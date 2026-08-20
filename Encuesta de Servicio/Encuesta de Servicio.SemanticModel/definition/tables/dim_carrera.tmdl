@@ -1,0 +1,58 @@
+table dim_carrera
+	lineageTag: 31f46dc2-9c03-4d11-87c7-dbbc5b646b92
+
+	column sap_cod_carrera
+		dataType: string
+		lineageTag: 8866f143-6078-45aa-9510-f46545ae7f96
+		summarizeBy: none
+		sourceColumn: sap_cod_carrera
+
+	column banner_carrera
+		dataType: string
+		lineageTag: d0013789-8f2e-4555-b06a-151b65b7843f
+		summarizeBy: none
+		sourceColumn: banner_carrera
+
+	column carrera_banner_agrupada
+		dataType: string
+		lineageTag: 53bcb8ce-f5ba-4f3a-9223-d128c6b2d042
+		summarizeBy: none
+		sourceColumn: carrera_banner_agrupada
+
+	column sap_cod_facultad
+		dataType: string
+		lineageTag: f1530a62-5762-4d6e-aa26-c50378ae1870
+		summarizeBy: none
+		sourceColumn: sap_cod_facultad
+
+	column sap_facultad
+		dataType: string
+		lineageTag: 2895764c-b81d-4538-b277-639626016153
+		summarizeBy: none
+		sourceColumn: sap_facultad
+
+	column nivel_academico
+		dataType: string
+		lineageTag: 127ad18f-471d-4307-996a-d9d9805ae594
+		summarizeBy: none
+		sourceColumn: nivel_academico
+
+	column clasificacion_nivel
+		dataType: string
+		lineageTag: 14952012-6d93-4d7b-838f-60934d7a8745
+		summarizeBy: none
+		sourceColumn: clasificacion_nivel
+
+	partition dim_carrera = m
+		mode: import
+		queryGroup: Detalles
+		source =
+				let
+				    Source = Odbc.Query("dsn=" & AthenaDSN, query_dim_carrera)
+				in
+				    Source
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

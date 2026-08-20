@@ -1,0 +1,33 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/2.1.0/schema.json",
+  "displayName": "Menú - Resultados y segmentación OFF",
+  "name": "nav_b1200000000000000002_off",
+  "options": {
+    "applyOnlyToTargetVisuals": true,
+    "targetVisualNames": [
+      "fi_mat_gnav",
+      "fi_mat_menubtn",
+      "fi_mat_nav_overlay",
+      "fi_mat_nav_panel",
+      "fi_mat_nav_close",
+      "fi_mat_nav_logo",
+      "fi_mat_nav_pages"
+    ],
+    "suppressData": true
+  },
+  "explorationState": {
+    "version": "1.3",
+    "activeSection": "b1200000000000000002",
+    "sections": {
+      "b1200000000000000002": {
+        "visualContainers": {},
+        "visualContainerGroups": {
+          "fi_mat_gnav": {
+            "isHidden": true
+          }
+        }
+      }
+    },
+    "objects": {}
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/2.1.0/schema.json",
+  "displayName": "Filtros Empleabilidad OFF",
+  "name": "60b9a4718045ed0a3ba6",
+  "options": {
+    "applyOnlyToTargetVisuals": true,
+    "targetVisualNames": [
+      "6a95bca43c897903a153",
+      "5cc6225428eb20a400ce",
+      "2901b11222ddc60d50a6",
+      "2484ab354bb45a8483ee",
+      "d685154a283d108d4867",
+      "5830c9c47b404d02043c"
+    ],
+    "suppressData": true
+  },
+  "explorationState": {
+    "version": "1.3",
+    "activeSection": "e274000c5980b0a02062",
+    "sections": {
+      "e274000c5980b0a02062": {
+        "visualContainers": {},
+        "visualContainerGroups": {
+          "6a95bca43c897903a153": {
+            "isHidden": true
+          }
+        }
+      }
+    },
+    "objects": {}
+  }
+}

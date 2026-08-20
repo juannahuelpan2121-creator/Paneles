@@ -1,0 +1,32 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "fi_mat_gnav",
+  "position": {
+    "x": 0,
+    "y": 0,
+    "z": 19000,
+    "height": 2186.4285278320313,
+    "width": 1280,
+    "tabOrder": 7000
+  },
+  "visualGroup": {
+    "displayName": "Navegacion",
+    "groupMode": "ScaleMode",
+    "objects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "isHidden": true
+}

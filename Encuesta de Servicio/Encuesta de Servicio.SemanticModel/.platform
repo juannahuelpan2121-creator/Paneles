@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Encuesta de Servicio"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "cc3594d3-827f-4a1b-b041-36555e78fa3f"
+  }
+}

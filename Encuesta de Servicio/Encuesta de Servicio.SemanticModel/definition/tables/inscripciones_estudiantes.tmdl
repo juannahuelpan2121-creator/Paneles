@@ -1,0 +1,128 @@
+table inscripciones_estudiantes
+	lineageTag: dc8786ce-dec5-4799-bab1-c2b815527e20
+
+	column periodo
+		dataType: string
+		lineageTag: 46a6fad5-5e63-4c3e-93af-ee24686a1e1b
+		summarizeBy: none
+		sourceColumn: periodo
+
+	column id_estudiante
+		dataType: string
+		isHidden
+		lineageTag: 622c97ae-cc39-4e02-b6ae-83918b4916ba
+		summarizeBy: none
+		sourceColumn: id_estudiante
+
+		changedProperty = IsHidden
+
+	column nivel_academico =
+			VAR IdActual = inscripciones_estudiantes[id_estudiante] & ""
+			VAR PeriodoActual = inscripciones_estudiantes[periodo] & ""
+			VAR SecuenciaMaxima =
+			    MAXX (
+			        FILTER (
+			            ALL ( maestro_estudiantes ),
+			            maestro_estudiantes[ID_ESTUDIANTE] & "" = IdActual
+			                && maestro_estudiantes[periodo_consulta] & "" = PeriodoActual
+			                && UPPER ( TRIM ( COALESCE ( maestro_estudiantes[estado_plan], "" ) ) ) = "AS"
+			        ),
+			        COALESCE ( maestro_estudiantes[secuencia_plan], -1 )
+			    )
+			RETURN
+			    MAXX (
+			        FILTER (
+			            ALL ( maestro_estudiantes ),
+			            maestro_estudiantes[ID_ESTUDIANTE] & "" = IdActual
+			                && maestro_estudiantes[periodo_consulta] & "" = PeriodoActual
+			                && UPPER ( TRIM ( COALESCE ( maestro_estudiantes[estado_plan], "" ) ) ) = "AS"
+			                && COALESCE ( maestro_estudiantes[secuencia_plan], -1 ) = SecuenciaMaxima
+			        ),
+			        maestro_estudiantes[origen_maestro]
+			    )
+		dataType: string
+		lineageTag: 54dba36d-ad50-4c36-85aa-53b9d2bf2285
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column nrc
+		dataType: string
+		lineageTag: 6d4a1c2b-34fe-4266-a7eb-42dc316b6844
+		summarizeBy: none
+		sourceColumn: nrc
+
+	column materia
+		dataType: string
+		lineageTag: bd564c42-e5b5-4eaf-8f45-45cd48640880
+		summarizeBy: none
+		sourceColumn: materia
+
+	column curso
+		dataType: string
+		lineageTag: dd0fee1b-b100-4ef1-93af-c181846312c0
+		summarizeBy: none
+		sourceColumn: curso
+
+	column componente
+		dataType: string
+		lineageTag: 46450c0f-fbf1-403e-b8e3-42006d53feb8
+		summarizeBy: none
+		sourceColumn: componente
+
+	column campus
+		dataType: string
+		lineageTag: b0e7454e-90dd-4a0c-b26d-721066df648a
+		summarizeBy: none
+		sourceColumn: campus
+
+	column estado_nrc
+		dataType: string
+		lineageTag: 2320850f-d506-4e86-b7d4-2b888fbcb95f
+		summarizeBy: none
+		sourceColumn: estado_nrc
+
+	column es_inscrito_real
+		dataType: int64
+		formatString: 0
+		lineageTag: dba6fb78-3029-4fb3-9e85-7f39d783e2bd
+		summarizeBy: sum
+		sourceColumn: es_inscrito_real
+
+	column llave_periodo_nrc
+		dataType: string
+		isHidden
+		lineageTag: 409f28b8-b83d-4fe9-a96d-e64e94167bd9
+		summarizeBy: none
+		sourceColumn: llave_periodo_nrc
+
+		changedProperty = IsHidden
+
+	partition inscripciones_estudiantes = m
+		mode: import
+		queryGroup: Detalles
+		source =
+				let
+				    Origen = Odbc.Query("dsn=" & AthenaDSN, query_inscripciones),
+				    Renombradas = Table.RenameColumns(Origen, {
+				        {"PERIODO", "periodo"}, {"ID_ESTUDIANTE", "id_estudiante"}, {"NRC", "nrc"},
+				        {"MATERIA", "materia"}, {"CURSO", "curso"},
+				        {"COMPONENTE", "componente"}, {"CAMPUS", "campus"},
+				        {"ESTADO_NRC", "estado_nrc"}
+				    }),
+				    Tipos = Table.TransformColumnTypes(Renombradas, {
+				        {"periodo", type text}, {"id_estudiante", type text}, {"nrc", type text},
+				        {"materia", type text}, {"curso", type text}, {"componente", type text},
+				        {"campus", type text}, {"estado_nrc", type text}
+				    }),
+				    Filtradas = Table.SelectRows(Tipos, each [periodo] >= "202400" and [id_estudiante] <> null),
+				    InscritoReal = Table.AddColumn(Filtradas, "es_inscrito_real", each if List.Contains({"RE", "RW"}, Text.Upper(Text.Trim([estado_nrc]))) then 1 else 0, Int64.Type),
+				    Llave = Table.AddColumn(InscritoReal, "llave_periodo_nrc", each [periodo] & "|" & [nrc], type text),
+				    Unicas = Table.Distinct(Llave, {"periodo", "id_estudiante", "nrc", "estado_nrc"})
+				in
+				    Unicas
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

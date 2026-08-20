@@ -1,0 +1,125 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmarksMetadata/1.0.0/schema.json",
+  "items": [
+    {
+      "name": "flt_da579c96d09850281cec_on"
+    },
+    {
+      "name": "flt_da579c96d09850281cec_off"
+    },
+    {
+      "name": "nav_da579c96d09850281cec_on"
+    },
+    {
+      "name": "nav_da579c96d09850281cec_off"
+    },
+    {
+      "name": "flt_b1200000000000000002_on"
+    },
+    {
+      "name": "flt_b1200000000000000002_off"
+    },
+    {
+      "name": "nav_b1200000000000000002_on"
+    },
+    {
+      "name": "nav_b1200000000000000002_off"
+    },
+    {
+      "name": "flt_b1200000000000000003_on"
+    },
+    {
+      "name": "flt_b1200000000000000003_off"
+    },
+    {
+      "name": "nav_b1200000000000000003_on"
+    },
+    {
+      "name": "nav_b1200000000000000003_off"
+    },
+    {
+      "name": "flt_b1200000000000000004_on"
+    },
+    {
+      "name": "flt_b1200000000000000004_off"
+    },
+    {
+      "name": "nav_b1200000000000000004_on"
+    },
+    {
+      "name": "nav_b1200000000000000004_off"
+    },
+    {
+      "name": "flt_b1200000000000000005_on"
+    },
+    {
+      "name": "flt_b1200000000000000005_off"
+    },
+    {
+      "name": "nav_b1200000000000000005_on"
+    },
+    {
+      "name": "nav_b1200000000000000005_off"
+    },
+    {
+      "name": "flt_b1200000000000000006_on"
+    },
+    {
+      "name": "flt_b1200000000000000006_off"
+    },
+    {
+      "name": "nav_b1200000000000000006_on"
+    },
+    {
+      "name": "nav_b1200000000000000006_off"
+    },
+    {
+      "name": "60b9a4718045ed0a3ba6"
+    },
+    {
+      "name": "8f9e156c683b0caceb3b"
+    },
+    {
+      "name": "93c34011e2d0183b602a"
+    },
+    {
+      "name": "ccda7ddfe087a130b0ab"
+    },
+    {
+      "name": "fi_emp_navoff"
+    },
+    {
+      "name": "fi_emp_navon"
+    },
+    {
+      "name": "fi_mat_navoff"
+    },
+    {
+      "name": "fi_mat_navon"
+    },
+    {
+      "name": "flt_b1200000_off"
+    },
+    {
+      "name": "flt_b1200000_on"
+    },
+    {
+      "name": "flt_da579c96_off"
+    },
+    {
+      "name": "flt_da579c96_on"
+    },
+    {
+      "name": "nav_b1200000_off"
+    },
+    {
+      "name": "nav_b1200000_on"
+    },
+    {
+      "name": "nav_da579c96_off"
+    },
+    {
+      "name": "nav_da579c96_on"
+    }
+  ]
+}

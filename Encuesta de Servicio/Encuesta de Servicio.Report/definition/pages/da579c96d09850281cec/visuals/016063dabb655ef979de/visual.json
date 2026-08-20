@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "016063dabb655ef979de",
+  "position": {
+    "x": 24,
+    "y": 373,
+    "z": 3000,
+    "height": 208,
+    "width": 1232,
+    "tabOrder": 12000
+  },
+  "visual": {
+    "visualType": "htmlContent443BE3AD55E043BF878BED274D3A6855",
+    "query": {
+      "queryState": {
+        "content": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas Encuesta de Servicio"
+                    }
+                  },
+                  "Property": "HTML Universo Encuestas"
+                }
+              },
+              "queryRef": "Medidas Encuesta de Servicio.HTML Universo Encuestas",
+              "nativeQueryRef": "HTML Universo Encuestas"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

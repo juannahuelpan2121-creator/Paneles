@@ -1,0 +1,283 @@
+table encuestas_docentes
+	lineageTag: 8cd3b1f6-ce5b-461b-a57a-b4f95c4e2652
+
+	column periodo
+		dataType: string
+		lineageTag: 11d076c4-4359-4eae-8d25-f921dabce241
+		summarizeBy: none
+		sourceColumn: periodo
+
+	column año
+		dataType: string
+		lineageTag: 27a68b10-ecc3-45ea-90fb-db125320dbc0
+		summarizeBy: none
+		sourceColumn: anio
+
+	column nrc
+		dataType: string
+		lineageTag: 4a580f3e-1657-418b-9507-3d61fae91472
+		summarizeBy: none
+		sourceColumn: nrc
+
+	column codigo_encuesta
+		dataType: string
+		lineageTag: 6fd57ced-7b65-4477-be55-6f81dc84c491
+		summarizeBy: none
+		sourceColumn: codigo_encuesta
+
+	column nombre_encuesta
+		dataType: string
+		lineageTag: 90dda8be-16c5-42d2-be3e-235dab043c98
+		summarizeBy: none
+		sourceColumn: nombre_encuesta
+
+	column codigo_pregunta
+		dataType: string
+		lineageTag: ea5bb75d-9b3a-4bd9-8255-582d0c425212
+		summarizeBy: none
+		sourceColumn: codigo_pregunta
+
+	column texto_pregunta
+		dataType: string
+		lineageTag: 621f5a93-a093-4338-b9b5-040e30ebb0e7
+		summarizeBy: none
+		sourceColumn: texto_pregunta
+
+	column tipo_pregunta_area
+		dataType: string
+		lineageTag: 71283d2d-7de6-409c-8e00-1aeaa5a914f2
+		summarizeBy: none
+		sourceColumn: tipo_pregunta_area
+
+	column secuencia
+		dataType: int64
+		formatString: 0
+		lineageTag: b73a4e55-39dc-4006-99a3-287999063fab
+		summarizeBy: sum
+		sourceColumn: secuencia
+
+		annotation SummarizationSetBy = Automatic
+
+	column titulo_oficial_curso
+		dataType: string
+		lineageTag: 33eaec82-bf63-4061-870c-05f98cb4c0a7
+		summarizeBy: none
+		sourceColumn: titulo_oficial_curso
+
+	column seccion
+		dataType: string
+		lineageTag: 8c05cf25-48b1-412e-9fa2-f2ea90284f0e
+		summarizeBy: none
+		sourceColumn: seccion
+
+	column cod_asignatura
+		dataType: string
+		lineageTag: d9a1e1a7-106d-43af-9b14-e3d84d9d4167
+		summarizeBy: none
+		sourceColumn: cod_asignatura
+
+	column nivel
+		dataType: string
+		lineageTag: 162f8d6c-bdd2-4651-bbd0-75ab51f01e64
+		summarizeBy: none
+		sourceColumn: nivel
+
+	column cod_campus
+		dataType: string
+		lineageTag: 21fba659-5ee4-4299-bd13-6910ba791ba0
+		summarizeBy: none
+		sourceColumn: cod_campus
+
+	column cod_facultad
+		dataType: string
+		lineageTag: 41eb912e-d8e2-461c-b48b-a5e2da4303f5
+		summarizeBy: none
+		sourceColumn: cod_facultad
+
+	column estado_nrc
+		dataType: string
+		lineageTag: aa899a30-c88c-4d7b-a0b6-2542adb9f14a
+		summarizeBy: none
+		sourceColumn: estado_nrc
+
+	column componente
+		dataType: string
+		lineageTag: 3ec903c0-70b3-4fae-9937-1d249d54e47b
+		summarizeBy: none
+		sourceColumn: componente
+
+	column inscritos
+		dataType: int64
+		formatString: #,0
+		lineageTag: d07ab3a9-b979-40c4-89c0-52c5d595fc84
+		summarizeBy: sum
+		sourceColumn: inscritos
+
+	column calificable
+		dataType: string
+		lineageTag: 854887ed-1c9e-4815-a855-16a9200da229
+		summarizeBy: none
+		sourceColumn: calificable
+
+	column pidm_docente
+		dataType: int64
+		lineageTag: 8a00a31a-d9eb-47ab-b399-320370eb317c
+		summarizeBy: sum
+		sourceColumn: pidm_docente
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_docente
+		dataType: string
+		lineageTag: 509e6848-9c8f-4a00-9052-9d308d4f09ad
+		summarizeBy: none
+		sourceColumn: cod_docente
+
+	column apellido_docente
+		dataType: string
+		lineageTag: 8375ba35-658a-4ade-abe8-accdfe566133
+		summarizeBy: none
+		sourceColumn: apellido_docente
+
+	column nombre_docente
+		dataType: string
+		lineageTag: 748af3bb-a135-46ce-a433-2fe1c7b76071
+		summarizeBy: none
+		sourceColumn: nombre_docente
+
+	column total_respuestas
+		dataType: int64
+		formatString: #,0
+		lineageTag: d3d7c6c1-007b-4fd7-a473-b9a1f470e53f
+		summarizeBy: sum
+		sourceColumn: total_respuestas
+
+	column ponderacion_pregunta
+		dataType: double
+		formatString: 0.00
+		lineageTag: fbcec93c-4243-4b0a-9102-1d2e3778cff3
+		summarizeBy: sum
+		sourceColumn: ponderacion_pregunta
+
+		annotation SummarizationSetBy = Automatic
+
+	column votos_nota_0
+		dataType: int64
+		formatString: #,0
+		lineageTag: d315b056-ce74-422e-ba94-4f15e364f06d
+		summarizeBy: sum
+		sourceColumn: votos_nota_0
+
+	column votos_nota_1
+		dataType: int64
+		formatString: #,0
+		lineageTag: 5e20e516-fcc7-48e2-9fb7-54c5e8521d14
+		summarizeBy: sum
+		sourceColumn: votos_nota_1
+
+	column votos_nota_2
+		dataType: int64
+		formatString: #,0
+		lineageTag: fe112c7e-55cd-47ad-bf99-dab3db2aefe6
+		summarizeBy: sum
+		sourceColumn: votos_nota_2
+
+	column votos_nota_3
+		dataType: int64
+		formatString: #,0
+		lineageTag: f15a913c-a722-4748-9a15-5e2d455c80dc
+		summarizeBy: sum
+		sourceColumn: votos_nota_3
+
+	column votos_nota_4
+		dataType: int64
+		formatString: #,0
+		lineageTag: 100fc9b3-7d4d-4a05-85c9-6385d82f38c9
+		summarizeBy: sum
+		sourceColumn: votos_nota_4
+
+	column votos_nota_5
+		dataType: int64
+		formatString: #,0
+		lineageTag: 2b7ca679-0c87-4f20-971a-9673235f017e
+		summarizeBy: sum
+		sourceColumn: votos_nota_5
+
+	column votos_nota_6
+		dataType: int64
+		formatString: #,0
+		lineageTag: f4cd754f-248c-4eed-bc8f-a180305151f3
+		summarizeBy: sum
+		sourceColumn: votos_nota_6
+
+	column votos_nota_7
+		dataType: int64
+		formatString: #,0
+		lineageTag: 387727bd-4ec0-4516-a29f-1e7ec2635119
+		summarizeBy: sum
+		sourceColumn: votos_nota_7
+
+	column votos_1_y_2
+		dataType: int64
+		formatString: #,0
+		lineageTag: e0891cd9-65eb-4f71-aa9e-23bc9e7b6a8f
+		summarizeBy: sum
+		sourceColumn: votos_1_y_2
+
+	column votos_4_y_5
+		dataType: int64
+		formatString: #,0
+		lineageTag: 5c86ac65-4de1-4e73-9173-b1251ac9aa2d
+		summarizeBy: sum
+		sourceColumn: votos_4_y_5
+
+	column llave = encuestas_docentes[periodo]&"|"&encuestas_docentes[nrc]
+		lineageTag: 135e06b5-2f24-45e4-96f9-60d5d1159cd1
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column nivel_reporte =
+			VAR SufijoPeriodo = RIGHT ( encuestas_docentes[periodo], 2 )
+			VAR NivelOrigen = UPPER ( TRIM ( COALESCE ( encuestas_docentes[nivel], "" ) ) )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        SufijoPeriodo IN { "10", "20" }, "Pregrado",
+			        SufijoPeriodo IN { "05", "15", "25" }, "Advance",
+			        CONTAINSSTRING ( NivelOrigen, "ADVANCE" ) || CONTAINSSTRING ( NivelOrigen, "TRIMESTRAL PREGRADO" ), "Advance",
+			        CONTAINSSTRING ( NivelOrigen, "PREGRADO" ), "Pregrado",
+			        CONTAINSSTRING ( NivelOrigen, "POST" ) || CONTAINSSTRING ( NivelOrigen, "MAGÍSTER" ) || CONTAINSSTRING ( NivelOrigen, "MAGISTER" ) || CONTAINSSTRING ( NivelOrigen, "DOCTOR" ), "Postgrado",
+			        BLANK ()
+			    )
+		dataType: string
+		lineageTag: 3b1da7ef-94db-4de3-91b2-7e2fe4c163b1
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition encuestas_docentes = m
+		mode: import
+		queryGroup: Detalles
+		source =
+				let
+				    Origen = Odbc.Query("dsn=" & AthenaDSN, query_encuestas),
+				    Tipos = Table.TransformColumnTypes(Origen, {
+				        {"periodo", type text}, {"anio", type text}, {"nrc", type text},
+				        {"secuencia", Int64.Type}, {"inscritos", Int64.Type},
+				        {"pidm_docente", Int64.Type}, {"total_respuestas", Int64.Type},
+				        {"ponderacion_pregunta", type number},
+				        {"votos_nota_0", Int64.Type}, {"votos_nota_1", Int64.Type},
+				        {"votos_nota_2", Int64.Type}, {"votos_nota_3", Int64.Type},
+				        {"votos_nota_4", Int64.Type}, {"votos_nota_5", Int64.Type},
+				        {"votos_nota_6", Int64.Type}, {"votos_nota_7", Int64.Type},
+				        {"votos_1_y_2", Int64.Type}, {"votos_4_y_5", Int64.Type}
+				    }),
+				    AreaNormalizada = Table.TransformColumns(Tipos, {{"tipo_pregunta_area", each Text.Proper(Text.Lower(Text.Trim(_))), type text}})
+				in
+				    AreaNormalizada
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

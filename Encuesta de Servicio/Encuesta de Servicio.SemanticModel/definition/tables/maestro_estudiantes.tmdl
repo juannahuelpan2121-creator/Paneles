@@ -1,0 +1,303 @@
+table maestro_estudiantes
+	lineageTag: 13f639d8-4117-480a-99a7-f425c008adbf
+
+	column origen_maestro =
+			VAR CodigoNivel = UPPER ( TRIM ( COALESCE ( maestro_estudiantes[nivel_academico], "" ) ) )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        CodigoNivel = "UG", "Pregrado",
+			        CodigoNivel = "AV", "Advance",
+			        CodigoNivel IN { "MG", "DP", "PH", "PE" }, "Postgrado",
+			        BLANK ()
+			    )
+		dataType: string
+		lineageTag: 8c2f13c0-8b34-43ea-95ce-61b38d9443b8
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column nivel_academico
+		dataType: string
+		lineageTag: ce959a88-6ea4-42d4-8958-e161f27b2de7
+		summarizeBy: none
+		sourceColumn: nivel_academico
+
+	column cod_carrera
+		dataType: string
+		lineageTag: 24fb3596-8710-4988-ab61-602376d38470
+		summarizeBy: none
+		sourceColumn: cod_carrera
+
+	column programa
+		dataType: string
+		lineageTag: 2d9fd081-afd3-4ebd-bf73-19430a506181
+		summarizeBy: none
+		sourceColumn: programa
+
+	column sede
+		dataType: string
+		lineageTag: ef9bb104-a6ea-4001-9d64-822e680d89d5
+		summarizeBy: none
+		sourceColumn: sede
+
+	column desc_sede
+		dataType: string
+		lineageTag: 6428935c-25b5-4c9a-ae01-938ac49bf92d
+		summarizeBy: none
+		sourceColumn: desc_sede
+
+	column cod_facultad
+		dataType: string
+		lineageTag: 7ef11955-d1d0-4d4f-97fb-9d82b0b09419
+		summarizeBy: none
+		sourceColumn: cod_facultad
+
+	column desc_facultad
+		dataType: string
+		lineageTag: c2e0866f-eb35-4859-93e8-a93143549c46
+		summarizeBy: none
+		sourceColumn: desc_facultad
+
+	column condicion_estudiante
+		dataType: string
+		lineageTag: 686e2523-b94f-4fae-a1b7-32182eb5995b
+		summarizeBy: none
+		sourceColumn: condicion_estudiante
+
+	column periodo_consulta
+		dataType: string
+		lineageTag: 43f6a552-2e94-44c2-8cda-2b93b103b8fc
+		summarizeBy: none
+		sourceColumn: periodo_consulta
+
+	column periodo_plan
+		dataType: string
+		lineageTag: 94b132d0-a0e5-48f0-b5ac-10f6115c9e03
+		summarizeBy: none
+		sourceColumn: periodo_plan
+
+	column secuencia_plan
+		dataType: int64
+		formatString: 0
+		lineageTag: 818f5296-7349-46c5-bd24-c4809bf0ee47
+		summarizeBy: sum
+		sourceColumn: secuencia_plan
+
+		annotation SummarizationSetBy = Automatic
+
+	column estado_plan
+		dataType: string
+		lineageTag: 40f2507e-becb-4428-8e06-98b85aa9ad89
+		summarizeBy: none
+		sourceColumn: estado_plan
+
+	column desc_estado_plan
+		dataType: string
+		lineageTag: c13ca359-14ab-48c6-883f-090896d51d2f
+		summarizeBy: none
+		sourceColumn: desc_estado_plan
+
+	column periodo_catalogo
+		dataType: string
+		lineageTag: 294dbb23-8996-403e-a6bb-2a19b08f8d6d
+		summarizeBy: none
+		sourceColumn: periodo_catalogo
+
+	column periodo_admision
+		dataType: string
+		lineageTag: ca56dba2-aeba-49d8-96db-775d6149b87d
+		summarizeBy: none
+		sourceColumn: periodo_admision
+
+	column asignaturas_inscritas
+		dataType: string
+		lineageTag: 6bd012e7-fb65-47ba-b946-9cb5e9e2d2d8
+		summarizeBy: none
+		sourceColumn: asignaturas_inscritas
+
+	column max_nivel_asignatura
+		dataType: int64
+		formatString: 0
+		lineageTag: f6e060fa-f38e-45ea-a92b-a52b7539a785
+		summarizeBy: sum
+		sourceColumn: max_nivel_asignatura
+
+		annotation SummarizationSetBy = Automatic
+
+	column asignatura_max_nivel
+		dataType: string
+		lineageTag: 4f83204a-ff50-4bee-95fd-e296131b0ff7
+		summarizeBy: none
+		sourceColumn: asignatura_max_nivel
+
+	column programa_anterior
+		dataType: string
+		lineageTag: cff81ef8-90ab-46e8-864b-2d20abf467ec
+		summarizeBy: none
+		sourceColumn: programa_anterior
+
+	column condicion_sam
+		dataType: string
+		lineageTag: ee788b43-2bbe-4b16-bb61-2a85e74d1a6b
+		summarizeBy: none
+		sourceColumn: condicion_sam
+
+	column ID_ESTUDIANTE
+		dataType: string
+		lineageTag: 4bdaa5c0-ab2d-48fb-a3cf-b66a37b12c22
+		summarizeBy: none
+		sourceColumn: ID_ESTUDIANTE
+
+		annotation SummarizationSetBy = Automatic
+
+	column apellido
+		dataType: string
+		lineageTag: c85cb22a-9911-475a-b824-51af881d1a2a
+		summarizeBy: none
+		sourceColumn: apellido
+
+		annotation SummarizationSetBy = Automatic
+
+	column nombre
+		dataType: string
+		lineageTag: 2d368f55-de7d-4965-b63a-6690f6f17672
+		summarizeBy: none
+		sourceColumn: nombre
+
+		annotation SummarizationSetBy = Automatic
+
+	column pidm
+		dataType: int64
+		formatString: 0
+		lineageTag: 3fa65790-3476-418c-8375-6b7919b7d0b7
+		summarizeBy: sum
+		sourceColumn: pidm
+
+		annotation SummarizationSetBy = Automatic
+
+	column PERIODO_MATRICULACION
+		dataType: string
+		lineageTag: cf4d54be-ae36-41b2-bcd3-70aa3098f97d
+		summarizeBy: none
+		sourceColumn: PERIODO_MATRICULACION
+
+		annotation SummarizationSetBy = Automatic
+
+	column ultima_fecha_actividad
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 818bd808-0faf-41c8-94e6-ed5950dbdf67
+		summarizeBy: none
+		sourceColumn: ultima_fecha_actividad
+
+		annotation SummarizationSetBy = Automatic
+
+	column edad
+		dataType: int64
+		formatString: 0
+		lineageTag: 8fbb6a52-a4cf-4fda-aba8-50fae4c8597d
+		summarizeBy: sum
+		sourceColumn: edad
+
+		annotation SummarizationSetBy = Automatic
+
+	column genero
+		dataType: string
+		lineageTag: 9f313aff-2ef7-4b78-8863-c604db48d22e
+		summarizeBy: none
+		sourceColumn: genero
+
+		annotation SummarizationSetBy = Automatic
+
+	column nacionalidad
+		dataType: string
+		lineageTag: a6abb1e7-b105-45ad-9100-21582314c3eb
+		summarizeBy: none
+		sourceColumn: nacionalidad
+
+		annotation SummarizationSetBy = Automatic
+
+	column comuna
+		dataType: string
+		lineageTag: b30f2a77-8145-41b2-9f1f-ec88dc47dc5d
+		summarizeBy: none
+		sourceColumn: comuna
+
+		annotation SummarizationSetBy = Automatic
+
+	column ec_convalidaciones
+		dataType: string
+		lineageTag: 80a9bed5-bd80-4ae8-9ff8-5f36d72b01d1
+		summarizeBy: none
+		sourceColumn: ec_convalidaciones
+
+		annotation SummarizationSetBy = Automatic
+
+	column ec_sustitucion
+		dataType: string
+		lineageTag: b045e01b-8023-483b-bfde-e418e1c403f2
+		summarizeBy: none
+		sourceColumn: ec_sustitucion
+
+		annotation SummarizationSetBy = Automatic
+
+	column inscripcion_eliminada
+		dataType: string
+		lineageTag: a1badd01-a711-44bf-a8ab-885424b1dca2
+		summarizeBy: none
+		sourceColumn: inscripcion_eliminada
+
+		annotation SummarizationSetBy = Automatic
+
+	column tipo_solicitud
+		dataType: string
+		lineageTag: 61107773-5ef3-42cf-8f0c-fbeafe973830
+		summarizeBy: none
+		sourceColumn: tipo_solicitud
+
+		annotation SummarizationSetBy = Automatic
+
+	column fecha_solicitud
+		dataType: string
+		lineageTag: 1e105e33-4827-4fb2-9247-e62e5687bbcf
+		summarizeBy: none
+		sourceColumn: fecha_solicitud
+
+		annotation SummarizationSetBy = Automatic
+
+	column NIVEL_ESTUDIANTE
+		dataType: int64
+		formatString: 0
+		lineageTag: 686a3338-ed3b-44d6-a486-afe0cd3b3cc1
+		summarizeBy: sum
+		sourceColumn: NIVEL_ESTUDIANTE
+
+		annotation SummarizationSetBy = Automatic
+
+	column posee_nota
+		dataType: string
+		lineageTag: a27add35-7b5e-4377-b7e6-db932e6bbded
+		summarizeBy: none
+		sourceColumn: posee_nota
+
+		annotation SummarizationSetBy = Automatic
+
+	partition maestro_estudiantes = m
+		mode: import
+		queryGroup: Detalles
+		source = ```
+				let
+				    Pregrado = Odbc.Query("dsn=" & AthenaDSN, query_maestro_pregrado),
+				    Advance = Odbc.Query("dsn=" & AthenaDSN, query_maestro_advance),
+				    Postgrado = Odbc.Query("dsn=" & AthenaDSN, query_maestro_postgrado),
+				    
+				    Combinadas = Table.Combine({Pregrado, Advance, Postgrado})
+				in
+				    Combinadas
+				```
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Exception
+

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "e274000c5980b0a02062",
+  "displayName": "Empleabilidad",
+  "displayOption": "ActualSize",
+  "height": 1800,
+  "width": 1280,
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "color": {
+            "solid": {
+              "color": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'#FFFFFF'"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "25557a9d04cb65c59530",
+      "target": "0a5e840758591509d522",
+      "type": "NoFilter"
+    },
+    {
+      "source": "25557a9d04cb65c59530",
+      "target": "ff1761995a0c428c0891",
+      "type": "NoFilter"
+    },
+    {
+      "source": "25557a9d04cb65c59530",
+      "target": "dae32a5605a00262aa05",
+      "type": "DataFilter"
+    },
+    {
+      "source": "25557a9d04cb65c59530",
+      "target": "209ec22da73dd822e4ba",
+      "type": "NoFilter"
+    },
+    {
+      "source": "25557a9d04cb65c59530",
+      "target": "58857a30a22211867c49",
+      "type": "DataFilter"
+    }
+  ]
+}
+

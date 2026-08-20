@@ -1,0 +1,5 @@
+relationship maestro_estudiantes_cod_carrera_dim_carrera
+	fromColumn: maestro_estudiantes.cod_carrera
+	toColumn: dim_carrera.sap_cod_carrera
+
+

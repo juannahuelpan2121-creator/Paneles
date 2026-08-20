@@ -1,0 +1,3133 @@
+expression AthenaDSN = "uss-athena-datalake-prod" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 226d96af-6a94-40be-86bf-06dd449aab8d
+	queryGroup: Parámetros
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Text
+
+expression query_encuestas = ```
+			let
+			    Source = "
+			WITH SeccionesTerminos AS (
+			    SELECT DISTINCT ssbsect_term_code, ssbsect_subj_code, ssbsect_crse_numb
+			    FROM uss_datalake_stage.banner_oracle_saturn_ssbsect
+			),
+			CursoEfectivo AS (
+			    SELECT st.ssbsect_term_code, st.ssbsect_subj_code, st.ssbsect_crse_numb,
+			           c.scbcrse_title, c.scbcrse_coll_code,
+			           ROW_NUMBER() OVER (
+			               PARTITION BY st.ssbsect_term_code, st.ssbsect_subj_code, st.ssbsect_crse_numb
+			               ORDER BY c.scbcrse_eff_term DESC
+			           ) AS rn
+			    FROM SeccionesTerminos st
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_scbcrse c
+			      ON st.ssbsect_subj_code = c.scbcrse_subj_code
+			     AND st.ssbsect_crse_numb = c.scbcrse_crse_numb
+			     AND c.scbcrse_eff_term <= st.ssbsect_term_code
+			),
+			NivelEfectivo AS (
+			    SELECT st.ssbsect_term_code, st.ssbsect_subj_code, st.ssbsect_crse_numb,
+			           l.scrlevl_levl_code,
+			           ROW_NUMBER() OVER (
+			               PARTITION BY st.ssbsect_term_code, st.ssbsect_subj_code, st.ssbsect_crse_numb
+			               ORDER BY l.scrlevl_eff_term DESC
+			           ) AS rn
+			    FROM SeccionesTerminos st
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_scrlevl l
+			      ON st.ssbsect_subj_code = l.scrlevl_subj_code
+			     AND st.ssbsect_crse_numb = l.scrlevl_crse_numb
+			     AND l.scrlevl_eff_term <= st.ssbsect_term_code
+			)
+			SELECT
+			    a.svbtesd_term_code AS periodo,
+			    k.stvterm_acyr_code AS anio,
+			    a.svbtesd_crn AS nrc,
+			    a.svbtesd_tssc_code AS codigo_encuesta,
+			    e.svvtssc_desc AS nombre_encuesta,
+			    a.svbtesd_qcod_code AS codigo_pregunta,
+			    g.svbqcod_desc AS texto_pregunta,
+			    f.svvteqa_desc AS tipo_pregunta_area,
+			    a.svbtesd_sdef_seq_num AS secuencia,
+			    ce.scbcrse_title AS titulo_oficial_curso,
+			    b.ssbsect_seq_numb AS seccion,
+			    b.ssbsect_subj_code || b.ssbsect_crse_numb AS cod_asignatura,
+			    CASE
+			      WHEN SUBSTR(a.svbtesd_term_code, 5, 2) IN ('10','20')
+			       AND TRIM(UPPER(b.ssbsect_subj_code)) = 'IAGE' THEN 'PREGRADO'
+			      WHEN SUBSTR(a.svbtesd_term_code, 5, 2) IN ('05','15','25')
+			       OR TRIM(UPPER(stv.stvlevl_desc)) = 'TRIMESTRAL PREGRADO' THEN 'ADVANCE'
+			      ELSE stv.stvlevl_desc
+			    END AS nivel,
+			    b.ssbsect_camp_code AS cod_campus,
+			    ce.scbcrse_coll_code AS cod_facultad,
+			    b.ssbsect_ssts_code AS estado_nrc,
+			    b.ssbsect_schd_code AS componente,
+			    b.ssbsect_enrl AS inscritos,
+			    b.ssbsect_gradable_ind AS calificable,
+			    a.svbtesd_faculty_pidm AS pidm_docente,
+			    fac.spriden_id AS cod_docente,
+			    fac.spriden_last_name AS apellido_docente,
+			    CONCAT(fac.spriden_first_name, ' ', COALESCE(fac.spriden_search_mi, '')) AS nombre_docente,
+			    COUNT(*) AS total_respuestas,
+			    TRY_CAST(a.svbtesd_sdef_weight AS DECIMAL(10,2)) AS ponderacion_pregunta,
+			    SUM(CASE WHEN TRY_CAST(a.svbtesd_pvac_qpoints AS INTEGER)=0 THEN 1 ELSE 0 END) AS votos_nota_0,
+			    SUM(CASE WHEN TRY_CAST(a.svbtesd_pvac_qpoints AS INTEGER)=1 THEN 1 ELSE 0 END) AS votos_nota_1,
+			    SUM(CASE WHEN TRY_CAST(a.svbtesd_pvac_qpoints AS INTEGER)=2 THEN 1 ELSE 0 END) AS votos_nota_2,
+			    SUM(CASE WHEN TRY_CAST(a.svbtesd_pvac_qpoints AS INTEGER)=3 THEN 1 ELSE 0 END) AS votos_nota_3,
+			    SUM(CASE WHEN TRY_CAST(a.svbtesd_pvac_qpoints AS INTEGER)=4 THEN 1 ELSE 0 END) AS votos_nota_4,
+			    SUM(CASE WHEN TRY_CAST(a.svbtesd_pvac_qpoints AS INTEGER)=5 THEN 1 ELSE 0 END) AS votos_nota_5,
+			    SUM(CASE WHEN TRY_CAST(a.svbtesd_pvac_qpoints AS INTEGER)=6 THEN 1 ELSE 0 END) AS votos_nota_6,
+			    SUM(CASE WHEN TRY_CAST(a.svbtesd_pvac_qpoints AS INTEGER)=7 THEN 1 ELSE 0 END) AS votos_nota_7,
+			    SUM(CASE WHEN TRY_CAST(a.svbtesd_pvac_qpoints AS INTEGER) IN (1,2) THEN 1 ELSE 0 END) AS votos_1_y_2,
+			    SUM(CASE WHEN TRY_CAST(a.svbtesd_pvac_qpoints AS INTEGER) IN (4,5) THEN 1 ELSE 0 END) AS votos_4_y_5
+			FROM uss_datalake_stage.banner_oracle_saturn_svbtesd a
+			INNER JOIN uss_datalake_stage.banner_oracle_saturn_svbtesh h
+			  ON a.svbtesd_term_code=h.svbtesh_term_code AND a.svbtesd_crn=h.svbtesh_crn
+			 AND a.svbtesd_esas_temp_pidm=h.svbtesh_esas_temp_pidm
+			INNER JOIN uss_datalake_stage.banner_oracle_saturn_ssbsect b
+			  ON a.svbtesd_term_code=b.ssbsect_term_code AND a.svbtesd_crn=b.ssbsect_crn
+			LEFT JOIN CursoEfectivo ce
+			  ON b.ssbsect_term_code=ce.ssbsect_term_code AND b.ssbsect_subj_code=ce.ssbsect_subj_code
+			 AND b.ssbsect_crse_numb=ce.ssbsect_crse_numb AND ce.rn=1
+			LEFT JOIN NivelEfectivo ne
+			  ON b.ssbsect_term_code=ne.ssbsect_term_code AND b.ssbsect_subj_code=ne.ssbsect_subj_code
+			 AND b.ssbsect_crse_numb=ne.ssbsect_crse_numb AND ne.rn=1
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_stvlevl stv ON ne.scrlevl_levl_code=stv.stvlevl_code
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_spriden fac
+			  ON a.svbtesd_faculty_pidm=fac.spriden_pidm AND fac.spriden_change_ind IS NULL
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_svvtssc e ON a.svbtesd_tssc_code=e.svvtssc_code
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_svvteqa f ON a.svbtesd_teqa_code=f.svvteqa_code
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_svbqcod g ON a.svbtesd_qcod_code=g.svbqcod_code
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_stvterm k ON a.svbtesd_term_code=k.stvterm_code
+			WHERE k.stvterm_acyr_code >= '2020'
+			  AND a.svbtesd_sdef_weight > 0
+			  AND UPPER(COALESCE(e.svvtssc_desc, '')) LIKE '%SERVICIO%'
+			GROUP BY a.svbtesd_term_code,k.stvterm_acyr_code,a.svbtesd_crn,a.svbtesd_tssc_code,
+			 e.svvtssc_desc,a.svbtesd_qcod_code,g.svbqcod_desc,f.svvteqa_desc,a.svbtesd_sdef_seq_num,
+			 ce.scbcrse_title,b.ssbsect_seq_numb,b.ssbsect_subj_code,b.ssbsect_crse_numb,
+			 CASE WHEN SUBSTR(a.svbtesd_term_code,5,2) IN ('10','20') AND TRIM(UPPER(b.ssbsect_subj_code))='IAGE' THEN 'PREGRADO'
+			      WHEN SUBSTR(a.svbtesd_term_code,5,2) IN ('05','15','25') OR TRIM(UPPER(stv.stvlevl_desc))='TRIMESTRAL PREGRADO' THEN 'ADVANCE'
+			      ELSE stv.stvlevl_desc END,
+			 b.ssbsect_camp_code,ce.scbcrse_coll_code,b.ssbsect_ssts_code,b.ssbsect_schd_code,b.ssbsect_enrl,
+			 b.ssbsect_gradable_ind,a.svbtesd_faculty_pidm,fac.spriden_id,fac.spriden_last_name,
+			 fac.spriden_first_name,fac.spriden_search_mi,a.svbtesd_sdef_weight
+			"
+			in
+			    Source
+		```
+	lineageTag: 9f12e625-3a24-45fe-9e36-d74a9940297e
+	queryGroup: Detalles
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Text
+
+expression query_inscripciones = ```
+			let
+			    Source = "
+			SELECT DISTINCT
+			    CAST(sfrstcr.sfrstcr_term_code AS VARCHAR) AS PERIODO,
+			    to_hex(sha256(to_utf8(cast(spriden.spriden_id AS varchar)))) AS ID_ESTUDIANTE,
+			    CAST(sfrstcr.sfrstcr_crn AS VARCHAR) AS NRC,
+			    ssbsect.ssbsect_subj_code AS MATERIA,
+			    ssbsect.ssbsect_crse_numb AS CURSO,
+			    ssbsect.ssbsect_schd_code AS COMPONENTE,
+			    ssbsect.ssbsect_camp_code AS CAMPUS,
+			    sfrstcr.sfrstcr_rsts_code AS ESTADO_NRC
+			FROM uss_datalake_stage.banner_oracle_saturn_sfrstcr sfrstcr
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_spriden spriden
+			    ON spriden.spriden_pidm = sfrstcr.sfrstcr_pidm
+			   AND spriden.spriden_change_ind IS NULL
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_ssbsect ssbsect
+			    ON ssbsect.ssbsect_crn = sfrstcr.sfrstcr_crn
+			   AND ssbsect.ssbsect_term_code = sfrstcr.sfrstcr_term_code
+			WHERE CAST(sfrstcr.sfrstcr_term_code AS VARCHAR) >= '202400'
+			"
+			in
+			    Source
+		```
+	lineageTag: a31fe5de-4ebd-4e2c-b721-f5a26aec286c
+	queryGroup: Detalles
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Text
+
+expression query_maestro_pregrado = ```
+		let
+			    Source = "
+			-- ============================================================================
+			-- MIGRACION AL NUEVO DATALAKE - 2026-07-21   (VARIANTE, no version de produccion)
+			-- ----------------------------------------------------------------------------
+			--   Esta variante usa la tabla SOVLCUR (CTE 'matric_ranked' -> campo
+			--   ""PERIODO_MATRICULACION""). CONFIRMADO en el inventario ESTADO_ACTUAL_DL_21072026:
+			--   sovlcur SI esta cargada, con nombre real 'banner_oracle_baninst1_sovlcur'
+			--   (modulo baninst1, NO saturn como se habia inferido el 2026-07-17). 43 columnas.
+			--   => Query estructuralmente ejecutable.
+			--
+			-- La vista mongodb_dev.vw_sam_matricula_preprocesada fue sustituida por el CTE
+			-- 'sam_matricula' (ver nota tecnica de sustitucion del 2026-07-17).
+			--
+			-- NOTA DE DATOS (barrido de sanidad 21/07): esta query hereda las brechas de
+			-- carga aun no corregidas de spriden (duplicada x3.00) y sam (2.4% de
+			-- completitud). La validacion reflejara esas desviaciones hasta que el equipo
+			-- DL corrija dichas tablas; no son defectos de la migracion.
+			-- ============================================================================
+			--####### QUERY MAESTRO ESTUDIANTES PREGADO ######
+			
+			WITH sam_matricula AS (
+			    SELECT
+			        rut,
+			        academicperiod,
+			        careercode,
+			        reportdata_campuscode,
+			        studentstatus,
+			        isold
+			    FROM uss_datalake_stage.sam_mongodb_retenciones_studentpostulants
+			    WHERE studentstatus = 'MATRICULADO'
+			),
+			RankedCurriculum AS (
+			    SELECT 
+			        x.*,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY x.sorlcur_pidm, x.sorlcur_key_seqno, x.sorlcur_term_code
+			            ORDER BY x.sorlcur_activity_date DESC, x.sorlcur_seqno DESC
+			        ) as ranking
+			    FROM uss_datalake_stage.banner_oracle_saturn_sorlcur x
+			    WHERE x.sorlcur_lmod_code = 'LEARNER'
+			      --AND x.sorlcur_cact_code = 'ACTIVE'
+			),
+			
+			RankedAddress AS (
+			    SELECT
+			        spraddr_pidm,
+			        spraddr_cnty_code,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY spraddr_pidm
+			            ORDER BY spraddr_activity_date DESC, spraddr_from_date DESC
+			        ) as addr_ranking
+			    FROM uss_datalake_stage.banner_oracle_saturn_spraddr
+			    WHERE spraddr_status_ind IS NULL
+			),
+			
+			RankedMajor AS (
+			    SELECT
+			        sobcurr.sobcurr_program,
+			        sobcurr.sobcurr_curr_rule,
+			        sorcmjr.sorcmjr_majr_code,
+			        sorcmjr.sorcmjr_term_code_eff,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY sobcurr.sobcurr_program
+			            ORDER BY sorcmjr.sorcmjr_term_code_eff DESC, sorcmjr.sorcmjr_cmjr_rule DESC
+			        ) as major_ranking
+			    FROM uss_datalake_stage.banner_oracle_saturn_sobcurr sobcurr
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_sorcmjr sorcmjr
+			        ON sobcurr.sobcurr_curr_rule = sorcmjr.sorcmjr_curr_rule
+			),
+			
+			-- =====================================================
+			-- Catálogos disponibles por programa (smbpgen)
+			-- =====================================================
+			catalogos_programa AS (
+			    SELECT DISTINCT
+			        smbpgen_program,
+			        smbpgen_term_code_eff AS catalogo
+			    FROM uss_datalake_stage.banner_oracle_saturn_smbpgen
+			),
+			
+			-- =====================================================
+			-- Todas las asignaturas de todos los catálogos por programa
+			-- Cadena: smrpaap -> smbagen -> smracaa -> smbarul -> smrarul
+			-- =====================================================
+			catalogo_asignaturas AS (
+			    SELECT DISTINCT
+			        paap.smrpaap_program,
+			        paap.smrpaap_term_code_eff AS version_catalogo,
+			        paap.smrpaap_area,
+			        paap.smrpaap_area_priority,
+			        arul.smrarul_subj_code,
+			        arul.smrarul_crse_numb_low
+			    FROM uss_datalake_stage.banner_oracle_saturn_smrpaap paap
+			
+			    INNER JOIN catalogos_programa cp
+			        ON cp.smbpgen_program = paap.smrpaap_program
+			        AND cp.catalogo = paap.smrpaap_term_code_eff
+			
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_smbagen agen
+			        ON agen.smbagen_area = paap.smrpaap_area
+			
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_smracaa acaa
+			        ON acaa.smracaa_area = agen.smbagen_area
+			
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_smbarul barul
+			        ON barul.smbarul_area = acaa.smracaa_area
+			        AND barul.smbarul_key_rule = acaa.smracaa_rule
+			
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_smrarul arul
+			        ON arul.smrarul_area = barul.smbarul_area
+			        AND arul.smrarul_key_rule = barul.smbarul_key_rule
+			),
+			
+			-- =====================================================
+			-- Cruce: inscripciones del estudiante vs catálogo
+			-- Búsqueda espiral por distancia al catálogo del estudiante
+			-- =====================================================
+			asig_con_nivel AS (
+			    SELECT
+			        c.sorlcur_pidm,
+			        c.sorlcur_program,
+			        c.sorlcur_term_code,
+			        c.sorlcur_term_code_ctlg,
+			        cat.smrpaap_area_priority,
+			        cat.version_catalogo,
+			        sect.ssbsect_subj_code,
+			        sect.ssbsect_crse_numb,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY c.sorlcur_pidm, c.sorlcur_program, c.sorlcur_term_code,
+			                         sect.ssbsect_subj_code, sect.ssbsect_crse_numb
+			            ORDER BY
+			                ABS(CAST(cat.version_catalogo AS INTEGER) - CAST(c.sorlcur_term_code_ctlg AS INTEGER)) ASC,
+			                cat.version_catalogo DESC
+			        ) AS rn_version
+			    FROM RankedCurriculum c
+			
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_sfrstcr fcr
+			        ON fcr.sfrstcr_pidm = c.sorlcur_pidm
+			        AND fcr.sfrstcr_term_code = c.sorlcur_term_code
+			        AND fcr.sfrstcr_rsts_code IN ('RE', 'RW')
+			
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_ssbsect sect
+			        ON sect.ssbsect_crn = fcr.sfrstcr_crn
+			        AND sect.ssbsect_term_code = fcr.sfrstcr_term_code
+			
+			    INNER JOIN catalogo_asignaturas cat
+			        ON cat.smrpaap_program = c.sorlcur_program
+			        AND cat.smrarul_subj_code = sect.ssbsect_subj_code
+			        AND cat.smrarul_crse_numb_low = sect.ssbsect_crse_numb
+			
+			    WHERE c.ranking = 1
+			),
+			
+			asig_version_correcta AS (
+			    SELECT
+			        sorlcur_pidm,
+			        sorlcur_program,
+			        sorlcur_term_code,
+			        sorlcur_term_code_ctlg,
+			        smrpaap_area_priority,
+			        ssbsect_subj_code,
+			        ssbsect_crse_numb,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY sorlcur_pidm, sorlcur_program, sorlcur_term_code
+			            ORDER BY smrpaap_area_priority DESC
+			        ) AS rn_final
+			    FROM asig_con_nivel
+			    WHERE rn_version = 1
+			),
+			
+			-- =====================================================
+			-- CTE: Conteo de asignaturas en malla (bloque principal)
+			-- Filtro de periodos independiente, igual que v3
+			-- =====================================================
+			asig_en_malla AS (
+			    SELECT
+			        sorlcur_pidm,
+			        sorlcur_program,
+			        sorlcur_term_code,
+			        COUNT(DISTINCT ssbsect_subj_code || '-' || ssbsect_crse_numb) AS total_asignaturas
+			    FROM asig_version_correcta
+			    WHERE sorlcur_term_code >='202300'     --------->>> PERIODO CATALOGO
+			    GROUP BY sorlcur_pidm, sorlcur_program, sorlcur_term_code
+			),
+			
+			-- =====================================================
+			-- CTE: Solo el registro con max nivel por estudiante
+			-- =====================================================
+			max_nivel_asig AS (
+			    SELECT
+			        sorlcur_pidm,
+			        sorlcur_program,
+			        sorlcur_term_code,
+			        smrpaap_area_priority AS max_nivel_asignatura,
+			        ssbsect_subj_code || ' ' || ssbsect_crse_numb AS asignatura_max_nivel
+			    FROM asig_version_correcta
+			    WHERE rn_final = 1
+			      AND sorlcur_term_code  >='202300'     --------->>> PERIODO CATALOGO
+			),
+			
+			-- =====================================================
+			-- CTE: Programa anterior
+			-- =====================================================
+			programa_anterior AS (
+			    SELECT
+			        curr.sorlcur_pidm,
+			        curr.sorlcur_program AS programa_actual,
+			        curr.sorlcur_term_code AS periodo_consulta,
+			        prev.sorlcur_program AS programa_previo,
+			        prev.sorlcur_term_code AS periodo_previo,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY curr.sorlcur_pidm, curr.sorlcur_program, curr.sorlcur_term_code
+			            ORDER BY prev.sorlcur_term_code DESC
+			        ) AS rn
+			    FROM RankedCurriculum curr
+			    INNER JOIN RankedCurriculum prev
+			        ON prev.sorlcur_pidm = curr.sorlcur_pidm
+			        AND prev.sorlcur_term_code < curr.sorlcur_term_code
+			        AND prev.sorlcur_program != curr.sorlcur_program
+			        AND prev.ranking = 1
+			    WHERE curr.ranking = 1
+			),
+			
+			-- =====================================================
+			-- CTE: Reingreso
+			-- =====================================================
+			RankedReingreso AS (
+			    SELECT
+			        s.sgrstsp_pidm,
+			        s.sgrstsp_term_code_eff,
+			        s.sgrstsp_key_seqno,
+			        s.sgrstsp_stsp_code,
+			        c.sorlcur_pidm,
+			        c.sorlcur_key_seqno,
+			        c.sorlcur_term_code,
+			        c.sorlcur_program,
+			        c.sorlcur_term_code_ctlg,
+			        c.sorlcur_term_code_admit,
+			        c.sorlcur_camp_code,
+			        c.sorlcur_levl_code,
+			        c.sorlcur_activity_date,
+			        c.sorlcur_seqno,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY s.sgrstsp_pidm, c.sorlcur_program, s.sgrstsp_term_code_eff
+			            ORDER BY s.sgrstsp_key_seqno DESC
+			        ) AS rn_reingreso
+			    FROM uss_datalake_stage.banner_oracle_saturn_sgrstsp s
+			    INNER JOIN RankedCurriculum c
+			        ON s.sgrstsp_pidm = c.sorlcur_pidm
+			        AND CAST(s.sgrstsp_key_seqno AS VARCHAR) = CAST(c.sorlcur_key_seqno AS VARCHAR)
+			        AND CAST(s.sgrstsp_term_code_eff AS VARCHAR) = CAST(c.sorlcur_term_code AS VARCHAR)
+			        AND c.ranking = 1
+			    WHERE s.sgrstsp_term_code_eff >= '201500'     ------> PERIODO MALLA (DEBE SER SIEMPRE EL MENOR)
+			      AND c.sorlcur_term_code_admit IS NOT NULL
+			      AND TRIM(c.sorlcur_term_code_admit) != ''
+			      and c.sorlcur_levl_code = 'UG'              ------> FILTRO NIVEL ACADÉMICO
+			),
+			
+			-- =====================================================
+			-- CTE: Periodos auxiliares
+			-- =====================================================
+			periodos_inscripcion AS (
+			    SELECT DISTINCT
+			        sfrstcr_pidm,
+			        CAST(sfrstcr_term_code AS VARCHAR) AS periodo_inscripcion
+			    FROM uss_datalake_stage.banner_oracle_saturn_sfrstcr
+			    WHERE sfrstcr_rsts_code IN ('RE', 'RW')
+			),
+			
+			auxiliares_plan_cercano AS (
+			    SELECT
+			        s.sgrstsp_pidm,
+			        s.sgrstsp_term_code_eff,
+			        s.sgrstsp_key_seqno,
+			        s.sgrstsp_stsp_code,
+			        s.sorlcur_program,
+			        s.sorlcur_term_code_ctlg,
+			        s.sorlcur_term_code_admit,
+			        s.sorlcur_camp_code,
+			        s.sorlcur_levl_code,
+			        s.sorlcur_activity_date,
+			        pi.periodo_inscripcion,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY s.sgrstsp_pidm, s.sorlcur_program, pi.periodo_inscripcion
+			            ORDER BY s.sgrstsp_term_code_eff DESC
+			        ) AS rn_plan_cercano
+			    FROM RankedReingreso s
+			    INNER JOIN periodos_inscripcion pi
+			        ON pi.sfrstcr_pidm = s.sgrstsp_pidm
+			        AND pi.periodo_inscripcion != CAST(s.sgrstsp_term_code_eff AS VARCHAR)
+			        AND pi.periodo_inscripcion > CAST(s.sgrstsp_term_code_eff AS VARCHAR)
+			        AND NOT EXISTS (
+			            SELECT 1 FROM RankedReingreso r2
+			            WHERE r2.sgrstsp_pidm = s.sgrstsp_pidm
+			              AND r2.sorlcur_program = s.sorlcur_program
+			              AND CAST(r2.sgrstsp_term_code_eff AS VARCHAR) = CAST(pi.periodo_inscripcion AS VARCHAR)
+			              AND r2.rn_reingreso = 1
+			        )
+			    WHERE s.rn_reingreso = 1
+			),
+			
+			-- =====================================================
+			-- CTE: Conteo de asignaturas en malla (bloque auxiliar)
+			-- Filtro de periodos independiente igual que v3
+			-- =====================================================
+			asig_en_malla_aux AS (
+			    SELECT
+			        fcr.sfrstcr_pidm,
+			        rr.sorlcur_program,
+			        CAST(fcr.sfrstcr_term_code AS VARCHAR) AS periodo_inscripcion,
+			        COUNT(DISTINCT sect.ssbsect_subj_code || '-' || sect.ssbsect_crse_numb) AS total_asignaturas
+			    FROM RankedReingreso rr
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_sfrstcr fcr
+			        ON fcr.sfrstcr_pidm = rr.sgrstsp_pidm
+			        AND fcr.sfrstcr_rsts_code IN ('RE', 'RW')
+			        AND fcr.sfrstcr_term_code >= '202300'          ------> PERIODO INSCRIPCIÓN A REVISAR
+			        AND CAST(fcr.sfrstcr_term_code AS VARCHAR) > CAST(rr.sgrstsp_term_code_eff AS VARCHAR)
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_ssbsect sect
+			        ON sect.ssbsect_crn = fcr.sfrstcr_crn
+			        AND sect.ssbsect_term_code = fcr.sfrstcr_term_code
+			    INNER JOIN (
+			        SELECT
+			            rr2.sgrstsp_pidm,
+			            rr2.sorlcur_program,
+			            rr2.sorlcur_term_code_ctlg,
+			            fcr2.sfrstcr_term_code,
+			            sect2.ssbsect_subj_code,
+			            sect2.ssbsect_crse_numb,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY rr2.sgrstsp_pidm, rr2.sorlcur_program, fcr2.sfrstcr_term_code,
+			                             sect2.ssbsect_subj_code, sect2.ssbsect_crse_numb
+			                ORDER BY
+			                    ABS(CAST(cat2.version_catalogo AS INTEGER) - CAST(rr2.sorlcur_term_code_ctlg AS INTEGER)) ASC,
+			                    cat2.version_catalogo DESC
+			            ) AS rn_version
+			        FROM RankedReingreso rr2
+			        INNER JOIN uss_datalake_stage.banner_oracle_saturn_sfrstcr fcr2
+			            ON fcr2.sfrstcr_pidm = rr2.sgrstsp_pidm
+			            AND fcr2.sfrstcr_rsts_code IN ('RE', 'RW')
+			            AND fcr2.sfrstcr_term_code >= '202400'      ------> PERIODO INSCRIPCIÓN A REVISAR
+			            AND CAST(fcr2.sfrstcr_term_code AS VARCHAR) > CAST(rr2.sgrstsp_term_code_eff AS VARCHAR)
+			        INNER JOIN uss_datalake_stage.banner_oracle_saturn_ssbsect sect2
+			            ON sect2.ssbsect_crn = fcr2.sfrstcr_crn
+			            AND sect2.ssbsect_term_code = fcr2.sfrstcr_term_code
+			        INNER JOIN catalogo_asignaturas cat2
+			            ON cat2.smrpaap_program = rr2.sorlcur_program
+			            AND cat2.smrarul_subj_code = sect2.ssbsect_subj_code
+			            AND cat2.smrarul_crse_numb_low = sect2.ssbsect_crse_numb
+			        WHERE rr2.rn_reingreso = 1
+			    ) espiral
+			        ON espiral.sgrstsp_pidm = rr.sgrstsp_pidm
+			        AND espiral.sorlcur_program = rr.sorlcur_program
+			        AND espiral.sfrstcr_term_code = fcr.sfrstcr_term_code
+			        AND espiral.ssbsect_subj_code = sect.ssbsect_subj_code
+			        AND espiral.ssbsect_crse_numb = sect.ssbsect_crse_numb
+			        AND espiral.rn_version = 1
+			    WHERE rr.rn_reingreso = 1
+			    GROUP BY
+			        fcr.sfrstcr_pidm,
+			        rr.sorlcur_program,
+			        CAST(fcr.sfrstcr_term_code AS VARCHAR)
+			),
+			
+			-- =====================================================
+			-- CTE: Inscripciones eliminadas
+			-- =====================================================
+			eliminadas AS (
+			    SELECT DISTINCT
+			        sfrstca_pidm,
+			        CAST(sfrstca_term_code AS VARCHAR)         AS sfrstca_term_code,
+			        CAST(sfrstca_stsp_key_sequence AS VARCHAR) AS sfrstca_stsp_key_sequence
+			    FROM uss_datalake_stage.banner_oracle_saturn_sfrstca
+			),
+			
+			-- =====================================================
+			-- CTE: Solicitudes de retiro y suspensión
+			-- =====================================================
+			solicitudes AS (
+			    SELECT
+			        wf.pd_id,
+			        wf.id                                                         AS wf_id,
+			        CASE 
+			            WHEN pd.name IN ('S_SOLICITUD_DE_RETIRO', 'SOLICITUD_DE_RETIRO_B9_REV3') 
+			                THEN 'RETIRO'
+			            WHEN pd.name IN ('S_SOLICITUD_DE_SUSPENSION', 'SOLICITUD_DE_SUSPENSION_B9') 
+			                THEN 'SUSPENSION'
+			        END                                                           AS tipo_solicitud,
+			        DATE_FORMAT(
+			            FROM_UNIXTIME(CAST(wf.start_date AS BIGINT) / 1000),
+			            '%d-%m-%Y'
+			        )                                                             AS start_date,
+			        CAST(wf.start_date AS BIGINT)                                 AS start_date_ts,
+			        MAX(CASE WHEN UPPER(epv.name) IN ('PIDM', 'C_PIDM')
+			            THEN epv.value END)                                       AS pidm_alumno,
+			        MAX(CASE WHEN UPPER(epv.name) IN ('COD_CARRERA', 'CARRERA', 'C_COD_CARRERA', 'FRMCODCARRERA',
+			                                          'C_CARRERA', 'CARRE', 'C_CODIGO_CARRERA', 'FRMCARRERA')
+			                 AND LENGTH(epv.value) = 4
+			            THEN epv.value END)                                       AS cod_carrera,
+			        MAX(CASE WHEN UPPER(epv.name) IN ('C_CAMPUS_CODE', 'C_CODIGO_SEDE', 'C_COD_SEDE', 'C_SEDE')
+			                 AND LENGTH(epv.value) = 3
+			            THEN epv.value END)                                       AS cod_campus,
+			        MAX(CASE WHEN UPPER(epv.name) IN ('C_PERIODO', 'C_TERM_CODE', 'FRM_PERIODO',
+			                                          'P_PERIODO', 'P_PERIODOADM', 'L_PERIODO', 'PERIODO')
+			            THEN epv.value END)                                       AS periodo
+			    FROM uss_datalake_stage.banner_oracle_workflow_eng_workflow wf
+			    INNER JOIN uss_datalake_stage.banner_oracle_workflow_process_definition pd
+			        ON wf.pd_id = pd.id
+			        AND pd.name IN (
+			            'S_SOLICITUD_DE_RETIRO',
+			            'S_SOLICITUD_DE_SUSPENSION',
+			            'SOLICITUD_DE_RETIRO_B9_REV3',
+			            'SOLICITUD_DE_SUSPENSION_B9'
+			        )
+			    INNER JOIN uss_datalake_stage.banner_oracle_workflow_eng_properties_values epv
+			        ON epv.id = wf.id
+			    GROUP BY
+			        wf.pd_id,
+			        wf.id,
+			        pd.name,
+			        wf.start_date
+			),
+			
+			solicitudes_dedup AS (
+			    SELECT *,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY pidm_alumno, cod_carrera, periodo
+			            ORDER BY start_date_ts ASC
+			        ) AS rn
+			    FROM solicitudes
+			),
+			
+			-- =====================================================
+			-- CTE: Matriculación desde SOVLCUR (deduplicada)
+			-- Fuente del campo PERIODO_MATRICULACION.
+			-- Una fila por (pidm, program, term_code): se conserva
+			-- la version mas reciente segun activity_date/seqno.
+			-- Filtro lmod_code='LEARNER': el campo term_code_matric
+			-- solo se puebla en filas LEARNER (ver analisis muestra).
+			-- =====================================================
+			matric_ranked AS (
+			    SELECT
+			        sovlcur_pidm,
+			        sovlcur_program,
+			        CAST(sovlcur_term_code AS VARCHAR)         AS sovlcur_term_code,
+			        CAST(sovlcur_term_code AS INTEGER)         AS sovlcur_term_code_int,
+			        CAST(sovlcur_term_code_matric AS VARCHAR)  AS sovlcur_term_code_matric
+			    FROM (
+			        SELECT
+			            v.sovlcur_pidm,
+			            v.sovlcur_program,
+			            v.sovlcur_term_code,
+			            v.sovlcur_term_code_matric,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY v.sovlcur_pidm, v.sovlcur_program, v.sovlcur_term_code
+			                ORDER BY v.sovlcur_activity_date DESC, v.sovlcur_seqno DESC
+			            ) AS rn_matric
+			        FROM uss_datalake_stage.banner_oracle_baninst1_sovlcur v   -- sovlcur cargada en modulo baninst1 (confirmado inventario 21/07)
+			        WHERE v.sovlcur_lmod_code = 'LEARNER'
+			          AND v.sovlcur_cact_code = 'ACTIVE'
+			          AND v.sovlcur_term_code >= '201500'   ------> PERIODO MATRICULACION (piso, alinear con PERIODO MALLA)
+			    )
+			    WHERE rn_matric = 1
+			),
+			
+			-- =====================================================
+			-- CTE: Spiral de matriculacion - BLOQUE PRINCIPAL
+			-- Para cada (pidm, program, periodo_consulta) del bloque
+			-- principal, selecciona el term_code_matric cuyo term_code
+			-- gana el spiral bidireccional contra sorlcur_term_code:
+			--   1. Match exacto (distancia 0) gana siempre.
+			--   2. Menor distancia ABS().
+			--   3. Empate de distancia: hacia ATRAS primero (term menor).
+			-- Presto no soporta correlated subqueries -> se resuelve
+			-- con CROSS JOIN acotado por pidm+program + ROW_NUMBER().
+			-- =====================================================
+			matric_spiral_principal AS (
+			    SELECT
+			        sgrstsp_pidm,
+			        sorlcur_program,
+			        periodo_consulta,
+			        sovlcur_term_code_matric
+			    FROM (
+			        SELECT
+			            rr.sgrstsp_pidm,
+			            rr.sorlcur_program,
+			            CAST(rr.sorlcur_term_code AS VARCHAR)      AS periodo_consulta,
+			            mr.sovlcur_term_code_matric,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY rr.sgrstsp_pidm, rr.sorlcur_program, rr.sorlcur_term_code
+			                ORDER BY
+			                    CASE WHEN mr.sovlcur_term_code_int = CAST(rr.sorlcur_term_code AS INTEGER)
+			                         THEN 0 ELSE 1 END ASC,
+			                    ABS(mr.sovlcur_term_code_int - CAST(rr.sorlcur_term_code AS INTEGER)) ASC,
+			                    CASE WHEN mr.sovlcur_term_code_int <= CAST(rr.sorlcur_term_code AS INTEGER)
+			                         THEN 0 ELSE 1 END ASC
+			            ) AS rn_spiral
+			        FROM RankedReingreso rr
+			        INNER JOIN matric_ranked mr
+			            ON mr.sovlcur_pidm = rr.sgrstsp_pidm
+			            AND mr.sovlcur_program = rr.sorlcur_program
+			        WHERE rr.rn_reingreso = 1
+			    )
+			    WHERE rn_spiral = 1
+			),
+			
+			-- =====================================================
+			-- CTE: Spiral de matriculacion - BLOQUE AUXILIAR
+			-- Misma logica que matric_spiral_principal, pero el
+			-- periodo_consulta aqui es periodo_inscripcion (no el
+			-- term_code del plan), coherente con el bloque auxiliar
+			-- del UNION ALL.
+			-- =====================================================
+			matric_spiral_aux AS (
+			    SELECT
+			        sgrstsp_pidm,
+			        sorlcur_program,
+			        periodo_inscripcion,
+			        sovlcur_term_code_matric
+			    FROM (
+			        SELECT
+			            ac.sgrstsp_pidm,
+			            ac.sorlcur_program,
+			            CAST(ac.periodo_inscripcion AS VARCHAR)    AS periodo_inscripcion,
+			            mr.sovlcur_term_code_matric,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY ac.sgrstsp_pidm, ac.sorlcur_program, ac.periodo_inscripcion
+			                ORDER BY
+			                    CASE WHEN mr.sovlcur_term_code_int = CAST(ac.periodo_inscripcion AS INTEGER)
+			                         THEN 0 ELSE 1 END ASC,
+			                    ABS(mr.sovlcur_term_code_int - CAST(ac.periodo_inscripcion AS INTEGER)) ASC,
+			                    CASE WHEN mr.sovlcur_term_code_int <= CAST(ac.periodo_inscripcion AS INTEGER)
+			                         THEN 0 ELSE 1 END ASC
+			            ) AS rn_spiral
+			        FROM auxiliares_plan_cercano ac
+			        INNER JOIN matric_ranked mr
+			            ON mr.sovlcur_pidm = ac.sgrstsp_pidm
+			            AND mr.sovlcur_program = ac.sorlcur_program
+			        WHERE ac.rn_plan_cercano = 1
+			    )
+			    WHERE rn_spiral = 1
+			)
+			
+			-- =====================================================
+			-- SELECT PRINCIPAL: registros del periodo del plan
+			-- =====================================================
+			SELECT DISTINCT
+			    to_hex(sha256(to_utf8(cast(i.spriden_id AS varchar)))) AS ""ID_ESTUDIANTE"",
+			    i.spriden_last_name       AS ""apellido"",
+			    i.spriden_first_name      AS ""nombre"",
+			    s.sgrstsp_pidm            AS ""pidm"",
+			    s.sgrstsp_term_code_eff   AS ""periodo_plan"",
+			    s.sgrstsp_key_seqno       AS ""secuencia_plan"",
+			    s.sgrstsp_stsp_code       AS ""estado_plan"",
+			    vs.stvstsp_desc           AS ""desc_estado_plan"",
+			    s.sorlcur_term_code       AS ""periodo_consulta"",
+			    s.sorlcur_levl_code       AS ""nivel_academico"",
+			    s.sorlcur_program         AS ""programa"",
+			    sobcurr.sobcurr_coll_code AS ""cod_facultad"",
+			    vc.stvcoll_desc           AS ""desc_facultad"",
+			    rmajor.sorcmjr_majr_code  AS ""cod_carrera"",
+			    s.sorlcur_term_code_ctlg  AS ""periodo_catalogo"",
+			    s.sorlcur_term_code_admit AS ""periodo_admision"",
+			    msp.sovlcur_term_code_matric AS ""PERIODO_MATRICULACION"",
+			    s.sorlcur_camp_code       AS ""sede"",
+			    vcamp.stvcamp_desc        AS ""desc_sede"",
+			    s.sorlcur_activity_date   AS ""ultima_fecha_actividad"",
+			    YEAR(CURRENT_DATE) - YEAR(pers.spbpers_birth_date) AS ""edad"",
+			    pers.spbpers_sex          AS ""genero"",
+			    pers.spbpers_citz_code    AS ""nacionalidad"",
+			    vcnty.stvcnty_desc        AS ""comuna"",
+			    CASE 
+			        WHEN s.sorlcur_term_code_admit = s.sorlcur_term_code THEN 'NUEVO'
+			        ELSE 'ANTIGUO'
+			    END AS ""condicion_estudiante"",
+			    CASE 
+			        WHEN asig.total_asignaturas > 0 THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""asignaturas_inscritas"",
+			    mna.max_nivel_asignatura  AS ""max_nivel_asignatura"",
+			    mna.asignatura_max_nivel  AS ""asignatura_max_nivel"",
+			    COALESCE(pa.programa_previo, s.sorlcur_program) AS ""programa_anterior"",
+			    CASE 
+			        WHEN conv.shrtrce_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""ec_convalidaciones"",
+			    CASE 
+			        WHEN sust.shrtrce_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""ec_sustitucion"",
+			    CASE 
+			        WHEN sam.isold IS NOT NULL AND CAST(sam.isold AS VARCHAR) = 'false' THEN 'NUEVO'
+			        WHEN sam.isold IS NOT NULL AND CAST(sam.isold AS VARCHAR) = 'true' THEN 'ANTIGUO'
+			        ELSE CASE 
+			            WHEN s.sorlcur_term_code_admit = s.sorlcur_term_code THEN 'NUEVO'
+			            ELSE 'ANTIGUO'
+			        END
+			    END AS ""condicion_sam"",
+			    CASE
+			        WHEN elim.sfrstca_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""inscripcion_eliminada"",
+			    COALESCE(sol.tipo_solicitud, 'SS_RE_SE') AS ""tipo_solicitud"",
+			    COALESCE(sol.start_date, '')             AS ""fecha_solicitud""
+			
+			FROM
+			    RankedReingreso s
+			
+			INNER JOIN
+			    uss_datalake_stage.banner_oracle_saturn_spriden i
+			    ON s.sgrstsp_pidm = i.spriden_pidm
+			    AND i.spriden_change_ind IS NULL
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_sobcurr sobcurr
+			    ON s.sorlcur_program = sobcurr.sobcurr_program
+			    AND s.sorlcur_camp_code = sobcurr.sobcurr_camp_code
+			
+			LEFT JOIN
+			    RankedMajor rmajor
+			    ON s.sorlcur_program = rmajor.sobcurr_program
+			    AND rmajor.major_ranking = 1
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_spbpers pers
+			    ON i.spriden_pidm = pers.spbpers_pidm
+			
+			LEFT JOIN
+			    RankedAddress addr
+			    ON i.spriden_pidm = addr.spraddr_pidm
+			    AND addr.addr_ranking = 1
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvstsp vs
+			    ON s.sgrstsp_stsp_code = vs.stvstsp_code
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvcoll vc
+			    ON sobcurr.sobcurr_coll_code = vc.stvcoll_code
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvcamp vcamp
+			    ON s.sorlcur_camp_code = vcamp.stvcamp_code
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvcnty vcnty
+			    ON addr.spraddr_cnty_code = vcnty.stvcnty_code
+			
+			LEFT JOIN asig_en_malla asig
+			    ON asig.sorlcur_pidm = s.sgrstsp_pidm
+			    AND asig.sorlcur_program = s.sorlcur_program
+			    AND asig.sorlcur_term_code = s.sorlcur_term_code
+			
+			LEFT JOIN max_nivel_asig mna
+			    ON mna.sorlcur_pidm = s.sgrstsp_pidm
+			    AND mna.sorlcur_program = s.sorlcur_program
+			    AND CAST(mna.sorlcur_term_code AS VARCHAR) = CAST(s.sorlcur_term_code AS VARCHAR)
+			
+			LEFT JOIN programa_anterior pa
+			    ON pa.sorlcur_pidm = s.sgrstsp_pidm
+			    AND pa.programa_actual = s.sorlcur_program
+			    AND CAST(pa.periodo_consulta AS VARCHAR) = CAST(s.sorlcur_term_code AS VARCHAR)
+			    AND pa.rn = 1
+			
+			LEFT JOIN matric_spiral_principal msp
+			    ON msp.sgrstsp_pidm = s.sgrstsp_pidm
+			    AND msp.sorlcur_program = s.sorlcur_program
+			    AND CAST(msp.periodo_consulta AS VARCHAR) = CAST(s.sorlcur_term_code AS VARCHAR)
+			
+			LEFT JOIN (
+			    SELECT DISTINCT
+			        tr.shrtrce_pidm,
+			        tr.shrtrce_subj_code
+			    FROM uss_datalake_stage.banner_oracle_saturn_shrtrce tr
+			    INNER JOIN (
+			        SELECT
+			            scbcrse_subj_code,
+			            scbcrse_crse_numb,
+			            scbcrse_dept_code,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY scbcrse_subj_code, scbcrse_crse_numb
+			                ORDER BY scbcrse_eff_term DESC
+			            ) AS rn
+			        FROM uss_datalake_stage.banner_oracle_saturn_scbcrse
+			    ) crse
+			        ON crse.scbcrse_subj_code = tr.shrtrce_subj_code
+			        AND crse.scbcrse_crse_numb = tr.shrtrce_crse_numb
+			        AND crse.rn = 1
+			        AND (crse.scbcrse_dept_code IS NULL
+			             OR TRIM(crse.scbcrse_dept_code) = ''
+			             OR crse.scbcrse_dept_code != 'FORM')
+			) conv
+			    ON conv.shrtrce_pidm = s.sgrstsp_pidm
+			
+			LEFT JOIN (
+			    SELECT DISTINCT
+			        tr.shrtrce_pidm,
+			        cat.smrpaap_program,
+			        cat.version_catalogo
+			    FROM uss_datalake_stage.banner_oracle_saturn_shrtrit trit
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_shrtrce tr
+			        ON tr.shrtrce_pidm = trit.shrtrit_pidm
+			        AND tr.shrtrce_trit_seq_no = trit.shrtrit_seq_no
+			    INNER JOIN catalogo_asignaturas cat
+			        ON cat.smrarul_subj_code = tr.shrtrce_subj_code
+			        AND cat.smrarul_crse_numb_low = tr.shrtrce_crse_numb
+			    WHERE trit.shrtrit_sbgi_code = 'ES39'
+			) sust
+			    ON sust.shrtrce_pidm = s.sgrstsp_pidm
+			    AND sust.smrpaap_program = s.sorlcur_program
+			    AND CAST(sust.version_catalogo AS VARCHAR) = CAST(s.sorlcur_term_code_ctlg AS VARCHAR)
+			
+			LEFT JOIN sam_matricula sam
+			    ON CAST(sam.academicperiod AS VARCHAR) = CAST(s.sgrstsp_term_code_eff AS VARCHAR)
+			    AND sam.careercode = rmajor.sorcmjr_majr_code
+			    AND sam.reportdata_campuscode = s.sorlcur_camp_code
+			    AND sam.rut = i.spriden_id
+			    AND sam.studentstatus = 'MATRICULADO'
+			
+			LEFT JOIN eliminadas elim
+			    ON elim.sfrstca_pidm = s.sgrstsp_pidm
+			    AND elim.sfrstca_term_code = CAST(s.sorlcur_term_code AS VARCHAR)
+			    AND elim.sfrstca_stsp_key_sequence = CAST(s.sgrstsp_key_seqno AS VARCHAR)
+			
+			LEFT JOIN solicitudes_dedup sol
+			    ON CAST(sol.pidm_alumno AS VARCHAR) = CAST(s.sgrstsp_pidm AS VARCHAR)
+			    AND sol.cod_carrera = rmajor.sorcmjr_majr_code
+			    AND CAST(sol.periodo AS VARCHAR) = CAST(s.sorlcur_term_code AS VARCHAR)
+			    AND sol.rn = 1
+			
+			WHERE
+			    s.rn_reingreso = 1
+			
+			UNION ALL
+			
+			-- =====================================================
+			-- FILAS AUXILIARES: periodos de inscripción distintos
+			-- al periodo_plan, con datos del plan original
+			-- =====================================================
+			SELECT DISTINCT
+			    to_hex(sha256(to_utf8(cast(i2.spriden_id AS varchar)))) AS ""ID_ESTUDIANTE"",
+			    i2.spriden_last_name       AS ""apellido"",
+			    i2.spriden_first_name      AS ""nombre"",
+			    s2.sgrstsp_pidm            AS ""pidm"",
+			    s2.sgrstsp_term_code_eff   AS ""periodo_plan"",
+			    s2.sgrstsp_key_seqno       AS ""secuencia_plan"",
+			    s2.sgrstsp_stsp_code       AS ""estado_plan"",
+			    vs2.stvstsp_desc           AS ""desc_estado_plan"",
+			    s2.periodo_inscripcion     AS ""periodo_consulta"",
+			    s2.sorlcur_levl_code       AS ""nivel_academico"",
+			    s2.sorlcur_program         AS ""programa"",
+			    sobcurr2.sobcurr_coll_code AS ""cod_facultad"",
+			    vc2.stvcoll_desc           AS ""desc_facultad"",
+			    rmajor2.sorcmjr_majr_code  AS ""cod_carrera"",
+			    s2.sorlcur_term_code_ctlg  AS ""periodo_catalogo"",
+			    s2.sorlcur_term_code_admit AS ""periodo_admision"",
+			    msa.sovlcur_term_code_matric AS ""PERIODO_MATRICULACION"",
+			    s2.sorlcur_camp_code       AS ""sede"",
+			    vcamp2.stvcamp_desc        AS ""desc_sede"",
+			    s2.sorlcur_activity_date   AS ""ultima_fecha_actividad"",
+			    YEAR(CURRENT_DATE) - YEAR(pers2.spbpers_birth_date) AS ""edad"",
+			    pers2.spbpers_sex          AS ""genero"",
+			    pers2.spbpers_citz_code    AS ""nacionalidad"",
+			    vcnty2.stvcnty_desc        AS ""comuna"",
+			    CASE
+			        WHEN s2.sorlcur_term_code_admit = s2.periodo_inscripcion THEN 'NUEVO'
+			        ELSE 'ANTIGUO'
+			    END AS ""condicion_estudiante"",
+			    CASE
+			        WHEN asig2.total_asignaturas > 0 THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""asignaturas_inscritas"",
+			    mna2.max_nivel_asignatura  AS ""max_nivel_asignatura"",
+			    mna2.asignatura_max_nivel  AS ""asignatura_max_nivel"",
+			    COALESCE(pa2.programa_previo, s2.sorlcur_program) AS ""programa_anterior"",
+			    CASE
+			        WHEN conv2.shrtrce_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""ec_convalidaciones"",
+			    CASE
+			        WHEN sust2.shrtrce_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""ec_sustitucion"",
+			    CASE
+			        WHEN sam2.isold IS NOT NULL AND CAST(sam2.isold AS VARCHAR) = 'false' THEN 'NUEVO'
+			        WHEN sam2.isold IS NOT NULL AND CAST(sam2.isold AS VARCHAR) = 'true' THEN 'ANTIGUO'
+			        ELSE CASE
+			            WHEN s2.sorlcur_term_code_admit = s2.periodo_inscripcion THEN 'NUEVO'
+			            ELSE 'ANTIGUO'
+			        END
+			    END AS ""condicion_sam"",
+			    CASE
+			        WHEN elim2.sfrstca_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""inscripcion_eliminada"",
+			    COALESCE(sol2.tipo_solicitud, 'SS_RE_SE') AS ""tipo_solicitud"",
+			    COALESCE(sol2.start_date, '')             AS ""fecha_solicitud""
+			
+			FROM
+			    auxiliares_plan_cercano s2
+			
+			INNER JOIN
+			    uss_datalake_stage.banner_oracle_saturn_spriden i2
+			    ON s2.sgrstsp_pidm = i2.spriden_pidm
+			    AND i2.spriden_change_ind IS NULL
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_sobcurr sobcurr2
+			    ON s2.sorlcur_program = sobcurr2.sobcurr_program
+			    AND s2.sorlcur_camp_code = sobcurr2.sobcurr_camp_code
+			
+			LEFT JOIN
+			    RankedMajor rmajor2
+			    ON s2.sorlcur_program = rmajor2.sobcurr_program
+			    AND rmajor2.major_ranking = 1
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_spbpers pers2
+			    ON i2.spriden_pidm = pers2.spbpers_pidm
+			
+			LEFT JOIN
+			    RankedAddress addr2
+			    ON i2.spriden_pidm = addr2.spraddr_pidm
+			    AND addr2.addr_ranking = 1
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvstsp vs2
+			    ON s2.sgrstsp_stsp_code = vs2.stvstsp_code
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvcoll vc2
+			    ON sobcurr2.sobcurr_coll_code = vc2.stvcoll_code
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvcamp vcamp2
+			    ON s2.sorlcur_camp_code = vcamp2.stvcamp_code
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvcnty vcnty2
+			    ON addr2.spraddr_cnty_code = vcnty2.stvcnty_code
+			
+			LEFT JOIN asig_en_malla_aux asig2
+			    ON asig2.sfrstcr_pidm = s2.sgrstsp_pidm
+			    AND asig2.sorlcur_program = s2.sorlcur_program
+			    AND asig2.periodo_inscripcion = CAST(s2.periodo_inscripcion AS VARCHAR)
+			
+			LEFT JOIN (
+			    SELECT
+			        sub2.sfrstcr_pidm,
+			        sub2.smrpaap_program,
+			        sub2.sfrstcr_term_code,
+			        sub2.sorlcur_term_code_ctlg,
+			        sub2.smrpaap_area_priority AS max_nivel_asignatura,
+			        sub2.ssbsect_subj_code || ' ' || sub2.ssbsect_crse_numb AS asignatura_max_nivel
+			    FROM (
+			        SELECT
+			            sub1.*,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY sub1.sfrstcr_pidm, sub1.smrpaap_program, sub1.sfrstcr_term_code
+			                ORDER BY sub1.smrpaap_area_priority DESC
+			            ) AS rn_nivel
+			        FROM (
+			            SELECT
+			                fcr.sfrstcr_pidm,
+			                cat.smrpaap_program,
+			                fcr.sfrstcr_term_code,
+			                rr.sorlcur_term_code_ctlg,
+			                cat.smrpaap_area_priority,
+			                sect.ssbsect_subj_code,
+			                sect.ssbsect_crse_numb,
+			                ROW_NUMBER() OVER (
+			                    PARTITION BY fcr.sfrstcr_pidm, cat.smrpaap_program, fcr.sfrstcr_term_code,
+			                                 sect.ssbsect_subj_code, sect.ssbsect_crse_numb
+			                    ORDER BY
+			                        ABS(CAST(cat.version_catalogo AS INTEGER) - CAST(rr.sorlcur_term_code_ctlg AS INTEGER)) ASC,
+			                        cat.version_catalogo DESC
+			                ) AS rn_version
+			            FROM RankedReingreso rr
+			            INNER JOIN uss_datalake_stage.banner_oracle_saturn_sfrstcr fcr
+			                ON fcr.sfrstcr_pidm = rr.sgrstsp_pidm
+			                AND fcr.sfrstcr_rsts_code IN ('RE', 'RW')
+			                AND fcr.sfrstcr_term_code >= '202400'     ------> PERIODO INSCRIPCIÓN A REVISAR
+			                AND CAST(fcr.sfrstcr_term_code AS VARCHAR) > CAST(rr.sgrstsp_term_code_eff AS VARCHAR)
+			            INNER JOIN uss_datalake_stage.banner_oracle_saturn_ssbsect sect
+			                ON sect.ssbsect_crn = fcr.sfrstcr_crn
+			                AND sect.ssbsect_term_code = fcr.sfrstcr_term_code
+			            INNER JOIN catalogo_asignaturas cat
+			                ON cat.smrpaap_program = rr.sorlcur_program
+			                AND cat.smrarul_subj_code = sect.ssbsect_subj_code
+			                AND cat.smrarul_crse_numb_low = sect.ssbsect_crse_numb
+			            WHERE rr.rn_reingreso = 1
+			        ) sub1
+			        WHERE sub1.rn_version = 1
+			    ) sub2
+			    WHERE sub2.rn_nivel = 1
+			) mna2
+			    ON mna2.sfrstcr_pidm = s2.sgrstsp_pidm
+			    AND mna2.smrpaap_program = s2.sorlcur_program
+			    AND CAST(mna2.sfrstcr_term_code AS VARCHAR) = CAST(s2.periodo_inscripcion AS VARCHAR)
+			    AND CAST(mna2.sorlcur_term_code_ctlg AS VARCHAR) = CAST(s2.sorlcur_term_code_ctlg AS VARCHAR)
+			
+			LEFT JOIN programa_anterior pa2
+			    ON pa2.sorlcur_pidm = s2.sgrstsp_pidm
+			    AND pa2.programa_actual = s2.sorlcur_program
+			    AND CAST(pa2.periodo_consulta AS VARCHAR) = CAST(s2.periodo_inscripcion AS VARCHAR)
+			    AND pa2.rn = 1
+			
+			LEFT JOIN matric_spiral_aux msa
+			    ON msa.sgrstsp_pidm = s2.sgrstsp_pidm
+			    AND msa.sorlcur_program = s2.sorlcur_program
+			    AND CAST(msa.periodo_inscripcion AS VARCHAR) = CAST(s2.periodo_inscripcion AS VARCHAR)
+			
+			LEFT JOIN (
+			    SELECT DISTINCT
+			        tr.shrtrce_pidm,
+			        tr.shrtrce_subj_code
+			    FROM uss_datalake_stage.banner_oracle_saturn_shrtrce tr
+			    INNER JOIN (
+			        SELECT
+			            scbcrse_subj_code,
+			            scbcrse_crse_numb,
+			            scbcrse_dept_code,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY scbcrse_subj_code, scbcrse_crse_numb
+			                ORDER BY scbcrse_eff_term DESC
+			            ) AS rn
+			        FROM uss_datalake_stage.banner_oracle_saturn_scbcrse
+			    ) crse
+			        ON crse.scbcrse_subj_code = tr.shrtrce_subj_code
+			        AND crse.scbcrse_crse_numb = tr.shrtrce_crse_numb
+			        AND crse.rn = 1
+			        AND (crse.scbcrse_dept_code IS NULL
+			             OR TRIM(crse.scbcrse_dept_code) = ''
+			             OR crse.scbcrse_dept_code != 'FORM')
+			) conv2
+			    ON conv2.shrtrce_pidm = s2.sgrstsp_pidm
+			
+			LEFT JOIN (
+			    SELECT DISTINCT
+			        tr.shrtrce_pidm,
+			        cat.smrpaap_program,
+			        cat.version_catalogo
+			    FROM uss_datalake_stage.banner_oracle_saturn_shrtrit trit
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_shrtrce tr
+			        ON tr.shrtrce_pidm = trit.shrtrit_pidm
+			        AND tr.shrtrce_trit_seq_no = trit.shrtrit_seq_no
+			    INNER JOIN catalogo_asignaturas cat
+			        ON cat.smrarul_subj_code = tr.shrtrce_subj_code
+			        AND cat.smrarul_crse_numb_low = tr.shrtrce_crse_numb
+			    WHERE trit.shrtrit_sbgi_code = 'ES39'
+			) sust2
+			    ON sust2.shrtrce_pidm = s2.sgrstsp_pidm
+			    AND sust2.smrpaap_program = s2.sorlcur_program
+			    AND CAST(sust2.version_catalogo AS VARCHAR) = CAST(s2.sorlcur_term_code_ctlg AS VARCHAR)
+			
+			LEFT JOIN sam_matricula sam2
+			    ON CAST(sam2.academicperiod AS VARCHAR) = CAST(s2.periodo_inscripcion AS VARCHAR)
+			    AND sam2.careercode = rmajor2.sorcmjr_majr_code
+			    AND sam2.reportdata_campuscode = s2.sorlcur_camp_code
+			    AND sam2.rut = i2.spriden_id
+			    AND sam2.studentstatus = 'MATRICULADO'
+			
+			LEFT JOIN eliminadas elim2
+			    ON elim2.sfrstca_pidm = s2.sgrstsp_pidm
+			    AND elim2.sfrstca_term_code = CAST(s2.periodo_inscripcion AS VARCHAR)
+			    AND elim2.sfrstca_stsp_key_sequence = CAST(s2.sgrstsp_key_seqno AS VARCHAR)
+			
+			LEFT JOIN solicitudes_dedup sol2
+			    ON CAST(sol2.pidm_alumno AS VARCHAR) = CAST(s2.sgrstsp_pidm AS VARCHAR)
+			    AND sol2.cod_carrera = rmajor2.sorcmjr_majr_code
+			    AND CAST(sol2.periodo AS VARCHAR) = CAST(s2.periodo_inscripcion AS VARCHAR)
+			    AND sol2.rn = 1
+			
+			WHERE
+			    s2.rn_plan_cercano = 1
+			
+			ORDER BY
+			    ""apellido"",
+			    ""nombre"",
+			    ""periodo_plan"",
+			    ""periodo_consulta""
+			"
+			in
+			    Source
+		```
+	lineageTag: df9afb26-8fa5-4d23-a732-7dd1962314d1
+	queryGroup: Detalles
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Text
+
+expression query_maestro_advance = ```
+		let
+			    Source = "
+			-- ============================================================================
+			-- MIGRACION AL NUEVO DATALAKE - 2026-07-21   (VARIANTE, no version de produccion)
+			-- ----------------------------------------------------------------------------
+			--   Esta variante usa la tabla SOVLCUR (CTE 'matric_ranked' -> campo
+			--   ""PERIODO_MATRICULACION""). CONFIRMADO en el inventario ESTADO_ACTUAL_DL_21072026:
+			--   sovlcur SI esta cargada, con nombre real 'banner_oracle_baninst1_sovlcur'
+			--   (modulo baninst1, NO saturn como se habia inferido el 2026-07-17). 43 columnas.
+			--   => Query estructuralmente ejecutable.
+			--
+			-- La vista mongodb_dev.vw_sam_matricula_preprocesada fue sustituida por el CTE
+			-- 'sam_matricula' (ver nota tecnica de sustitucion del 2026-07-17).
+			--
+			-- NOTA DE DATOS (barrido de sanidad 21/07): esta query hereda las brechas de
+			-- carga aun no corregidas de spriden (duplicada x3.00) y sam (2.4% de
+			-- completitud). La validacion reflejara esas desviaciones hasta que el equipo
+			-- DL corrija dichas tablas; no son defectos de la migracion.
+			-- ============================================================================
+			--####### QUERY MAESTRO ESTUDIANTES ADVANCE ######
+			
+			WITH sam_matricula AS (
+			    SELECT
+			        rut,
+			        academicperiod,
+			        careercode,
+			        reportdata_campuscode,
+			        studentstatus,
+			        isold
+			    FROM uss_datalake_stage.sam_mongodb_retenciones_studentpostulants
+			    WHERE studentstatus = 'MATRICULADO'
+			),
+			RankedCurriculum AS (
+			    SELECT 
+			        x.*,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY x.sorlcur_pidm, x.sorlcur_key_seqno, x.sorlcur_term_code
+			            ORDER BY x.sorlcur_activity_date DESC, x.sorlcur_seqno DESC
+			        ) as ranking
+			    FROM uss_datalake_stage.banner_oracle_saturn_sorlcur x
+			    WHERE x.sorlcur_lmod_code = 'LEARNER'
+			     --AND x.sorlcur_cact_code = 'ACTIVE'
+			),
+			
+			RankedAddress AS (
+			    SELECT
+			        spraddr_pidm,
+			        spraddr_cnty_code,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY spraddr_pidm
+			            ORDER BY spraddr_activity_date DESC, spraddr_from_date DESC
+			        ) as addr_ranking
+			    FROM uss_datalake_stage.banner_oracle_saturn_spraddr
+			    WHERE spraddr_status_ind IS NULL
+			),
+			
+			RankedMajor AS (
+			    SELECT
+			        sobcurr.sobcurr_program,
+			        sobcurr.sobcurr_curr_rule,
+			        sorcmjr.sorcmjr_majr_code,
+			        sorcmjr.sorcmjr_term_code_eff,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY sobcurr.sobcurr_program
+			            ORDER BY sorcmjr.sorcmjr_term_code_eff DESC, sorcmjr.sorcmjr_cmjr_rule DESC
+			        ) as major_ranking
+			    FROM uss_datalake_stage.banner_oracle_saturn_sobcurr sobcurr
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_sorcmjr sorcmjr
+			        ON sobcurr.sobcurr_curr_rule = sorcmjr.sorcmjr_curr_rule
+			),
+			
+			-- =====================================================
+			-- Catálogos disponibles por programa (smbpgen)
+			-- =====================================================
+			catalogos_programa AS (
+			    SELECT DISTINCT
+			        smbpgen_program,
+			        smbpgen_term_code_eff AS catalogo
+			    FROM uss_datalake_stage.banner_oracle_saturn_smbpgen
+			),
+			
+			-- =====================================================
+			-- Todas las asignaturas de todos los catálogos por programa
+			-- Cadena: smrpaap -> smbagen -> smracaa -> smbarul -> smrarul
+			-- =====================================================
+			catalogo_asignaturas AS (
+			    SELECT DISTINCT
+			        paap.smrpaap_program,
+			        paap.smrpaap_term_code_eff AS version_catalogo,
+			        paap.smrpaap_area,
+			        paap.smrpaap_area_priority,
+			        arul.smrarul_subj_code,
+			        arul.smrarul_crse_numb_low
+			    FROM uss_datalake_stage.banner_oracle_saturn_smrpaap paap
+			
+			    INNER JOIN catalogos_programa cp
+			        ON cp.smbpgen_program = paap.smrpaap_program
+			        AND cp.catalogo = paap.smrpaap_term_code_eff
+			
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_smbagen agen
+			        ON agen.smbagen_area = paap.smrpaap_area
+			
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_smracaa acaa
+			        ON acaa.smracaa_area = agen.smbagen_area
+			
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_smbarul barul
+			        ON barul.smbarul_area = acaa.smracaa_area
+			        AND barul.smbarul_key_rule = acaa.smracaa_rule
+			
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_smrarul arul
+			        ON arul.smrarul_area = barul.smbarul_area
+			        AND arul.smrarul_key_rule = barul.smbarul_key_rule
+			),
+			
+			-- =====================================================
+			-- Cruce: inscripciones del estudiante vs catálogo
+			-- Búsqueda espiral por distancia al catálogo del estudiante
+			-- =====================================================
+			asig_con_nivel AS (
+			    SELECT
+			        c.sorlcur_pidm,
+			        c.sorlcur_program,
+			        c.sorlcur_term_code,
+			        c.sorlcur_term_code_ctlg,
+			        cat.smrpaap_area_priority,
+			        cat.version_catalogo,
+			        sect.ssbsect_subj_code,
+			        sect.ssbsect_crse_numb,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY c.sorlcur_pidm, c.sorlcur_program, c.sorlcur_term_code,
+			                         sect.ssbsect_subj_code, sect.ssbsect_crse_numb
+			            ORDER BY
+			                ABS(CAST(cat.version_catalogo AS INTEGER) - CAST(c.sorlcur_term_code_ctlg AS INTEGER)) ASC,
+			                cat.version_catalogo DESC
+			        ) AS rn_version
+			    FROM RankedCurriculum c
+			
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_sfrstcr fcr
+			        ON fcr.sfrstcr_pidm = c.sorlcur_pidm
+			        AND fcr.sfrstcr_term_code = c.sorlcur_term_code
+			        AND fcr.sfrstcr_rsts_code IN ('RE', 'RW')
+			
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_ssbsect sect
+			        ON sect.ssbsect_crn = fcr.sfrstcr_crn
+			        AND sect.ssbsect_term_code = fcr.sfrstcr_term_code
+			
+			    INNER JOIN catalogo_asignaturas cat
+			        ON cat.smrpaap_program = c.sorlcur_program
+			        AND cat.smrarul_subj_code = sect.ssbsect_subj_code
+			        AND cat.smrarul_crse_numb_low = sect.ssbsect_crse_numb
+			
+			    WHERE c.ranking = 1
+			),
+			
+			asig_version_correcta AS (
+			    SELECT
+			        sorlcur_pidm,
+			        sorlcur_program,
+			        sorlcur_term_code,
+			        sorlcur_term_code_ctlg,
+			        smrpaap_area_priority,
+			        ssbsect_subj_code,
+			        ssbsect_crse_numb,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY sorlcur_pidm, sorlcur_program, sorlcur_term_code
+			            ORDER BY smrpaap_area_priority DESC
+			        ) AS rn_final
+			    FROM asig_con_nivel
+			    WHERE rn_version = 1
+			),
+			
+			-- =====================================================
+			-- CTE: Conteo de asignaturas en malla (bloque principal)
+			-- Filtro de periodos independiente, igual que v3
+			-- =====================================================
+			asig_en_malla AS (
+			    SELECT
+			        sorlcur_pidm,
+			        sorlcur_program,
+			        sorlcur_term_code,
+			        COUNT(DISTINCT ssbsect_subj_code || '-' || ssbsect_crse_numb) AS total_asignaturas
+			    FROM asig_version_correcta
+			    WHERE sorlcur_term_code >='202300'     --------->>> PERIODO CATALOGO
+			    GROUP BY sorlcur_pidm, sorlcur_program, sorlcur_term_code
+			),
+			
+			-- =====================================================
+			-- CTE: Solo el registro con max nivel por estudiante
+			-- =====================================================
+			max_nivel_asig AS (
+			    SELECT
+			        sorlcur_pidm,
+			        sorlcur_program,
+			        sorlcur_term_code,
+			        smrpaap_area_priority AS max_nivel_asignatura,
+			        ssbsect_subj_code || ' ' || ssbsect_crse_numb AS asignatura_max_nivel
+			    FROM asig_version_correcta
+			    WHERE rn_final = 1
+			      AND sorlcur_term_code  >='202300'     --------->>> PERIODO CATALOGO
+			),
+			
+			-- =====================================================
+			-- CTE: Nivel predominante del estudiante (bloque principal)
+			-- Agrupa por pidm+programa+periodo+area_priority y elige el
+			-- nivel con MAS asignaturas inscritas (cantidad).
+			-- Desempate: prioridad MENOR gana.
+			-- =====================================================
+			nivel_predominante AS (
+			    SELECT
+			        sorlcur_pidm,
+			        sorlcur_program,
+			        sorlcur_term_code,
+			        smrpaap_area_priority AS nivel_estudiante
+			    FROM (
+			        SELECT
+			            sorlcur_pidm,
+			            sorlcur_program,
+			            sorlcur_term_code,
+			            smrpaap_area_priority,
+			            COUNT(DISTINCT ssbsect_subj_code || '-' || ssbsect_crse_numb) AS qty_asig,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY sorlcur_pidm, sorlcur_program, sorlcur_term_code
+			                ORDER BY
+			                    COUNT(DISTINCT ssbsect_subj_code || '-' || ssbsect_crse_numb) DESC,
+			                    smrpaap_area_priority ASC
+			            ) AS rn_predominante
+			        FROM asig_version_correcta
+			        WHERE sorlcur_term_code >= '201700'     --------->>> PERIODO CATALOGO
+			        GROUP BY
+			            sorlcur_pidm,
+			            sorlcur_program,
+			            sorlcur_term_code,
+			            smrpaap_area_priority
+			    ) sub
+			    WHERE rn_predominante = 1
+			),
+			
+			-- =====================================================
+			-- CTE: Programa anterior
+			-- =====================================================
+			programa_anterior AS (
+			    SELECT
+			        curr.sorlcur_pidm,
+			        curr.sorlcur_program AS programa_actual,
+			        curr.sorlcur_term_code AS periodo_consulta,
+			        prev.sorlcur_program AS programa_previo,
+			        prev.sorlcur_term_code AS periodo_previo,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY curr.sorlcur_pidm, curr.sorlcur_program, curr.sorlcur_term_code
+			            ORDER BY prev.sorlcur_term_code DESC
+			        ) AS rn
+			    FROM RankedCurriculum curr
+			    INNER JOIN RankedCurriculum prev
+			        ON prev.sorlcur_pidm = curr.sorlcur_pidm
+			        AND prev.sorlcur_term_code < curr.sorlcur_term_code
+			        AND prev.sorlcur_program != curr.sorlcur_program
+			        AND prev.ranking = 1
+			    WHERE curr.ranking = 1
+			),
+			
+			-- =====================================================
+			-- CTE: Reingreso
+			-- =====================================================
+			RankedReingreso AS (
+			    SELECT
+			        s.sgrstsp_pidm,
+			        s.sgrstsp_term_code_eff,
+			        s.sgrstsp_key_seqno,
+			        s.sgrstsp_stsp_code,
+			        c.sorlcur_pidm,
+			        c.sorlcur_key_seqno,
+			        c.sorlcur_term_code,
+			        c.sorlcur_program,
+			        c.sorlcur_term_code_ctlg,
+			        c.sorlcur_term_code_admit,
+			        c.sorlcur_camp_code,
+			        c.sorlcur_levl_code,
+			        c.sorlcur_activity_date,
+			        c.sorlcur_seqno,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY s.sgrstsp_pidm, c.sorlcur_program, s.sgrstsp_term_code_eff
+			            ORDER BY s.sgrstsp_key_seqno DESC
+			        ) AS rn_reingreso
+			    FROM uss_datalake_stage.banner_oracle_saturn_sgrstsp s
+			    INNER JOIN RankedCurriculum c
+			        ON s.sgrstsp_pidm = c.sorlcur_pidm
+			        AND CAST(s.sgrstsp_key_seqno AS VARCHAR) = CAST(c.sorlcur_key_seqno AS VARCHAR)
+			        AND CAST(s.sgrstsp_term_code_eff AS VARCHAR) = CAST(c.sorlcur_term_code AS VARCHAR)
+			        AND c.ranking = 1
+			    WHERE s.sgrstsp_term_code_eff >= '201700'     ------> PERIODO MALLA (DEBE SER SIEMPRE EL MENOR)
+			      AND c.sorlcur_term_code_admit IS NOT NULL
+			      AND TRIM(c.sorlcur_term_code_admit) != ''
+			      and c.sorlcur_levl_code = 'AV'              ------> FILTRO NIVEL ACADÉMICO
+			),
+			
+			-- =====================================================
+			-- CTE: Periodos auxiliares
+			-- =====================================================
+			periodos_inscripcion AS (
+			    SELECT DISTINCT
+			        sfrstcr_pidm,
+			        CAST(sfrstcr_term_code AS VARCHAR) AS periodo_inscripcion
+			    FROM uss_datalake_stage.banner_oracle_saturn_sfrstcr
+			    WHERE sfrstcr_rsts_code IN ('RE', 'RW')
+			),
+			
+			auxiliares_plan_cercano AS (
+			    SELECT
+			        s.sgrstsp_pidm,
+			        s.sgrstsp_term_code_eff,
+			        s.sgrstsp_key_seqno,
+			        s.sgrstsp_stsp_code,
+			        s.sorlcur_program,
+			        s.sorlcur_term_code_ctlg,
+			        s.sorlcur_term_code_admit,
+			        s.sorlcur_camp_code,
+			        s.sorlcur_levl_code,
+			        s.sorlcur_activity_date,
+			        pi.periodo_inscripcion,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY s.sgrstsp_pidm, s.sorlcur_program, pi.periodo_inscripcion
+			            ORDER BY s.sgrstsp_term_code_eff DESC
+			        ) AS rn_plan_cercano
+			    FROM RankedReingreso s
+			    INNER JOIN periodos_inscripcion pi
+			        ON pi.sfrstcr_pidm = s.sgrstsp_pidm
+			        AND pi.periodo_inscripcion != CAST(s.sgrstsp_term_code_eff AS VARCHAR)
+			        AND pi.periodo_inscripcion > CAST(s.sgrstsp_term_code_eff AS VARCHAR)
+			        AND NOT EXISTS (
+			            SELECT 1 FROM RankedReingreso r2
+			            WHERE r2.sgrstsp_pidm = s.sgrstsp_pidm
+			              AND r2.sorlcur_program = s.sorlcur_program
+			              AND CAST(r2.sgrstsp_term_code_eff AS VARCHAR) = CAST(pi.periodo_inscripcion AS VARCHAR)
+			              AND r2.rn_reingreso = 1
+			        )
+			    WHERE s.rn_reingreso = 1
+			),
+			
+			-- =====================================================
+			-- CTE: Conteo de asignaturas en malla (bloque auxiliar)
+			-- Filtro de periodos independiente igual que v3
+			-- =====================================================
+			asig_en_malla_aux AS (
+			    SELECT
+			        fcr.sfrstcr_pidm,
+			        rr.sorlcur_program,
+			        CAST(fcr.sfrstcr_term_code AS VARCHAR) AS periodo_inscripcion,
+			        COUNT(DISTINCT sect.ssbsect_subj_code || '-' || sect.ssbsect_crse_numb) AS total_asignaturas
+			    FROM RankedReingreso rr
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_sfrstcr fcr
+			        ON fcr.sfrstcr_pidm = rr.sgrstsp_pidm
+			        AND fcr.sfrstcr_rsts_code IN ('RE', 'RW')
+			        AND fcr.sfrstcr_term_code >= '202400'          ------> PERIODO INSCRIPCIÓN A REVISAR
+			        AND CAST(fcr.sfrstcr_term_code AS VARCHAR) > CAST(rr.sgrstsp_term_code_eff AS VARCHAR)
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_ssbsect sect
+			        ON sect.ssbsect_crn = fcr.sfrstcr_crn
+			        AND sect.ssbsect_term_code = fcr.sfrstcr_term_code
+			    INNER JOIN (
+			        SELECT
+			            rr2.sgrstsp_pidm,
+			            rr2.sorlcur_program,
+			            rr2.sorlcur_term_code_ctlg,
+			            fcr2.sfrstcr_term_code,
+			            sect2.ssbsect_subj_code,
+			            sect2.ssbsect_crse_numb,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY rr2.sgrstsp_pidm, rr2.sorlcur_program, fcr2.sfrstcr_term_code,
+			                             sect2.ssbsect_subj_code, sect2.ssbsect_crse_numb
+			                ORDER BY
+			                    ABS(CAST(cat2.version_catalogo AS INTEGER) - CAST(rr2.sorlcur_term_code_ctlg AS INTEGER)) ASC,
+			                    cat2.version_catalogo DESC
+			            ) AS rn_version
+			        FROM RankedReingreso rr2
+			        INNER JOIN uss_datalake_stage.banner_oracle_saturn_sfrstcr fcr2
+			            ON fcr2.sfrstcr_pidm = rr2.sgrstsp_pidm
+			            AND fcr2.sfrstcr_rsts_code IN ('RE', 'RW')
+			            AND fcr2.sfrstcr_term_code >= '202400'      ------> PERIODO INSCRIPCIÓN A REVISAR
+			            AND CAST(fcr2.sfrstcr_term_code AS VARCHAR) > CAST(rr2.sgrstsp_term_code_eff AS VARCHAR)
+			        INNER JOIN uss_datalake_stage.banner_oracle_saturn_ssbsect sect2
+			            ON sect2.ssbsect_crn = fcr2.sfrstcr_crn
+			            AND sect2.ssbsect_term_code = fcr2.sfrstcr_term_code
+			        INNER JOIN catalogo_asignaturas cat2
+			            ON cat2.smrpaap_program = rr2.sorlcur_program
+			            AND cat2.smrarul_subj_code = sect2.ssbsect_subj_code
+			            AND cat2.smrarul_crse_numb_low = sect2.ssbsect_crse_numb
+			        WHERE rr2.rn_reingreso = 1
+			    ) espiral
+			        ON espiral.sgrstsp_pidm = rr.sgrstsp_pidm
+			        AND espiral.sorlcur_program = rr.sorlcur_program
+			        AND espiral.sfrstcr_term_code = fcr.sfrstcr_term_code
+			        AND espiral.ssbsect_subj_code = sect.ssbsect_subj_code
+			        AND espiral.ssbsect_crse_numb = sect.ssbsect_crse_numb
+			        AND espiral.rn_version = 1
+			    WHERE rr.rn_reingreso = 1
+			    GROUP BY
+			        fcr.sfrstcr_pidm,
+			        rr.sorlcur_program,
+			        CAST(fcr.sfrstcr_term_code AS VARCHAR)
+			),
+			
+			-- =====================================================
+			-- CTE: Inscripciones eliminadas
+			-- =====================================================
+			eliminadas AS (
+			    SELECT DISTINCT
+			        sfrstca_pidm,
+			        CAST(sfrstca_term_code AS VARCHAR)         AS sfrstca_term_code,
+			        CAST(sfrstca_stsp_key_sequence AS VARCHAR) AS sfrstca_stsp_key_sequence
+			    FROM uss_datalake_stage.banner_oracle_saturn_sfrstca
+			),
+			
+			-- =====================================================
+			-- CTE: Solicitudes de retiro y suspensión
+			-- =====================================================
+			solicitudes AS (
+			    SELECT
+			        wf.pd_id,
+			        wf.id                                                         AS wf_id,
+			        CASE 
+			            WHEN pd.name IN ('S_SOLICITUD_DE_RETIRO', 'SOLICITUD_DE_RETIRO_B9_REV3') 
+			                THEN 'RETIRO'
+			            WHEN pd.name IN ('S_SOLICITUD_DE_SUSPENSION', 'SOLICITUD_DE_SUSPENSION_B9') 
+			                THEN 'SUSPENSION'
+			        END                                                           AS tipo_solicitud,
+			        DATE_FORMAT(
+			            FROM_UNIXTIME(CAST(wf.start_date AS BIGINT) / 1000),
+			            '%d-%m-%Y'
+			        )                                                             AS start_date,
+			        CAST(wf.start_date AS BIGINT)                                 AS start_date_ts,
+			        MAX(CASE WHEN UPPER(epv.name) IN ('PIDM', 'C_PIDM')
+			            THEN epv.value END)                                       AS pidm_alumno,
+			        MAX(CASE WHEN UPPER(epv.name) IN ('COD_CARRERA', 'CARRERA', 'C_COD_CARRERA', 'FRMCODCARRERA',
+			                                          'C_CARRERA', 'CARRE', 'C_CODIGO_CARRERA', 'FRMCARRERA')
+			                 AND LENGTH(epv.value) = 4
+			            THEN epv.value END)                                       AS cod_carrera,
+			        MAX(CASE WHEN UPPER(epv.name) IN ('C_CAMPUS_CODE', 'C_CODIGO_SEDE', 'C_COD_SEDE', 'C_SEDE')
+			                 AND LENGTH(epv.value) = 3
+			            THEN epv.value END)                                       AS cod_campus,
+			        MAX(CASE WHEN UPPER(epv.name) IN ('C_PERIODO', 'C_TERM_CODE', 'FRM_PERIODO',
+			                                          'P_PERIODO', 'P_PERIODOADM', 'L_PERIODO', 'PERIODO')
+			            THEN epv.value END)                                       AS periodo
+			    FROM uss_datalake_stage.banner_oracle_workflow_eng_workflow wf
+			    INNER JOIN uss_datalake_stage.banner_oracle_workflow_process_definition pd
+			        ON wf.pd_id = pd.id
+			        AND pd.name IN (
+			            'S_SOLICITUD_DE_RETIRO',
+			            'S_SOLICITUD_DE_SUSPENSION',
+			            'SOLICITUD_DE_RETIRO_B9_REV3',
+			            'SOLICITUD_DE_SUSPENSION_B9'
+			        )
+			    INNER JOIN uss_datalake_stage.banner_oracle_workflow_eng_properties_values epv
+			        ON epv.id = wf.id
+			    GROUP BY
+			        wf.pd_id,
+			        wf.id,
+			        pd.name,
+			        wf.start_date
+			),
+			
+			solicitudes_dedup AS (
+			    SELECT *,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY pidm_alumno, cod_carrera, periodo
+			            ORDER BY start_date_ts ASC
+			        ) AS rn
+			    FROM solicitudes
+			),
+			
+			-- =====================================================
+			-- CTE: Matriculación desde SOVLCUR (deduplicada)
+			-- Fuente del campo PERIODO_MATRICULACION.
+			-- Una fila por (pidm, program, term_code): se conserva
+			-- la version mas reciente segun activity_date/seqno.
+			-- Filtro lmod_code='LEARNER': el campo term_code_matric
+			-- solo se puebla en filas LEARNER.
+			-- Piso 201700 alineado con PERIODO MALLA del Advance.
+			-- =====================================================
+			matric_ranked AS (
+			    SELECT
+			        sovlcur_pidm,
+			        sovlcur_program,
+			        CAST(sovlcur_term_code AS VARCHAR)         AS sovlcur_term_code,
+			        CAST(sovlcur_term_code AS INTEGER)         AS sovlcur_term_code_int,
+			        CAST(sovlcur_term_code_matric AS VARCHAR)  AS sovlcur_term_code_matric
+			    FROM (
+			        SELECT
+			            v.sovlcur_pidm,
+			            v.sovlcur_program,
+			            v.sovlcur_term_code,
+			            v.sovlcur_term_code_matric,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY v.sovlcur_pidm, v.sovlcur_program, v.sovlcur_term_code
+			                ORDER BY v.sovlcur_activity_date DESC, v.sovlcur_seqno DESC
+			            ) AS rn_matric
+			        FROM uss_datalake_stage.banner_oracle_baninst1_sovlcur v   -- sovlcur cargada en modulo baninst1 (confirmado inventario 21/07)
+			        WHERE v.sovlcur_lmod_code = 'LEARNER'
+			          AND v.sovlcur_cact_code = 'ACTIVE'
+			          AND v.sovlcur_term_code >= '201700'   ------> PERIODO MATRICULACION (piso, alinear con PERIODO MALLA)
+			    )
+			    WHERE rn_matric = 1
+			),
+			
+			-- =====================================================
+			-- CTE: Spiral de matriculacion - BLOQUE PRINCIPAL
+			-- Para cada (pidm, program, periodo_consulta) del bloque
+			-- principal, selecciona el term_code_matric cuyo term_code
+			-- gana el spiral bidireccional contra sorlcur_term_code:
+			--   1. Match exacto (distancia 0) gana siempre.
+			--   2. Menor distancia ABS().
+			--   3. Empate de distancia: hacia ATRAS primero (term menor).
+			-- Presto no soporta correlated subqueries -> se resuelve
+			-- con CROSS JOIN acotado por pidm+program + ROW_NUMBER().
+			-- =====================================================
+			matric_spiral_principal AS (
+			    SELECT
+			        sgrstsp_pidm,
+			        sorlcur_program,
+			        periodo_consulta,
+			        sovlcur_term_code_matric
+			    FROM (
+			        SELECT
+			            rr.sgrstsp_pidm,
+			            rr.sorlcur_program,
+			            CAST(rr.sorlcur_term_code AS VARCHAR)      AS periodo_consulta,
+			            mr.sovlcur_term_code_matric,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY rr.sgrstsp_pidm, rr.sorlcur_program, rr.sorlcur_term_code
+			                ORDER BY
+			                    CASE WHEN mr.sovlcur_term_code_int = CAST(rr.sorlcur_term_code AS INTEGER)
+			                         THEN 0 ELSE 1 END ASC,
+			                    ABS(mr.sovlcur_term_code_int - CAST(rr.sorlcur_term_code AS INTEGER)) ASC,
+			                    CASE WHEN mr.sovlcur_term_code_int <= CAST(rr.sorlcur_term_code AS INTEGER)
+			                         THEN 0 ELSE 1 END ASC
+			            ) AS rn_spiral
+			        FROM RankedReingreso rr
+			        INNER JOIN matric_ranked mr
+			            ON mr.sovlcur_pidm = rr.sgrstsp_pidm
+			            AND mr.sovlcur_program = rr.sorlcur_program
+			        WHERE rr.rn_reingreso = 1
+			    )
+			    WHERE rn_spiral = 1
+			),
+			
+			-- =====================================================
+			-- CTE: Spiral de matriculacion - BLOQUE AUXILIAR
+			-- Misma logica que matric_spiral_principal, pero el
+			-- periodo_consulta aqui es periodo_inscripcion (no el
+			-- term_code del plan), coherente con el bloque auxiliar
+			-- del UNION ALL.
+			-- =====================================================
+			matric_spiral_aux AS (
+			    SELECT
+			        sgrstsp_pidm,
+			        sorlcur_program,
+			        periodo_inscripcion,
+			        sovlcur_term_code_matric
+			    FROM (
+			        SELECT
+			            ac.sgrstsp_pidm,
+			            ac.sorlcur_program,
+			            CAST(ac.periodo_inscripcion AS VARCHAR)    AS periodo_inscripcion,
+			            mr.sovlcur_term_code_matric,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY ac.sgrstsp_pidm, ac.sorlcur_program, ac.periodo_inscripcion
+			                ORDER BY
+			                    CASE WHEN mr.sovlcur_term_code_int = CAST(ac.periodo_inscripcion AS INTEGER)
+			                         THEN 0 ELSE 1 END ASC,
+			                    ABS(mr.sovlcur_term_code_int - CAST(ac.periodo_inscripcion AS INTEGER)) ASC,
+			                    CASE WHEN mr.sovlcur_term_code_int <= CAST(ac.periodo_inscripcion AS INTEGER)
+			                         THEN 0 ELSE 1 END ASC
+			            ) AS rn_spiral
+			        FROM auxiliares_plan_cercano ac
+			        INNER JOIN matric_ranked mr
+			            ON mr.sovlcur_pidm = ac.sgrstsp_pidm
+			            AND mr.sovlcur_program = ac.sorlcur_program
+			        WHERE ac.rn_plan_cercano = 1
+			    )
+			    WHERE rn_spiral = 1
+			)
+			
+			-- =====================================================
+			-- SELECT PRINCIPAL: registros del periodo del plan
+			-- =====================================================
+			SELECT DISTINCT
+			    to_hex(sha256(to_utf8(cast(i.spriden_id AS varchar)))) AS ""ID_ESTUDIANTE"",
+			    i.spriden_last_name       AS ""apellido"",
+			    i.spriden_first_name      AS ""nombre"",
+			    s.sgrstsp_pidm            AS ""pidm"",
+			    s.sgrstsp_term_code_eff   AS ""periodo_plan"",
+			    s.sgrstsp_key_seqno       AS ""secuencia_plan"",
+			    s.sgrstsp_stsp_code       AS ""estado_plan"",
+			    vs.stvstsp_desc           AS ""desc_estado_plan"",
+			    s.sorlcur_term_code       AS ""periodo_consulta"",
+			    s.sorlcur_levl_code       AS ""nivel_academico"",
+			    s.sorlcur_program         AS ""programa"",
+			    sobcurr.sobcurr_coll_code AS ""cod_facultad"",
+			    vc.stvcoll_desc           AS ""desc_facultad"",
+			    rmajor.sorcmjr_majr_code  AS ""cod_carrera"",
+			    s.sorlcur_term_code_ctlg  AS ""periodo_catalogo"",
+			    s.sorlcur_term_code_admit AS ""periodo_admision"",
+			    msp.sovlcur_term_code_matric AS ""PERIODO_MATRICULACION"",
+			    s.sorlcur_camp_code       AS ""sede"",
+			    vcamp.stvcamp_desc        AS ""desc_sede"",
+			    s.sorlcur_activity_date   AS ""ultima_fecha_actividad"",
+			    YEAR(CURRENT_DATE) - YEAR(pers.spbpers_birth_date) AS ""edad"",
+			    pers.spbpers_sex          AS ""genero"",
+			    pers.spbpers_citz_code    AS ""nacionalidad"",
+			    vcnty.stvcnty_desc        AS ""comuna"",
+			    CASE 
+			        WHEN s.sorlcur_term_code_admit = s.sorlcur_term_code THEN 'NUEVO'
+			        ELSE 'ANTIGUO'
+			    END AS ""condicion_estudiante"",
+			    CASE 
+			        WHEN asig.total_asignaturas > 0 THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""asignaturas_inscritas"",
+			    mna.max_nivel_asignatura  AS ""max_nivel_asignatura"",
+			    mna.asignatura_max_nivel  AS ""asignatura_max_nivel"",
+			    npe.nivel_estudiante      AS ""NIVEL_ESTUDIANTE"",
+			    COALESCE(pa.programa_previo, s.sorlcur_program) AS ""programa_anterior"",
+			    CASE 
+			        WHEN conv.shrtrce_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""ec_convalidaciones"",
+			    CASE 
+			        WHEN sust.shrtrce_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""ec_sustitucion"",
+			    CASE 
+			        WHEN sam.isold IS NOT NULL AND CAST(sam.isold AS VARCHAR) = 'false' THEN 'NUEVO'
+			        WHEN sam.isold IS NOT NULL AND CAST(sam.isold AS VARCHAR) = 'true' THEN 'ANTIGUO'
+			        ELSE CASE 
+			            WHEN s.sorlcur_term_code_admit = s.sorlcur_term_code THEN 'NUEVO'
+			            ELSE 'ANTIGUO'
+			        END
+			    END AS ""condicion_sam"",
+			    CASE
+			        WHEN elim.sfrstca_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""inscripcion_eliminada"",
+			    COALESCE(sol.tipo_solicitud, 'SS_RE_SE') AS ""tipo_solicitud"",
+			    COALESCE(sol.start_date, '')             AS ""fecha_solicitud""
+			
+			FROM
+			    RankedReingreso s
+			
+			INNER JOIN
+			    uss_datalake_stage.banner_oracle_saturn_spriden i
+			    ON s.sgrstsp_pidm = i.spriden_pidm
+			    AND i.spriden_change_ind IS NULL
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_sobcurr sobcurr
+			    ON s.sorlcur_program = sobcurr.sobcurr_program
+			    AND s.sorlcur_camp_code = sobcurr.sobcurr_camp_code
+			
+			LEFT JOIN
+			    RankedMajor rmajor
+			    ON s.sorlcur_program = rmajor.sobcurr_program
+			    AND rmajor.major_ranking = 1
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_spbpers pers
+			    ON i.spriden_pidm = pers.spbpers_pidm
+			
+			LEFT JOIN
+			    RankedAddress addr
+			    ON i.spriden_pidm = addr.spraddr_pidm
+			    AND addr.addr_ranking = 1
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvstsp vs
+			    ON s.sgrstsp_stsp_code = vs.stvstsp_code
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvcoll vc
+			    ON sobcurr.sobcurr_coll_code = vc.stvcoll_code
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvcamp vcamp
+			    ON s.sorlcur_camp_code = vcamp.stvcamp_code
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvcnty vcnty
+			    ON addr.spraddr_cnty_code = vcnty.stvcnty_code
+			
+			LEFT JOIN asig_en_malla asig
+			    ON asig.sorlcur_pidm = s.sgrstsp_pidm
+			    AND asig.sorlcur_program = s.sorlcur_program
+			    AND asig.sorlcur_term_code = s.sorlcur_term_code
+			
+			LEFT JOIN max_nivel_asig mna
+			    ON mna.sorlcur_pidm = s.sgrstsp_pidm
+			    AND mna.sorlcur_program = s.sorlcur_program
+			    AND CAST(mna.sorlcur_term_code AS VARCHAR) = CAST(s.sorlcur_term_code AS VARCHAR)
+			
+			LEFT JOIN nivel_predominante npe
+			    ON npe.sorlcur_pidm = s.sgrstsp_pidm
+			    AND npe.sorlcur_program = s.sorlcur_program
+			    AND CAST(npe.sorlcur_term_code AS VARCHAR) = CAST(s.sorlcur_term_code AS VARCHAR)
+			
+			LEFT JOIN programa_anterior pa
+			    ON pa.sorlcur_pidm = s.sgrstsp_pidm
+			    AND pa.programa_actual = s.sorlcur_program
+			    AND CAST(pa.periodo_consulta AS VARCHAR) = CAST(s.sorlcur_term_code AS VARCHAR)
+			    AND pa.rn = 1
+			
+			LEFT JOIN matric_spiral_principal msp
+			    ON msp.sgrstsp_pidm = s.sgrstsp_pidm
+			    AND msp.sorlcur_program = s.sorlcur_program
+			    AND CAST(msp.periodo_consulta AS VARCHAR) = CAST(s.sorlcur_term_code AS VARCHAR)
+			
+			LEFT JOIN (
+			    SELECT DISTINCT
+			        tr.shrtrce_pidm,
+			        tr.shrtrce_subj_code
+			    FROM uss_datalake_stage.banner_oracle_saturn_shrtrce tr
+			    INNER JOIN (
+			        SELECT
+			            scbcrse_subj_code,
+			            scbcrse_crse_numb,
+			            scbcrse_dept_code,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY scbcrse_subj_code, scbcrse_crse_numb
+			                ORDER BY scbcrse_eff_term DESC
+			            ) AS rn
+			        FROM uss_datalake_stage.banner_oracle_saturn_scbcrse
+			    ) crse
+			        ON crse.scbcrse_subj_code = tr.shrtrce_subj_code
+			        AND crse.scbcrse_crse_numb = tr.shrtrce_crse_numb
+			        AND crse.rn = 1
+			        AND (crse.scbcrse_dept_code IS NULL
+			             OR TRIM(crse.scbcrse_dept_code) = ''
+			             OR crse.scbcrse_dept_code != 'FORM')
+			) conv
+			    ON conv.shrtrce_pidm = s.sgrstsp_pidm
+			
+			LEFT JOIN (
+			    SELECT DISTINCT
+			        tr.shrtrce_pidm,
+			        cat.smrpaap_program,
+			        cat.version_catalogo
+			    FROM uss_datalake_stage.banner_oracle_saturn_shrtrit trit
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_shrtrce tr
+			        ON tr.shrtrce_pidm = trit.shrtrit_pidm
+			        AND tr.shrtrce_trit_seq_no = trit.shrtrit_seq_no
+			    INNER JOIN catalogo_asignaturas cat
+			        ON cat.smrarul_subj_code = tr.shrtrce_subj_code
+			        AND cat.smrarul_crse_numb_low = tr.shrtrce_crse_numb
+			    WHERE trit.shrtrit_sbgi_code = 'ES39'
+			) sust
+			    ON sust.shrtrce_pidm = s.sgrstsp_pidm
+			    AND sust.smrpaap_program = s.sorlcur_program
+			    AND CAST(sust.version_catalogo AS VARCHAR) = CAST(s.sorlcur_term_code_ctlg AS VARCHAR)
+			
+			LEFT JOIN sam_matricula sam
+			    ON CAST(sam.academicperiod AS VARCHAR) = CAST(s.sgrstsp_term_code_eff AS VARCHAR)
+			    AND sam.careercode = rmajor.sorcmjr_majr_code
+			    AND sam.reportdata_campuscode = s.sorlcur_camp_code
+			    AND sam.rut = i.spriden_id
+			    AND sam.studentstatus = 'MATRICULADO'
+			
+			LEFT JOIN eliminadas elim
+			    ON elim.sfrstca_pidm = s.sgrstsp_pidm
+			    AND elim.sfrstca_term_code = CAST(s.sorlcur_term_code AS VARCHAR)
+			    AND elim.sfrstca_stsp_key_sequence = CAST(s.sgrstsp_key_seqno AS VARCHAR)
+			
+			LEFT JOIN solicitudes_dedup sol
+			    ON CAST(sol.pidm_alumno AS VARCHAR) = CAST(s.sgrstsp_pidm AS VARCHAR)
+			    AND sol.cod_carrera = rmajor.sorcmjr_majr_code
+			    AND CAST(sol.periodo AS VARCHAR) = CAST(s.sorlcur_term_code AS VARCHAR)
+			    AND sol.rn = 1
+			
+			WHERE
+			    s.rn_reingreso = 1
+			
+			UNION ALL
+			
+			-- =====================================================
+			-- FILAS AUXILIARES: periodos de inscripción distintos
+			-- al periodo_plan, con datos del plan original
+			-- =====================================================
+			SELECT DISTINCT
+			    to_hex(sha256(to_utf8(cast(i2.spriden_id AS varchar)))) AS ""ID_ESTUDIANTE"",
+			    i2.spriden_last_name       AS ""apellido"",
+			    i2.spriden_first_name      AS ""nombre"",
+			    s2.sgrstsp_pidm            AS ""pidm"",
+			    s2.sgrstsp_term_code_eff   AS ""periodo_plan"",
+			    s2.sgrstsp_key_seqno       AS ""secuencia_plan"",
+			    s2.sgrstsp_stsp_code       AS ""estado_plan"",
+			    vs2.stvstsp_desc           AS ""desc_estado_plan"",
+			    s2.periodo_inscripcion     AS ""periodo_consulta"",
+			    s2.sorlcur_levl_code       AS ""nivel_academico"",
+			    s2.sorlcur_program         AS ""programa"",
+			    sobcurr2.sobcurr_coll_code AS ""cod_facultad"",
+			    vc2.stvcoll_desc           AS ""desc_facultad"",
+			    rmajor2.sorcmjr_majr_code  AS ""cod_carrera"",
+			    s2.sorlcur_term_code_ctlg  AS ""periodo_catalogo"",
+			    s2.sorlcur_term_code_admit AS ""periodo_admision"",
+			    msa.sovlcur_term_code_matric AS ""PERIODO_MATRICULACION"",
+			    s2.sorlcur_camp_code       AS ""sede"",
+			    vcamp2.stvcamp_desc        AS ""desc_sede"",
+			    s2.sorlcur_activity_date   AS ""ultima_fecha_actividad"",
+			    YEAR(CURRENT_DATE) - YEAR(pers2.spbpers_birth_date) AS ""edad"",
+			    pers2.spbpers_sex          AS ""genero"",
+			    pers2.spbpers_citz_code    AS ""nacionalidad"",
+			    vcnty2.stvcnty_desc        AS ""comuna"",
+			    CASE
+			        WHEN s2.sorlcur_term_code_admit = s2.periodo_inscripcion THEN 'NUEVO'
+			        ELSE 'ANTIGUO'
+			    END AS ""condicion_estudiante"",
+			    CASE
+			        WHEN asig2.total_asignaturas > 0 THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""asignaturas_inscritas"",
+			    mna2.max_nivel_asignatura  AS ""max_nivel_asignatura"",
+			    mna2.asignatura_max_nivel  AS ""asignatura_max_nivel"",
+			    npe2.nivel_estudiante      AS ""NIVEL_ESTUDIANTE"",
+			    COALESCE(pa2.programa_previo, s2.sorlcur_program) AS ""programa_anterior"",
+			    CASE
+			        WHEN conv2.shrtrce_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""ec_convalidaciones"",
+			    CASE
+			        WHEN sust2.shrtrce_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""ec_sustitucion"",
+			    CASE
+			        WHEN sam2.isold IS NOT NULL AND CAST(sam2.isold AS VARCHAR) = 'false' THEN 'NUEVO'
+			        WHEN sam2.isold IS NOT NULL AND CAST(sam2.isold AS VARCHAR) = 'true' THEN 'ANTIGUO'
+			        ELSE CASE
+			            WHEN s2.sorlcur_term_code_admit = s2.periodo_inscripcion THEN 'NUEVO'
+			            ELSE 'ANTIGUO'
+			        END
+			    END AS ""condicion_sam"",
+			    CASE
+			        WHEN elim2.sfrstca_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""inscripcion_eliminada"",
+			    COALESCE(sol2.tipo_solicitud, 'SS_RE_SE') AS ""tipo_solicitud"",
+			    COALESCE(sol2.start_date, '')             AS ""fecha_solicitud""
+			
+			FROM
+			    auxiliares_plan_cercano s2
+			
+			INNER JOIN
+			    uss_datalake_stage.banner_oracle_saturn_spriden i2
+			    ON s2.sgrstsp_pidm = i2.spriden_pidm
+			    AND i2.spriden_change_ind IS NULL
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_sobcurr sobcurr2
+			    ON s2.sorlcur_program = sobcurr2.sobcurr_program
+			    AND s2.sorlcur_camp_code = sobcurr2.sobcurr_camp_code
+			
+			LEFT JOIN
+			    RankedMajor rmajor2
+			    ON s2.sorlcur_program = rmajor2.sobcurr_program
+			    AND rmajor2.major_ranking = 1
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_spbpers pers2
+			    ON i2.spriden_pidm = pers2.spbpers_pidm
+			
+			LEFT JOIN
+			    RankedAddress addr2
+			    ON i2.spriden_pidm = addr2.spraddr_pidm
+			    AND addr2.addr_ranking = 1
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvstsp vs2
+			    ON s2.sgrstsp_stsp_code = vs2.stvstsp_code
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvcoll vc2
+			    ON sobcurr2.sobcurr_coll_code = vc2.stvcoll_code
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvcamp vcamp2
+			    ON s2.sorlcur_camp_code = vcamp2.stvcamp_code
+			
+			LEFT JOIN
+			    uss_datalake_stage.banner_oracle_saturn_stvcnty vcnty2
+			    ON addr2.spraddr_cnty_code = vcnty2.stvcnty_code
+			
+			LEFT JOIN asig_en_malla_aux asig2
+			    ON asig2.sfrstcr_pidm = s2.sgrstsp_pidm
+			    AND asig2.sorlcur_program = s2.sorlcur_program
+			    AND asig2.periodo_inscripcion = CAST(s2.periodo_inscripcion AS VARCHAR)
+			
+			LEFT JOIN (
+			    SELECT
+			        sub2.sfrstcr_pidm,
+			        sub2.smrpaap_program,
+			        sub2.sfrstcr_term_code,
+			        sub2.sorlcur_term_code_ctlg,
+			        sub2.smrpaap_area_priority AS max_nivel_asignatura,
+			        sub2.ssbsect_subj_code || ' ' || sub2.ssbsect_crse_numb AS asignatura_max_nivel
+			    FROM (
+			        SELECT
+			            sub1.*,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY sub1.sfrstcr_pidm, sub1.smrpaap_program, sub1.sfrstcr_term_code
+			                ORDER BY sub1.smrpaap_area_priority DESC
+			            ) AS rn_nivel
+			        FROM (
+			            SELECT
+			                fcr.sfrstcr_pidm,
+			                cat.smrpaap_program,
+			                fcr.sfrstcr_term_code,
+			                rr.sorlcur_term_code_ctlg,
+			                cat.smrpaap_area_priority,
+			                sect.ssbsect_subj_code,
+			                sect.ssbsect_crse_numb,
+			                ROW_NUMBER() OVER (
+			                    PARTITION BY fcr.sfrstcr_pidm, cat.smrpaap_program, fcr.sfrstcr_term_code,
+			                                 sect.ssbsect_subj_code, sect.ssbsect_crse_numb
+			                    ORDER BY
+			                        ABS(CAST(cat.version_catalogo AS INTEGER) - CAST(rr.sorlcur_term_code_ctlg AS INTEGER)) ASC,
+			                        cat.version_catalogo DESC
+			                ) AS rn_version
+			            FROM RankedReingreso rr
+			            INNER JOIN uss_datalake_stage.banner_oracle_saturn_sfrstcr fcr
+			                ON fcr.sfrstcr_pidm = rr.sgrstsp_pidm
+			                AND fcr.sfrstcr_rsts_code IN ('RE', 'RW')
+			                AND fcr.sfrstcr_term_code >= '202400'     ------> PERIODO INSCRIPCIÓN A REVISAR
+			                AND CAST(fcr.sfrstcr_term_code AS VARCHAR) > CAST(rr.sgrstsp_term_code_eff AS VARCHAR)
+			            INNER JOIN uss_datalake_stage.banner_oracle_saturn_ssbsect sect
+			                ON sect.ssbsect_crn = fcr.sfrstcr_crn
+			                AND sect.ssbsect_term_code = fcr.sfrstcr_term_code
+			            INNER JOIN catalogo_asignaturas cat
+			                ON cat.smrpaap_program = rr.sorlcur_program
+			                AND cat.smrarul_subj_code = sect.ssbsect_subj_code
+			                AND cat.smrarul_crse_numb_low = sect.ssbsect_crse_numb
+			            WHERE rr.rn_reingreso = 1
+			        ) sub1
+			        WHERE sub1.rn_version = 1
+			    ) sub2
+			    WHERE sub2.rn_nivel = 1
+			) mna2
+			    ON mna2.sfrstcr_pidm = s2.sgrstsp_pidm
+			    AND mna2.smrpaap_program = s2.sorlcur_program
+			    AND CAST(mna2.sfrstcr_term_code AS VARCHAR) = CAST(s2.periodo_inscripcion AS VARCHAR)
+			    AND CAST(mna2.sorlcur_term_code_ctlg AS VARCHAR) = CAST(s2.sorlcur_term_code_ctlg AS VARCHAR)
+			
+			-- =====================================================
+			-- Subquery: Nivel predominante (bloque auxiliar)
+			-- Agrupa por pidm+programa+periodo_inscripcion+area_priority
+			-- Espiral por catalogo del plan original (sorlcur_term_code_ctlg)
+			-- Cantidad DESC, prioridad ASC para empate
+			-- =====================================================
+			LEFT JOIN (
+			    SELECT
+			        sub3.sfrstcr_pidm,
+			        sub3.smrpaap_program,
+			        sub3.sfrstcr_term_code,
+			        sub3.sorlcur_term_code_ctlg,
+			        sub3.smrpaap_area_priority AS nivel_estudiante
+			    FROM (
+			        SELECT
+			            sub2.*,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY sub2.sfrstcr_pidm, sub2.smrpaap_program, sub2.sfrstcr_term_code,
+			                             sub2.sorlcur_term_code_ctlg
+			                ORDER BY sub2.qty_asig DESC, sub2.smrpaap_area_priority ASC
+			            ) AS rn_predominante
+			        FROM (
+			            SELECT
+			                sub1.sfrstcr_pidm,
+			                sub1.smrpaap_program,
+			                sub1.sfrstcr_term_code,
+			                sub1.sorlcur_term_code_ctlg,
+			                sub1.smrpaap_area_priority,
+			                COUNT(DISTINCT sub1.ssbsect_subj_code || '-' || sub1.ssbsect_crse_numb) AS qty_asig
+			            FROM (
+			                SELECT
+			                    fcr.sfrstcr_pidm,
+			                    cat.smrpaap_program,
+			                    fcr.sfrstcr_term_code,
+			                    rr.sorlcur_term_code_ctlg,
+			                    cat.smrpaap_area_priority,
+			                    sect.ssbsect_subj_code,
+			                    sect.ssbsect_crse_numb,
+			                    ROW_NUMBER() OVER (
+			                        PARTITION BY fcr.sfrstcr_pidm, cat.smrpaap_program, fcr.sfrstcr_term_code,
+			                                     sect.ssbsect_subj_code, sect.ssbsect_crse_numb
+			                        ORDER BY
+			                            ABS(CAST(cat.version_catalogo AS INTEGER) - CAST(rr.sorlcur_term_code_ctlg AS INTEGER)) ASC,
+			                            cat.version_catalogo DESC
+			                    ) AS rn_version
+			                FROM RankedReingreso rr
+			                INNER JOIN uss_datalake_stage.banner_oracle_saturn_sfrstcr fcr
+			                    ON fcr.sfrstcr_pidm = rr.sgrstsp_pidm
+			                    AND fcr.sfrstcr_rsts_code IN ('RE', 'RW')
+			                    AND fcr.sfrstcr_term_code >= '202400'     ------> PERIODO INSCRIPCIÓN A REVISAR
+			                    AND CAST(fcr.sfrstcr_term_code AS VARCHAR) > CAST(rr.sgrstsp_term_code_eff AS VARCHAR)
+			                INNER JOIN uss_datalake_stage.banner_oracle_saturn_ssbsect sect
+			                    ON sect.ssbsect_crn = fcr.sfrstcr_crn
+			                    AND sect.ssbsect_term_code = fcr.sfrstcr_term_code
+			                INNER JOIN catalogo_asignaturas cat
+			                    ON cat.smrpaap_program = rr.sorlcur_program
+			                    AND cat.smrarul_subj_code = sect.ssbsect_subj_code
+			                    AND cat.smrarul_crse_numb_low = sect.ssbsect_crse_numb
+			                WHERE rr.rn_reingreso = 1
+			            ) sub1
+			            WHERE sub1.rn_version = 1
+			            GROUP BY
+			                sub1.sfrstcr_pidm,
+			                sub1.smrpaap_program,
+			                sub1.sfrstcr_term_code,
+			                sub1.sorlcur_term_code_ctlg,
+			                sub1.smrpaap_area_priority
+			        ) sub2
+			    ) sub3
+			    WHERE sub3.rn_predominante = 1
+			) npe2
+			    ON npe2.sfrstcr_pidm = s2.sgrstsp_pidm
+			    AND npe2.smrpaap_program = s2.sorlcur_program
+			    AND CAST(npe2.sfrstcr_term_code AS VARCHAR) = CAST(s2.periodo_inscripcion AS VARCHAR)
+			    AND CAST(npe2.sorlcur_term_code_ctlg AS VARCHAR) = CAST(s2.sorlcur_term_code_ctlg AS VARCHAR)
+			
+			LEFT JOIN programa_anterior pa2
+			    ON pa2.sorlcur_pidm = s2.sgrstsp_pidm
+			    AND pa2.programa_actual = s2.sorlcur_program
+			    AND CAST(pa2.periodo_consulta AS VARCHAR) = CAST(s2.periodo_inscripcion AS VARCHAR)
+			    AND pa2.rn = 1
+			
+			LEFT JOIN matric_spiral_aux msa
+			    ON msa.sgrstsp_pidm = s2.sgrstsp_pidm
+			    AND msa.sorlcur_program = s2.sorlcur_program
+			    AND CAST(msa.periodo_inscripcion AS VARCHAR) = CAST(s2.periodo_inscripcion AS VARCHAR)
+			
+			LEFT JOIN (
+			    SELECT DISTINCT
+			        tr.shrtrce_pidm,
+			        tr.shrtrce_subj_code
+			    FROM uss_datalake_stage.banner_oracle_saturn_shrtrce tr
+			    INNER JOIN (
+			        SELECT
+			            scbcrse_subj_code,
+			            scbcrse_crse_numb,
+			            scbcrse_dept_code,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY scbcrse_subj_code, scbcrse_crse_numb
+			                ORDER BY scbcrse_eff_term DESC
+			            ) AS rn
+			        FROM uss_datalake_stage.banner_oracle_saturn_scbcrse
+			    ) crse
+			        ON crse.scbcrse_subj_code = tr.shrtrce_subj_code
+			        AND crse.scbcrse_crse_numb = tr.shrtrce_crse_numb
+			        AND crse.rn = 1
+			        AND (crse.scbcrse_dept_code IS NULL
+			             OR TRIM(crse.scbcrse_dept_code) = ''
+			             OR crse.scbcrse_dept_code != 'FORM')
+			) conv2
+			    ON conv2.shrtrce_pidm = s2.sgrstsp_pidm
+			
+			LEFT JOIN (
+			    SELECT DISTINCT
+			        tr.shrtrce_pidm,
+			        cat.smrpaap_program,
+			        cat.version_catalogo
+			    FROM uss_datalake_stage.banner_oracle_saturn_shrtrit trit
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_shrtrce tr
+			        ON tr.shrtrce_pidm = trit.shrtrit_pidm
+			        AND tr.shrtrce_trit_seq_no = trit.shrtrit_seq_no
+			    INNER JOIN catalogo_asignaturas cat
+			        ON cat.smrarul_subj_code = tr.shrtrce_subj_code
+			        AND cat.smrarul_crse_numb_low = tr.shrtrce_crse_numb
+			    WHERE trit.shrtrit_sbgi_code = 'ES39'
+			) sust2
+			    ON sust2.shrtrce_pidm = s2.sgrstsp_pidm
+			    AND sust2.smrpaap_program = s2.sorlcur_program
+			    AND CAST(sust2.version_catalogo AS VARCHAR) = CAST(s2.sorlcur_term_code_ctlg AS VARCHAR)
+			
+			LEFT JOIN sam_matricula sam2
+			    ON CAST(sam2.academicperiod AS VARCHAR) = CAST(s2.periodo_inscripcion AS VARCHAR)
+			    AND sam2.careercode = rmajor2.sorcmjr_majr_code
+			    AND sam2.reportdata_campuscode = s2.sorlcur_camp_code
+			    AND sam2.rut = i2.spriden_id
+			    AND sam2.studentstatus = 'MATRICULADO'
+			
+			LEFT JOIN eliminadas elim2
+			    ON elim2.sfrstca_pidm = s2.sgrstsp_pidm
+			    AND elim2.sfrstca_term_code = CAST(s2.periodo_inscripcion AS VARCHAR)
+			    AND elim2.sfrstca_stsp_key_sequence = CAST(s2.sgrstsp_key_seqno AS VARCHAR)
+			
+			LEFT JOIN solicitudes_dedup sol2
+			    ON CAST(sol2.pidm_alumno AS VARCHAR) = CAST(s2.sgrstsp_pidm AS VARCHAR)
+			    AND sol2.cod_carrera = rmajor2.sorcmjr_majr_code
+			    AND CAST(sol2.periodo AS VARCHAR) = CAST(s2.periodo_inscripcion AS VARCHAR)
+			    AND sol2.rn = 1
+			
+			WHERE
+			    s2.rn_plan_cercano = 1
+			
+			ORDER BY
+			    ""apellido"",
+			    ""nombre"",
+			    ""periodo_plan"",
+			    ""periodo_consulta""
+			"
+			in
+			    Source
+		```
+	lineageTag: b24ddc79-9ed0-4a3d-9b16-c072fa16d594
+	queryGroup: Detalles
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Text
+
+expression query_maestro_postgrado = ```
+		let
+			    Source = "
+			-- ============================================================================
+			-- MIGRACION AL NUEVO DATALAKE - 2026-07-21   (VARIANTE, no version de produccion)
+			-- ----------------------------------------------------------------------------
+			--   Esta variante usa la tabla SOVLCUR (CTE 'matric_ranked' -> campo
+			--   ""PERIODO_MATRICULACION""). CONFIRMADO en el inventario ESTADO_ACTUAL_DL_21072026:
+			--   sovlcur SI esta cargada, con nombre real 'banner_oracle_baninst1_sovlcur'
+			--   (modulo baninst1, NO saturn como se habia inferido el 2026-07-17). 43 columnas.
+			--   => Query estructuralmente ejecutable.
+			--
+			-- La vista mongodb_dev.vw_sam_matricula_preprocesada fue sustituida por el CTE
+			-- 'sam_matricula' (ver nota tecnica de sustitucion del 2026-07-17).
+			--
+			-- NOTA DE DATOS (barrido de sanidad 21/07): esta query hereda las brechas de
+			-- carga aun no corregidas de spriden (duplicada x3.00) y sam (2.4% de
+			-- completitud). La validacion reflejara esas desviaciones hasta que el equipo
+			-- DL corrija dichas tablas; no son defectos de la migracion.
+			-- ============================================================================
+			WITH sam_matricula AS (
+			    SELECT
+			        rut,
+			        academicperiod,
+			        careercode,
+			        reportdata_campuscode,
+			        studentstatus,
+			        isold
+			    FROM uss_datalake_stage.sam_mongodb_retenciones_studentpostulants
+			    WHERE studentstatus = 'MATRICULADO'
+			),
+			RankedCurriculum AS (
+			    SELECT 
+			        x.*,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY x.sorlcur_pidm, x.sorlcur_key_seqno, x.sorlcur_term_code
+			            ORDER BY x.sorlcur_activity_date DESC, x.sorlcur_seqno DESC
+			        ) as ranking
+			    FROM uss_datalake_stage.banner_oracle_saturn_sorlcur x
+			    WHERE x.sorlcur_lmod_code = 'LEARNER'
+			     -- AND x.sorlcur_cact_code = 'ACTIVE'
+			),
+			
+			RankedAddress AS (
+			    SELECT
+			        spraddr_pidm,
+			        spraddr_cnty_code,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY spraddr_pidm
+			            ORDER BY spraddr_activity_date DESC, spraddr_from_date DESC
+			        ) as addr_ranking
+			    FROM uss_datalake_stage.banner_oracle_saturn_spraddr
+			    WHERE spraddr_status_ind IS NULL
+			),
+			
+			RankedMajor AS (
+			    SELECT
+			        sobcurr.sobcurr_program,
+			        sobcurr.sobcurr_curr_rule,
+			        sorcmjr.sorcmjr_majr_code,
+			        sorcmjr.sorcmjr_term_code_eff,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY sobcurr.sobcurr_program
+			            ORDER BY sorcmjr.sorcmjr_term_code_eff DESC, sorcmjr.sorcmjr_cmjr_rule DESC
+			        ) as major_ranking
+			    FROM uss_datalake_stage.banner_oracle_saturn_sobcurr sobcurr
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_sorcmjr sorcmjr
+			        ON sobcurr.sobcurr_curr_rule = sorcmjr.sorcmjr_curr_rule
+			),
+			
+			catalogos_programa AS (
+			    SELECT DISTINCT
+			        smbpgen_program,
+			        smbpgen_term_code_eff AS catalogo
+			    FROM uss_datalake_stage.banner_oracle_saturn_smbpgen
+			),
+			
+			catalogo_asignaturas AS (
+			    SELECT DISTINCT
+			        paap.smrpaap_program,
+			        paap.smrpaap_term_code_eff AS version_catalogo,
+			        paap.smrpaap_area,
+			        paap.smrpaap_area_priority,
+			        arul.smrarul_subj_code,
+			        arul.smrarul_crse_numb_low
+			    FROM uss_datalake_stage.banner_oracle_saturn_smrpaap paap
+			    INNER JOIN catalogos_programa cp
+			        ON cp.smbpgen_program = paap.smrpaap_program
+			        AND cp.catalogo = paap.smrpaap_term_code_eff
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_smbagen agen
+			        ON agen.smbagen_area = paap.smrpaap_area
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_smracaa acaa
+			        ON acaa.smracaa_area = agen.smbagen_area
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_smbarul barul
+			        ON barul.smbarul_area = acaa.smracaa_area
+			        AND barul.smbarul_key_rule = acaa.smracaa_rule
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_smrarul arul
+			        ON arul.smrarul_area = barul.smbarul_area
+			        AND arul.smrarul_key_rule = barul.smbarul_key_rule
+			),
+			
+			asig_con_nivel AS (
+			    SELECT
+			        c.sorlcur_pidm,
+			        c.sorlcur_program,
+			        c.sorlcur_term_code,
+			        cat.smrpaap_area_priority,
+			        cat.version_catalogo,
+			        sect.ssbsect_subj_code,
+			        sect.ssbsect_crse_numb,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY c.sorlcur_pidm, c.sorlcur_program, c.sorlcur_term_code,
+			                         sect.ssbsect_subj_code, sect.ssbsect_crse_numb
+			            ORDER BY
+			                ABS(CAST(cat.version_catalogo AS INTEGER) - CAST(c.sorlcur_term_code_ctlg AS INTEGER)) ASC,
+			                cat.version_catalogo DESC
+			        ) AS rn_version
+			    FROM RankedCurriculum c
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_sfrstcr fcr
+			        ON fcr.sfrstcr_pidm = c.sorlcur_pidm
+			        AND fcr.sfrstcr_term_code = c.sorlcur_term_code
+			        AND fcr.sfrstcr_rsts_code IN ('RE', 'RW')
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_ssbsect sect
+			        ON sect.ssbsect_crn = fcr.sfrstcr_crn
+			        AND sect.ssbsect_term_code = fcr.sfrstcr_term_code
+			    INNER JOIN catalogo_asignaturas cat
+			        ON cat.smrpaap_program = c.sorlcur_program
+			        AND cat.smrarul_subj_code = sect.ssbsect_subj_code
+			        AND cat.smrarul_crse_numb_low = sect.ssbsect_crse_numb
+			    WHERE c.ranking = 1
+			),
+			
+			asig_version_correcta AS (
+			    SELECT
+			        sorlcur_pidm,
+			        sorlcur_program,
+			        sorlcur_term_code,
+			        smrpaap_area_priority,
+			        ssbsect_subj_code,
+			        ssbsect_crse_numb,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY sorlcur_pidm, sorlcur_program, sorlcur_term_code
+			            ORDER BY smrpaap_area_priority DESC
+			        ) AS rn_final
+			    FROM asig_con_nivel
+			    WHERE rn_version = 1
+			),
+			
+			max_nivel_asig AS (
+			    SELECT
+			        sorlcur_pidm,
+			        sorlcur_program,
+			        sorlcur_term_code,
+			        smrpaap_area_priority AS max_nivel_asignatura,
+			        ssbsect_subj_code || ' ' || ssbsect_crse_numb AS asignatura_max_nivel
+			    FROM asig_version_correcta
+			    WHERE rn_final = 1
+			),
+			
+			programa_anterior AS (
+			    SELECT
+			        curr.sorlcur_pidm,
+			        curr.sorlcur_program AS programa_actual,
+			        curr.sorlcur_term_code AS periodo_consulta,
+			        prev.sorlcur_program AS programa_previo,
+			        prev.sorlcur_term_code AS periodo_previo,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY curr.sorlcur_pidm, curr.sorlcur_program, curr.sorlcur_term_code
+			            ORDER BY prev.sorlcur_term_code DESC
+			        ) AS rn
+			    FROM RankedCurriculum curr
+			    INNER JOIN RankedCurriculum prev
+			        ON prev.sorlcur_pidm = curr.sorlcur_pidm
+			        AND prev.sorlcur_term_code < curr.sorlcur_term_code
+			        AND prev.sorlcur_program != curr.sorlcur_program
+			        AND prev.ranking = 1
+			    WHERE curr.ranking = 1
+			),
+			
+			RankedReingreso AS (
+			    SELECT
+			        s.sgrstsp_pidm,
+			        s.sgrstsp_term_code_eff,
+			        s.sgrstsp_key_seqno,
+			        s.sgrstsp_stsp_code,
+			        c.sorlcur_pidm,
+			        c.sorlcur_key_seqno,
+			        c.sorlcur_term_code,
+			        c.sorlcur_program,
+			        c.sorlcur_term_code_ctlg,
+			        c.sorlcur_term_code_admit,
+			        c.sorlcur_camp_code,
+			        c.sorlcur_levl_code,
+			        c.sorlcur_activity_date,
+			        c.sorlcur_seqno,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY s.sgrstsp_pidm, c.sorlcur_program, s.sgrstsp_term_code_eff
+			            ORDER BY s.sgrstsp_key_seqno DESC
+			        ) AS rn_reingreso
+			    FROM uss_datalake_stage.banner_oracle_saturn_sgrstsp s
+			    INNER JOIN RankedCurriculum c
+			        ON s.sgrstsp_pidm = c.sorlcur_pidm
+			        AND CAST(s.sgrstsp_key_seqno AS VARCHAR) = CAST(c.sorlcur_key_seqno AS VARCHAR)
+			        AND CAST(s.sgrstsp_term_code_eff AS VARCHAR) = CAST(c.sorlcur_term_code AS VARCHAR)
+			        AND c.ranking = 1
+			      WHERE s.sgrstsp_term_code_eff >= '201500'  --> FILTRO PERIODO PLAN
+			      AND c.sorlcur_term_code_admit IS NOT NULL
+			      AND TRIM(c.sorlcur_term_code_admit) != ''
+			      AND c.sorlcur_levl_code IN ('MG','DP','PH','PE') ----> FILTRO PARA PERIODOS
+			),
+			
+			-- =====================================================
+			-- Inscripciones validadas contra el programa
+			-- Solo cuenta asignaturas que existen en el catálogo del programa
+			-- =====================================================
+			asig_por_programa AS (
+			    SELECT 
+			        fcr.sfrstcr_pidm,
+			        CAST(fcr.sfrstcr_term_code AS VARCHAR) AS sfrstcr_term_code,
+			        cat.smrpaap_program,
+			        COUNT(DISTINCT fcr.sfrstcr_crn) AS total_asignaturas
+			    FROM uss_datalake_stage.banner_oracle_saturn_sfrstcr fcr
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_ssbsect sect
+			        ON sect.ssbsect_crn = fcr.sfrstcr_crn
+			        AND sect.ssbsect_term_code = fcr.sfrstcr_term_code
+			    INNER JOIN catalogo_asignaturas cat
+			        ON cat.smrarul_subj_code = sect.ssbsect_subj_code
+			        AND cat.smrarul_crse_numb_low = sect.ssbsect_crse_numb
+			    WHERE fcr.sfrstcr_rsts_code IN ('RE', 'RW')
+			      AND fcr.sfrstcr_term_code >= '202400' --> FILTRO PERIODO INSCRIPCIÓN
+			    GROUP BY fcr.sfrstcr_pidm, fcr.sfrstcr_term_code, cat.smrpaap_program
+			),
+			
+			-- =====================================================
+			-- Periodos auxiliares: periodos donde el estudiante tiene
+			-- inscripciones del programa, distintos al periodo_plan
+			-- =====================================================
+			periodos_inscripcion AS (
+			    SELECT DISTINCT
+			        sfrstcr_pidm,
+			        sfrstcr_term_code AS periodo_inscripcion,
+			        smrpaap_program
+			    FROM asig_por_programa
+			),
+			
+			-- =====================================================
+			-- Para cada pidm+programa+periodo_auxiliar, solo el plan
+			-- más cercano (mayor sgrstsp_term_code_eff < periodo_inscripcion)
+			-- =====================================================
+			auxiliares_plan_cercano AS (
+			    SELECT
+			        s.sgrstsp_pidm,
+			        s.sgrstsp_term_code_eff,
+			        s.sgrstsp_key_seqno,
+			        s.sgrstsp_stsp_code,
+			        s.sorlcur_program,
+			        s.sorlcur_term_code_ctlg,
+			        s.sorlcur_term_code_admit,
+			        s.sorlcur_camp_code,
+			        s.sorlcur_levl_code,
+			        s.sorlcur_activity_date,
+			        pi.periodo_inscripcion,
+			        ROW_NUMBER() OVER (
+			            PARTITION BY s.sgrstsp_pidm, s.sorlcur_program, pi.periodo_inscripcion
+			            ORDER BY s.sgrstsp_term_code_eff DESC
+			        ) AS rn_plan_cercano
+			    FROM RankedReingreso s
+			    INNER JOIN periodos_inscripcion pi
+			        ON pi.sfrstcr_pidm = s.sgrstsp_pidm
+			        AND pi.smrpaap_program = s.sorlcur_program
+			        AND pi.periodo_inscripcion != CAST(s.sgrstsp_term_code_eff AS VARCHAR)
+			        AND pi.periodo_inscripcion > CAST(s.sgrstsp_term_code_eff AS VARCHAR)
+			        AND NOT EXISTS (
+			            SELECT 1 FROM RankedReingreso r2
+			            WHERE r2.sgrstsp_pidm = s.sgrstsp_pidm
+			              AND r2.sorlcur_program = s.sorlcur_program
+			              AND CAST(r2.sgrstsp_term_code_eff AS VARCHAR) = CAST(pi.periodo_inscripcion AS VARCHAR)
+			              AND r2.rn_reingreso = 1
+			        )
+			    WHERE s.rn_reingreso = 1
+			),
+			
+			-- =====================================================
+			-- Notas aprobadas: SHRTCKN + SHRTCKG
+			-- Match línea académica ↔ nota: shrtckn_seq_no = shrtckg_tckn_seq_no
+			-- Si al menos un shrtckg_grde_code_final numérico >= 4.0
+			-- El stsp_key_sequence se conserva para el cruce final
+			-- con sgrstsp_key_seqno en el SELECT principal.
+			-- =====================================================
+			notas_aprobadas AS (
+			    SELECT DISTINCT
+			        n.shrtckn_pidm,
+			        CAST(n.shrtckn_term_code AS VARCHAR) AS shrtckn_term_code,
+			        n.shrtckn_stsp_key_sequence
+			    FROM uss_datalake_stage.banner_oracle_saturn_shrtckn n
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_shrtckg g
+			        ON n.shrtckn_pidm = g.shrtckg_pidm
+			        AND n.shrtckn_term_code = g.shrtckg_term_code
+			        AND n.shrtckn_seq_no = g.shrtckg_tckn_seq_no
+			    WHERE TRY_CAST(g.shrtckg_grde_code_final AS DOUBLE) >= 4.0
+			),
+			
+			-- =====================================================
+			-- CTE: Matriculación desde SOVLCUR (deduplicada)
+			-- Fuente del campo PERIODO_MATRICULACION.
+			-- Una fila por (pidm, program, term_code): se conserva
+			-- la version mas reciente segun activity_date/seqno.
+			-- Filtro lmod_code='LEARNER': el campo term_code_matric
+			-- solo se puebla en filas LEARNER.
+			-- Piso 201500 alineado con FILTRO PERIODO PLAN del Postgrado.
+			-- =====================================================
+			matric_ranked AS (
+			    SELECT
+			        sovlcur_pidm,
+			        sovlcur_program,
+			        CAST(sovlcur_term_code AS VARCHAR)         AS sovlcur_term_code,
+			        CAST(sovlcur_term_code AS INTEGER)         AS sovlcur_term_code_int,
+			        CAST(sovlcur_term_code_matric AS VARCHAR)  AS sovlcur_term_code_matric
+			    FROM (
+			        SELECT
+			            v.sovlcur_pidm,
+			            v.sovlcur_program,
+			            v.sovlcur_term_code,
+			            v.sovlcur_term_code_matric,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY v.sovlcur_pidm, v.sovlcur_program, v.sovlcur_term_code
+			                ORDER BY v.sovlcur_activity_date DESC, v.sovlcur_seqno DESC
+			            ) AS rn_matric
+			        FROM uss_datalake_stage.banner_oracle_baninst1_sovlcur v   -- sovlcur cargada en modulo baninst1 (confirmado inventario 21/07)
+			        WHERE v.sovlcur_lmod_code = 'LEARNER'
+			          AND v.sovlcur_cact_code = 'ACTIVE'
+			          AND v.sovlcur_term_code >= '201500'   ------> PERIODO MATRICULACION (piso, alinear con FILTRO PERIODO PLAN)
+			    )
+			    WHERE rn_matric = 1
+			),
+			
+			-- =====================================================
+			-- CTE: Spiral de matriculacion - BLOQUE PRINCIPAL
+			-- Para cada (pidm, program, periodo_consulta) del bloque
+			-- principal, selecciona el term_code_matric cuyo term_code
+			-- gana el spiral bidireccional contra sorlcur_term_code:
+			--   1. Match exacto (distancia 0) gana siempre.
+			--   2. Menor distancia ABS().
+			--   3. Empate de distancia: hacia ATRAS primero (term menor).
+			-- Presto no soporta correlated subqueries -> se resuelve
+			-- con CROSS JOIN acotado por pidm+program + ROW_NUMBER().
+			-- =====================================================
+			matric_spiral_principal AS (
+			    SELECT
+			        sgrstsp_pidm,
+			        sorlcur_program,
+			        periodo_consulta,
+			        sovlcur_term_code_matric
+			    FROM (
+			        SELECT
+			            rr.sgrstsp_pidm,
+			            rr.sorlcur_program,
+			            CAST(rr.sorlcur_term_code AS VARCHAR)      AS periodo_consulta,
+			            mr.sovlcur_term_code_matric,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY rr.sgrstsp_pidm, rr.sorlcur_program, rr.sorlcur_term_code
+			                ORDER BY
+			                    CASE WHEN mr.sovlcur_term_code_int = CAST(rr.sorlcur_term_code AS INTEGER)
+			                         THEN 0 ELSE 1 END ASC,
+			                    ABS(mr.sovlcur_term_code_int - CAST(rr.sorlcur_term_code AS INTEGER)) ASC,
+			                    CASE WHEN mr.sovlcur_term_code_int <= CAST(rr.sorlcur_term_code AS INTEGER)
+			                         THEN 0 ELSE 1 END ASC
+			            ) AS rn_spiral
+			        FROM RankedReingreso rr
+			        INNER JOIN matric_ranked mr
+			            ON mr.sovlcur_pidm = rr.sgrstsp_pidm
+			            AND mr.sovlcur_program = rr.sorlcur_program
+			        WHERE rr.rn_reingreso = 1
+			    )
+			    WHERE rn_spiral = 1
+			),
+			
+			-- =====================================================
+			-- CTE: Spiral de matriculacion - BLOQUE AUXILIAR
+			-- Misma logica que matric_spiral_principal, pero el
+			-- periodo_consulta aqui es periodo_inscripcion (no el
+			-- term_code del plan), coherente con el bloque auxiliar
+			-- del UNION ALL.
+			-- =====================================================
+			matric_spiral_aux AS (
+			    SELECT
+			        sgrstsp_pidm,
+			        sorlcur_program,
+			        periodo_inscripcion,
+			        sovlcur_term_code_matric
+			    FROM (
+			        SELECT
+			            ac.sgrstsp_pidm,
+			            ac.sorlcur_program,
+			            CAST(ac.periodo_inscripcion AS VARCHAR)    AS periodo_inscripcion,
+			            mr.sovlcur_term_code_matric,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY ac.sgrstsp_pidm, ac.sorlcur_program, ac.periodo_inscripcion
+			                ORDER BY
+			                    CASE WHEN mr.sovlcur_term_code_int = CAST(ac.periodo_inscripcion AS INTEGER)
+			                         THEN 0 ELSE 1 END ASC,
+			                    ABS(mr.sovlcur_term_code_int - CAST(ac.periodo_inscripcion AS INTEGER)) ASC,
+			                    CASE WHEN mr.sovlcur_term_code_int <= CAST(ac.periodo_inscripcion AS INTEGER)
+			                         THEN 0 ELSE 1 END ASC
+			            ) AS rn_spiral
+			        FROM auxiliares_plan_cercano ac
+			        INNER JOIN matric_ranked mr
+			            ON mr.sovlcur_pidm = ac.sgrstsp_pidm
+			            AND mr.sovlcur_program = ac.sorlcur_program
+			        WHERE ac.rn_plan_cercano = 1
+			    )
+			    WHERE rn_spiral = 1
+			),
+			
+			-- =====================================================
+			-- CTE todo: une registros originales y auxiliares
+			-- =====================================================
+			todo AS (
+			-- REGISTROS ORIGINALES
+			SELECT DISTINCT
+			    to_hex(sha256(to_utf8(cast(i.spriden_id AS varchar)))) AS ""ID_ESTUDIANTE"",
+			    i.spriden_last_name    AS ""apellido"",
+			    i.spriden_first_name   AS ""nombre"",
+			    s.sgrstsp_pidm          AS ""pidm"",
+			    s.sgrstsp_term_code_eff AS ""periodo_plan"",
+			    s.sgrstsp_key_seqno     AS ""secuencia_plan"",
+			    s.sgrstsp_stsp_code     AS ""estado_plan"",
+			    vs.stvstsp_desc         AS ""desc_estado_plan"",
+			    s.sorlcur_term_code     AS ""periodo_consulta"",
+			    s.sorlcur_levl_code     AS ""nivel_academico"",
+			    s.sorlcur_program       AS ""programa"",
+			    sobcurr.sobcurr_coll_code AS ""cod_facultad"",
+			    vc.stvcoll_desc           AS ""desc_facultad"",
+			    rmajor.sorcmjr_majr_code AS ""cod_carrera"",
+			    s.sorlcur_term_code_ctlg  AS ""periodo_catalogo"",
+			    s.sorlcur_term_code_admit AS ""periodo_admision"",
+			    msp.sovlcur_term_code_matric AS ""PERIODO_MATRICULACION"",
+			    s.sorlcur_camp_code       AS ""sede"",
+			    vcamp.stvcamp_desc        AS ""desc_sede"",
+			    s.sorlcur_activity_date AS ""ultima_fecha_actividad"",
+			    YEAR(CURRENT_DATE) - YEAR(pers.spbpers_birth_date) AS ""edad"",
+			    pers.spbpers_sex        AS ""genero"",
+			    pers.spbpers_citz_code  AS ""nacionalidad"",
+			    vcnty.stvcnty_desc      AS ""comuna"",
+			    CASE 
+			        WHEN SUBSTR(s.sorlcur_term_code_admit, 1, 4) = SUBSTR(s.sorlcur_term_code, 1, 4) THEN 'NUEVO'
+			        ELSE 'ANTIGUO'
+			    END AS ""condicion_estudiante"",
+			    CASE 
+			        WHEN asig.total_asignaturas > 0 THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""asignaturas_inscritas"",
+			    mna.max_nivel_asignatura AS ""max_nivel_asignatura"",
+			    mna.asignatura_max_nivel AS ""asignatura_max_nivel"",
+			    COALESCE(pa.programa_previo, s.sorlcur_program) AS ""programa_anterior"",
+			    CASE 
+			        WHEN conv.shrtrce_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""ec_convalidaciones"",
+			    CASE 
+			        WHEN sust.shrtrce_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""ec_sustitucion"",
+			    CASE 
+			        WHEN sam.isold IS NOT NULL AND CAST(sam.isold AS VARCHAR) = 'false' THEN 'NUEVO'
+			        WHEN sam.isold IS NOT NULL AND CAST(sam.isold AS VARCHAR) = 'true' THEN 'ANTIGUO'
+			        ELSE CASE 
+			            WHEN SUBSTR(s.sorlcur_term_code_admit, 1, 4) = SUBSTR(s.sorlcur_term_code, 1, 4) THEN 'NUEVO'
+			            ELSE 'ANTIGUO'
+			        END
+			    END AS ""condicion_sam"",
+			    CASE 
+			        WHEN na.shrtckn_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""posee_nota""
+			FROM RankedReingreso s
+			INNER JOIN uss_datalake_stage.banner_oracle_saturn_spriden i
+			    ON s.sgrstsp_pidm = i.spriden_pidm AND i.spriden_change_ind IS NULL
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_sobcurr sobcurr
+			    ON s.sorlcur_program = sobcurr.sobcurr_program AND s.sorlcur_camp_code = sobcurr.sobcurr_camp_code
+			LEFT JOIN RankedMajor rmajor
+			    ON s.sorlcur_program = rmajor.sobcurr_program AND rmajor.major_ranking = 1
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_spbpers pers
+			    ON i.spriden_pidm = pers.spbpers_pidm
+			LEFT JOIN RankedAddress addr
+			    ON i.spriden_pidm = addr.spraddr_pidm AND addr.addr_ranking = 1
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_stvstsp vs
+			    ON s.sgrstsp_stsp_code = vs.stvstsp_code
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_stvcoll vc
+			    ON sobcurr.sobcurr_coll_code = vc.stvcoll_code
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_stvcamp vcamp
+			    ON s.sorlcur_camp_code = vcamp.stvcamp_code
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_stvcnty vcnty
+			    ON addr.spraddr_cnty_code = vcnty.stvcnty_code
+			LEFT JOIN asig_por_programa asig
+			    ON s.sgrstsp_pidm = asig.sfrstcr_pidm
+			    AND CAST(s.sorlcur_term_code AS VARCHAR) = asig.sfrstcr_term_code
+			    AND s.sorlcur_program = asig.smrpaap_program
+			LEFT JOIN max_nivel_asig mna
+			    ON s.sgrstsp_pidm = mna.sorlcur_pidm AND s.sorlcur_program = mna.sorlcur_program
+			    AND CAST(s.sorlcur_term_code AS VARCHAR) = CAST(mna.sorlcur_term_code AS VARCHAR)
+			LEFT JOIN programa_anterior pa
+			    ON s.sgrstsp_pidm = pa.sorlcur_pidm AND s.sorlcur_program = pa.programa_actual
+			    AND CAST(s.sorlcur_term_code AS VARCHAR) = CAST(pa.periodo_consulta AS VARCHAR) AND pa.rn = 1
+			LEFT JOIN matric_spiral_principal msp
+			    ON msp.sgrstsp_pidm = s.sgrstsp_pidm
+			    AND msp.sorlcur_program = s.sorlcur_program
+			    AND CAST(msp.periodo_consulta AS VARCHAR) = CAST(s.sorlcur_term_code AS VARCHAR)
+			LEFT JOIN (
+			    SELECT DISTINCT tr.shrtrce_pidm, tr.shrtrce_subj_code
+			    FROM uss_datalake_stage.banner_oracle_saturn_shrtrce tr
+			    INNER JOIN (
+			        SELECT scbcrse_subj_code, scbcrse_crse_numb, scbcrse_dept_code,
+			            ROW_NUMBER() OVER (PARTITION BY scbcrse_subj_code, scbcrse_crse_numb ORDER BY scbcrse_eff_term DESC) AS rn
+			        FROM uss_datalake_stage.banner_oracle_saturn_scbcrse
+			    ) crse ON crse.scbcrse_subj_code = tr.shrtrce_subj_code AND crse.scbcrse_crse_numb = tr.shrtrce_crse_numb
+			        AND crse.rn = 1 AND (crse.scbcrse_dept_code IS NULL OR TRIM(crse.scbcrse_dept_code) = '' OR crse.scbcrse_dept_code != 'FORM')
+			) conv ON conv.shrtrce_pidm = s.sgrstsp_pidm
+			LEFT JOIN (
+			    SELECT DISTINCT tr.shrtrce_pidm, cat.smrpaap_program, cat.version_catalogo
+			    FROM uss_datalake_stage.banner_oracle_saturn_shrtrit trit
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_shrtrce tr ON tr.shrtrce_pidm = trit.shrtrit_pidm AND tr.shrtrce_trit_seq_no = trit.shrtrit_seq_no
+			    INNER JOIN catalogo_asignaturas cat ON cat.smrarul_subj_code = tr.shrtrce_subj_code AND cat.smrarul_crse_numb_low = tr.shrtrce_crse_numb
+			    WHERE trit.shrtrit_sbgi_code = 'ES39'
+			) sust ON sust.shrtrce_pidm = s.sgrstsp_pidm AND sust.smrpaap_program = s.sorlcur_program
+			    AND CAST(sust.version_catalogo AS VARCHAR) = CAST(s.sorlcur_term_code_ctlg AS VARCHAR)
+			LEFT JOIN sam_matricula sam
+			    ON CAST(sam.academicperiod AS VARCHAR) = CAST(s.sgrstsp_term_code_eff AS VARCHAR)
+			    AND sam.careercode = rmajor.sorcmjr_majr_code AND sam.reportdata_campuscode = s.sorlcur_camp_code
+			    AND sam.rut = i.spriden_id AND sam.studentstatus = 'MATRICULADO'
+			LEFT JOIN notas_aprobadas na
+			    ON na.shrtckn_pidm = s.sgrstsp_pidm
+			    AND na.shrtckn_term_code = CAST(s.sorlcur_term_code AS VARCHAR)
+			    AND CAST(na.shrtckn_stsp_key_sequence AS VARCHAR) = CAST(s.sgrstsp_key_seqno AS VARCHAR)
+			WHERE s.rn_reingreso = 1
+			
+			UNION ALL
+			
+			-- REGISTROS AUXILIARES
+			SELECT DISTINCT
+			    to_hex(sha256(to_utf8(cast(i2.spriden_id AS varchar)))) AS ""ID_ESTUDIANTE"",
+			    i2.spriden_last_name    AS ""apellido"",
+			    i2.spriden_first_name   AS ""nombre"",
+			    s2.sgrstsp_pidm          AS ""pidm"",
+			    s2.sgrstsp_term_code_eff AS ""periodo_plan"",
+			    s2.sgrstsp_key_seqno     AS ""secuencia_plan"",
+			    s2.sgrstsp_stsp_code     AS ""estado_plan"",
+			    vs2.stvstsp_desc         AS ""desc_estado_plan"",
+			    s2.periodo_inscripcion   AS ""periodo_consulta"",
+			    s2.sorlcur_levl_code     AS ""nivel_academico"",
+			    s2.sorlcur_program       AS ""programa"",
+			    sobcurr2.sobcurr_coll_code AS ""cod_facultad"",
+			    vc2.stvcoll_desc           AS ""desc_facultad"",
+			    rmajor2.sorcmjr_majr_code AS ""cod_carrera"",
+			    s2.sorlcur_term_code_ctlg  AS ""periodo_catalogo"",
+			    s2.sorlcur_term_code_admit AS ""periodo_admision"",
+			    msa.sovlcur_term_code_matric AS ""PERIODO_MATRICULACION"",
+			    s2.sorlcur_camp_code       AS ""sede"",
+			    vcamp2.stvcamp_desc        AS ""desc_sede"",
+			    s2.sorlcur_activity_date AS ""ultima_fecha_actividad"",
+			    YEAR(CURRENT_DATE) - YEAR(pers2.spbpers_birth_date) AS ""edad"",
+			    pers2.spbpers_sex        AS ""genero"",
+			    pers2.spbpers_citz_code  AS ""nacionalidad"",
+			    vcnty2.stvcnty_desc      AS ""comuna"",
+			    CASE 
+			        WHEN SUBSTR(s2.sorlcur_term_code_admit, 1, 4) = SUBSTR(s2.periodo_inscripcion, 1, 4) THEN 'NUEVO'
+			        ELSE 'ANTIGUO'
+			    END AS ""condicion_estudiante"",
+			    'SI' AS ""asignaturas_inscritas"",
+			    mna2.max_nivel_asignatura AS ""max_nivel_asignatura"",
+			    mna2.asignatura_max_nivel AS ""asignatura_max_nivel"",
+			    COALESCE(pa2.programa_previo, s2.sorlcur_program) AS ""programa_anterior"",
+			    CASE 
+			        WHEN conv2.shrtrce_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""ec_convalidaciones"",
+			    CASE 
+			        WHEN sust2.shrtrce_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""ec_sustitucion"",
+			    CASE 
+			        WHEN sam2.isold IS NOT NULL AND CAST(sam2.isold AS VARCHAR) = 'false' THEN 'NUEVO'
+			        WHEN sam2.isold IS NOT NULL AND CAST(sam2.isold AS VARCHAR) = 'true' THEN 'ANTIGUO'
+			        ELSE CASE 
+			            WHEN SUBSTR(s2.sorlcur_term_code_admit, 1, 4) = SUBSTR(s2.periodo_inscripcion, 1, 4) THEN 'NUEVO'
+			            ELSE 'ANTIGUO'
+			        END
+			    END AS ""condicion_sam"",
+			    CASE 
+			        WHEN na2.shrtckn_pidm IS NOT NULL THEN 'SI'
+			        ELSE 'NO'
+			    END AS ""posee_nota""
+			FROM auxiliares_plan_cercano s2
+			INNER JOIN uss_datalake_stage.banner_oracle_saturn_spriden i2
+			    ON s2.sgrstsp_pidm = i2.spriden_pidm AND i2.spriden_change_ind IS NULL
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_sobcurr sobcurr2
+			    ON s2.sorlcur_program = sobcurr2.sobcurr_program AND s2.sorlcur_camp_code = sobcurr2.sobcurr_camp_code
+			LEFT JOIN RankedMajor rmajor2
+			    ON s2.sorlcur_program = rmajor2.sobcurr_program AND rmajor2.major_ranking = 1
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_spbpers pers2
+			    ON i2.spriden_pidm = pers2.spbpers_pidm
+			LEFT JOIN RankedAddress addr2
+			    ON i2.spriden_pidm = addr2.spraddr_pidm AND addr2.addr_ranking = 1
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_stvstsp vs2
+			    ON s2.sgrstsp_stsp_code = vs2.stvstsp_code
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_stvcoll vc2
+			    ON sobcurr2.sobcurr_coll_code = vc2.stvcoll_code
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_stvcamp vcamp2
+			    ON s2.sorlcur_camp_code = vcamp2.stvcamp_code
+			LEFT JOIN uss_datalake_stage.banner_oracle_saturn_stvcnty vcnty2
+			    ON addr2.spraddr_cnty_code = vcnty2.stvcnty_code
+			-- max_nivel auxiliar: cruce directo sfrstcr → ssbsect → catalogo_asignaturas
+			LEFT JOIN (
+			    SELECT
+			        sub2.sfrstcr_pidm, sub2.smrpaap_program, sub2.sfrstcr_term_code,
+			        sub2.sorlcur_term_code_ctlg,
+			        sub2.smrpaap_area_priority AS max_nivel_asignatura,
+			        sub2.ssbsect_subj_code || ' ' || sub2.ssbsect_crse_numb AS asignatura_max_nivel
+			    FROM (
+			        SELECT sub1.*,
+			            ROW_NUMBER() OVER (
+			                PARTITION BY sub1.sfrstcr_pidm, sub1.smrpaap_program, sub1.sfrstcr_term_code
+			                ORDER BY sub1.smrpaap_area_priority DESC
+			            ) AS rn_nivel
+			        FROM (
+			            SELECT
+			                fcr.sfrstcr_pidm, cat.smrpaap_program, fcr.sfrstcr_term_code,
+			                rr.sorlcur_term_code_ctlg, cat.smrpaap_area_priority,
+			                sect.ssbsect_subj_code, sect.ssbsect_crse_numb,
+			                ROW_NUMBER() OVER (
+			                    PARTITION BY fcr.sfrstcr_pidm, cat.smrpaap_program, fcr.sfrstcr_term_code,
+			                                 sect.ssbsect_subj_code, sect.ssbsect_crse_numb
+			                    ORDER BY ABS(CAST(cat.version_catalogo AS INTEGER) - CAST(rr.sorlcur_term_code_ctlg AS INTEGER)) ASC,
+			                        cat.version_catalogo DESC
+			                ) AS rn_version
+			            FROM RankedReingreso rr
+			            INNER JOIN uss_datalake_stage.banner_oracle_saturn_sfrstcr fcr
+			                ON fcr.sfrstcr_pidm = rr.sgrstsp_pidm AND fcr.sfrstcr_rsts_code IN ('RE', 'RW')
+			                AND CAST(fcr.sfrstcr_term_code AS VARCHAR) > CAST(rr.sgrstsp_term_code_eff AS VARCHAR)
+			            INNER JOIN uss_datalake_stage.banner_oracle_saturn_ssbsect sect
+			                ON sect.ssbsect_crn = fcr.sfrstcr_crn AND sect.ssbsect_term_code = fcr.sfrstcr_term_code
+			            INNER JOIN catalogo_asignaturas cat
+			                ON cat.smrpaap_program = rr.sorlcur_program
+			                AND cat.smrarul_subj_code = sect.ssbsect_subj_code
+			                AND cat.smrarul_crse_numb_low = sect.ssbsect_crse_numb
+			            WHERE rr.rn_reingreso = 1
+			        ) sub1
+			        WHERE sub1.rn_version = 1
+			    ) sub2
+			    WHERE sub2.rn_nivel = 1
+			) mna2
+			    ON s2.sgrstsp_pidm = mna2.sfrstcr_pidm AND s2.sorlcur_program = mna2.smrpaap_program
+			    AND CAST(s2.periodo_inscripcion AS VARCHAR) = CAST(mna2.sfrstcr_term_code AS VARCHAR)
+			    AND CAST(s2.sorlcur_term_code_ctlg AS VARCHAR) = CAST(mna2.sorlcur_term_code_ctlg AS VARCHAR)
+			LEFT JOIN programa_anterior pa2
+			    ON s2.sgrstsp_pidm = pa2.sorlcur_pidm AND s2.sorlcur_program = pa2.programa_actual
+			    AND CAST(s2.periodo_inscripcion AS VARCHAR) = CAST(pa2.periodo_consulta AS VARCHAR) AND pa2.rn = 1
+			LEFT JOIN matric_spiral_aux msa
+			    ON msa.sgrstsp_pidm = s2.sgrstsp_pidm
+			    AND msa.sorlcur_program = s2.sorlcur_program
+			    AND CAST(msa.periodo_inscripcion AS VARCHAR) = CAST(s2.periodo_inscripcion AS VARCHAR)
+			LEFT JOIN (
+			    SELECT DISTINCT tr.shrtrce_pidm, tr.shrtrce_subj_code
+			    FROM uss_datalake_stage.banner_oracle_saturn_shrtrce tr
+			    INNER JOIN (
+			        SELECT scbcrse_subj_code, scbcrse_crse_numb, scbcrse_dept_code,
+			            ROW_NUMBER() OVER (PARTITION BY scbcrse_subj_code, scbcrse_crse_numb ORDER BY scbcrse_eff_term DESC) AS rn
+			        FROM uss_datalake_stage.banner_oracle_saturn_scbcrse
+			    ) crse ON crse.scbcrse_subj_code = tr.shrtrce_subj_code AND crse.scbcrse_crse_numb = tr.shrtrce_crse_numb
+			        AND crse.rn = 1 AND (crse.scbcrse_dept_code IS NULL OR TRIM(crse.scbcrse_dept_code) = '' OR crse.scbcrse_dept_code != 'FORM')
+			) conv2 ON conv2.shrtrce_pidm = s2.sgrstsp_pidm
+			LEFT JOIN (
+			    SELECT DISTINCT tr.shrtrce_pidm, cat.smrpaap_program, cat.version_catalogo
+			    FROM uss_datalake_stage.banner_oracle_saturn_shrtrit trit
+			    INNER JOIN uss_datalake_stage.banner_oracle_saturn_shrtrce tr ON tr.shrtrce_pidm = trit.shrtrit_pidm AND tr.shrtrce_trit_seq_no = trit.shrtrit_seq_no
+			    INNER JOIN catalogo_asignaturas cat ON cat.smrarul_subj_code = tr.shrtrce_subj_code AND cat.smrarul_crse_numb_low = tr.shrtrce_crse_numb
+			    WHERE trit.shrtrit_sbgi_code = 'ES39'
+			) sust2 ON sust2.shrtrce_pidm = s2.sgrstsp_pidm AND sust2.smrpaap_program = s2.sorlcur_program
+			    AND CAST(sust2.version_catalogo AS VARCHAR) = CAST(s2.sorlcur_term_code_ctlg AS VARCHAR)
+			LEFT JOIN sam_matricula sam2
+			    ON CAST(sam2.academicperiod AS VARCHAR) = CAST(s2.periodo_inscripcion AS VARCHAR)
+			    AND sam2.careercode = rmajor2.sorcmjr_majr_code AND sam2.reportdata_campuscode = s2.sorlcur_camp_code
+			    AND sam2.rut = i2.spriden_id AND sam2.studentstatus = 'MATRICULADO'
+			LEFT JOIN notas_aprobadas na2
+			    ON na2.shrtckn_pidm = s2.sgrstsp_pidm
+			    AND na2.shrtckn_term_code = CAST(s2.periodo_inscripcion AS VARCHAR)
+			    AND CAST(na2.shrtckn_stsp_key_sequence AS VARCHAR) = CAST(s2.sgrstsp_key_seqno AS VARCHAR)
+			WHERE s2.rn_plan_cercano = 1
+			)
+			
+			-- SELECT FINAL: trae todos los planes del estudiante (sin deduplicación)
+			SELECT 
+			    ""ID_ESTUDIANTE"", ""apellido"", ""nombre"", ""pidm"", ""periodo_plan"", ""secuencia_plan"",
+			    ""estado_plan"", ""desc_estado_plan"", ""periodo_consulta"", ""nivel_academico"",
+			    ""programa"", ""cod_facultad"", ""desc_facultad"", ""cod_carrera"",
+			    ""periodo_catalogo"", ""periodo_admision"", ""PERIODO_MATRICULACION"", ""sede"", ""desc_sede"",
+			    ""ultima_fecha_actividad"", ""edad"", ""genero"", ""nacionalidad"", ""comuna"",
+			    ""condicion_estudiante"", ""asignaturas_inscritas"", ""max_nivel_asignatura"",
+			    ""asignatura_max_nivel"", ""programa_anterior"", ""ec_convalidaciones"",
+			    ""ec_sustitucion"", ""condicion_sam"", ""posee_nota""
+			FROM todo
+			ORDER BY ""apellido"", ""nombre"", ""periodo_plan"", ""periodo_consulta"", ""secuencia_plan""
+			"
+			in
+			    Source
+		```
+	lineageTag: 74f82feb-26e8-45e2-a1e8-3b491c455ce2
+	queryGroup: Detalles
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Text
+
+expression query_dim_carrera =
+		let
+				    Source = "
+				WITH csks_enriquecido AS (
+				    SELECT
+				        a.*,
+				        substr(a.kostl, 5, 4) AS sap_cod_carrera,
+				        substr(a.khinr, 1, 4) AS sap_cod_facultad,
+				        trim(split_part(b.descript, '-', 2)) AS nivel_academico,
+				        trim(split_part(b.descript, '-', 3)) AS clasificacion_nivel,
+				        b.descript AS sap_descripcion_jerarquia
+				    FROM uss_datalake_stage.sap_odata_co_csks AS a
+				    INNER JOIN uss_datalake_stage.sap_odata_fi_setheadert AS b
+				        ON  a.khinr    = b.setname
+				        AND b.setclass = '0101'
+				        AND b.langu    = 'ES'
+				    WHERE a.bukrs = '1000'
+				),
+				carreras_base AS (
+				    SELECT
+				        x.sap_cod_carrera,
+				        d.stvmajr_desc AS banner_carrera,
+				        CASE
+				            WHEN d.stvmajr_desc IS NULL THEN NULL
+				            ELSE trim(
+				                regexp_replace(
+				                    regexp_replace(
+				                        regexp_replace(
+				                            upper(d.stvmajr_desc),
+				                            '\s*\([^)]*\)',
+				                            ''
+				                        ),
+				                        '[\s\.](ADVANCE|ADVAN|ADVA|ADV|AV|VESPERTINO|VESPERT|VESPE|VESP|VES|ONLINE|ONL|SEMIPRESENCIAL|SEMIPRESENCIA|SEMIPRESEN|SEMIPRESENC|SEMIPRESE|SEMIPRES|SEMIPRE|SEMIP|SEMI|AOL|TRIMESTRAL|INICIAL|9TR)$',
+				                        ''
+				                    ),
+				                    '(\s{2,}|\.$)',
+				                    ' '
+				                )
+				            )
+				        END AS carrera_banner_agrupada,
+				        x.sap_cod_facultad,
+				        c.descript AS sap_facultad,
+				        x.nivel_academico,
+				        x.clasificacion_nivel,
+				        row_number() OVER (
+				            PARTITION BY x.sap_cod_carrera
+				            ORDER BY x.sap_cod_facultad
+				        ) AS rn
+				    FROM csks_enriquecido x
+				    LEFT JOIN uss_datalake_stage.sap_odata_fi_setheadert c
+				        ON substr(x.khinr, 1, 4) = c.setname
+				        AND c.setclass = '0101'
+				        AND c.langu    = 'ES'
+				    LEFT JOIN uss_datalake_stage.banner_oracle_saturn_stvmajr d
+				        ON x.sap_cod_carrera = d.stvmajr_code
+				    WHERE x.nivel_academico <> 'Administrativo'
+				)
+				SELECT
+				    sap_cod_carrera,
+				    banner_carrera,
+				    carrera_banner_agrupada,
+				    sap_cod_facultad,
+				    sap_facultad,
+				    nivel_academico,
+				    clasificacion_nivel
+				FROM carreras_base
+				WHERE rn = 1
+				"
+				in
+				    Source
+	lineageTag: af7de20e-3283-455c-9825-4fb3420c2d21
+	queryGroup: Detalles
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Text
+
+expression query_dim_facultad =
+		let
+				    Source = "
+				WITH csks_enriquecido AS (
+				    SELECT
+				        substr(a.khinr, 1, 4) AS sap_cod_facultad,
+				        c.descript            AS sap_facultad,
+		
+				        row_number() OVER (
+				            PARTITION BY substr(a.khinr, 1, 4)
+				            ORDER BY c.descript
+				        ) AS rn
+		
+				    FROM uss_datalake_stage.sap_odata_co_csks AS a
+		
+				    INNER JOIN uss_datalake_stage.sap_odata_fi_setheadert AS b
+				        ON  a.khinr    = b.setname
+				        AND b.setclass = '0101'
+				        AND b.langu    = 'ES'
+		
+				    LEFT JOIN uss_datalake_stage.sap_odata_fi_setheadert AS c
+				        ON substr(a.khinr, 1, 4) = c.setname
+				        AND c.setclass = '0101'
+				        AND c.langu    = 'ES'
+		
+				    WHERE a.bukrs = '1000'
+				)
+		
+				SELECT
+				    sap_cod_facultad,
+				    sap_facultad
+				FROM csks_enriquecido
+				WHERE rn = 1
+				"
+				in
+				    Source
+	lineageTag: f4fc8681-917e-4603-9f3c-baff8ae287e3
+	queryGroup: Detalles
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Text
+
+expression query_dim_campus =
+		let
+		    Source = "
+		WITH campus_stvcamp AS (
+		    SELECT DISTINCT
+		        UPPER(TRIM(stvcamp_code)) AS cod_campus,
+		        TRIM(stvcamp_desc) AS campus
+		    FROM uss_datalake_stage.banner_oracle_saturn_stvcamp
+		    WHERE stvcamp_code IS NOT NULL
+		      AND TRIM(stvcamp_code) <> ''
+		)
+		SELECT
+		    cod_campus,
+		    campus,
+		    CASE
+		        WHEN UPPER(campus) LIKE '%CONCEPCIÓN%'
+		          OR UPPER(campus) LIKE '%CONCEPCION%' THEN 'CONCEPCIÓN'
+		        WHEN UPPER(campus) LIKE '%VALDIVIA%' THEN 'VALDIVIA'
+		        WHEN UPPER(campus) LIKE '%PTO. MONTT%'
+		          OR UPPER(campus) LIKE '%PUERTO MONTT%'
+		          OR UPPER(campus) LIKE '%OSORNO%' THEN 'PATAGONIA'
+		        WHEN UPPER(campus) LIKE '%VIRTUAL%'
+		          OR cod_campus = 'ONL' THEN 'ONLINE'
+		        WHEN UPPER(campus) LIKE '%SANTIAGO%'
+		          OR cod_campus IN ('CIZ', 'OGE', 'RCG') THEN 'SANTIAGO'
+		        ELSE 'SIN MAPEO'
+		    END AS ciudad
+		FROM campus_stvcamp
+		"
+		in
+		    Source
+	lineageTag: 0cd0ad2e-cc4b-4250-aaa1-604f0d4a94a9
+	queryGroup: Detalles
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Text
+

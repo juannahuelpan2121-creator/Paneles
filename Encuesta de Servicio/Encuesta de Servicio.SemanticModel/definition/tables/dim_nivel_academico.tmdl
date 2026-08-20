@@ -1,0 +1,12 @@
+table dim_nivel_academico
+	lineageTag: 63e7533d-cef5-43af-ae58-9f14a2194c3c
+
+	column nivel_academico
+		dataType: string
+		lineageTag: a6d4895a-21be-4e69-99e4-d2dfcbd0ec76
+		summarizeBy: none
+		sourceColumn: nivel_academico
+
+	partition dim_nivel_academico = calculated
+		mode: import
+		source = DATATABLE ( "nivel_academico", STRING, { { "Pregrado" }, { "Advance" }, { "Postgrado" } } )

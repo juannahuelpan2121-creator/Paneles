@@ -1,0 +1,102 @@
+{
+  "visual": {
+    "name": "ussDatePicker",
+    "displayName": "USS Date Picker",
+    "guid": "ussDatePicker1A2B3C4D5E6F7A8B9C0D",
+    "visualClassName": "USSDatePicker",
+    "version": "1.0.0.0",
+    "description": "Calendario date picker con estilos Kit Digital USS. Selecciona hoy por defecto y aplica filtro sobre columna Date.",
+    "supportUrl": "https://www.uss.cl",
+    "gitHubUrl": ""
+  },
+  "author": {
+    "name": "USS – Dirección de Desarrollo Digital",
+    "email": "desarrollo.digital@uss.cl"
+  },
+  "apiVersion": "5.11.0",
+  "style": "style/visual.less",
+  "stringResources": {},
+  "capabilities": {
+    "dataRoles": [
+      {
+        "name": "dateField",
+        "kind": "Grouping",
+        "displayName": "Fecha",
+        "description": "Columna de fecha del calendario. Arrastra aquí tu columna Date."
+      }
+    ],
+    "dataViewMappings": [
+      {
+        "categorical": {
+          "categories": {
+            "for": {
+              "in": "dateField"
+            },
+            "dataReductionAlgorithm": {
+              "top": {
+                "count": 3650
+              }
+            }
+          }
+        }
+      }
+    ],
+    "objects": {
+      "general": {
+        "displayName": "General",
+        "properties": {
+          "filter": {
+            "type": {
+              "filter": {}
+            }
+          }
+        }
+      },
+      "dateField": {
+        "displayName": "Date Field",
+        "properties": {
+          "filter": {
+            "type": {
+              "filter": {}
+            }
+          }
+        }
+      },
+      "colorSettings": {
+        "displayName": "Colores",
+        "properties": {
+          "primaryColor": {
+            "displayName": "Color primario",
+            "type": {
+              "fill": {
+                "solid": {
+                  "color": true
+                }
+              }
+            }
+          },
+          "accentColor": {
+            "displayName": "Color acento (hoy)",
+            "type": {
+              "fill": {
+                "solid": {
+                  "color": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "privileges": []
+  },
+  "content": {
+    "js": "var ussDatePicker1A2B3C4D5E6F7A8B9C0D;(()=>{\"use strict\";var e={848(e,t){Object.defineProperty(t,\"__esModule\",{value:!0}),t.USSDatePicker=void 0;const s=[\"Enero\",\"Febrero\",\"Marzo\",\"Abril\",\"Mayo\",\"Junio\",\"Julio\",\"Agosto\",\"Septiembre\",\"Octubre\",\"Noviembre\",\"Diciembre\"];t.USSDatePicker=class{constructor(e){this.host=e.host,this.today=new Date,this.today.setHours(0,0,0,0),this.viewYear=this.today.getFullYear(),this.viewMonth=this.today.getMonth(),this.selectedDate=new Date(this.today),this.targetTable=\"\",this.targetColumn=\"\";const t=document.createElement(\"style\");t.textContent=\"\\n  :root {\\n    --uss-primary: #003087;\\n    --uss-primary-light: #e8eef8;\\n    --uss-accent: #e30613;\\n    --uss-text: #1a1a2e;\\n    --uss-text-muted: #6c757d;\\n    --uss-border: #d0d8e4;\\n    --uss-bg: #ffffff;\\n    --uss-bg-hover: #f0f4fb;\\n    --uss-radius: 6px;\\n    --uss-font: 'Segoe UI', system-ui, sans-serif;\\n  }\\n  .uss-cal {\\n    font-family: var(--uss-font);\\n    background: var(--uss-bg);\\n    border: 1px solid var(--uss-border);\\n    border-radius: var(--uss-radius);\\n    overflow: hidden;\\n    width: 100%;\\n    height: 100%;\\n    display: flex;\\n    flex-direction: column;\\n    box-sizing: border-box;\\n  }\\n  .uss-cal__header {\\n    background: var(--uss-primary);\\n    color: #fff;\\n    display: flex;\\n    align-items: center;\\n    justify-content: space-between;\\n    padding: 8px 12px;\\n    flex-shrink: 0;\\n  }\\n  .uss-cal__title { font-size: 13px; font-weight: 700; text-transform: capitalize; }\\n  .uss-cal__nav {\\n    background: none; border: none; color: rgba(255,255,255,.85);\\n    cursor: pointer; padding: 2px 7px; border-radius: 4px; font-size: 17px; line-height: 1;\\n  }\\n  .uss-cal__nav:hover { background: rgba(255,255,255,.18); color: #fff; }\\n  .uss-cal__weekdays {\\n    display: grid; grid-template-columns: repeat(7, 1fr);\\n    background: var(--uss-primary-light); border-bottom: 1px solid var(--uss-border); flex-shrink: 0;\\n  }\\n  .uss-cal__weekdays span {\\n    text-align: center; font-size: 9px; font-weight: 700; letter-spacing: .07em;\\n    color: var(--uss-primary); padding: 5px 0; text-transform: uppercase;\\n  }\\n  .uss-cal__grid {\\n    display: grid; grid-template-columns: repeat(7, 1fr);\\n    padding: 5px 7px 8px; gap: 2px; flex: 1; align-content: start;\\n  }\\n  .uss-cal__day {\\n    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;\\n    font-size: 11px; border-radius: 50%; cursor: pointer; color: var(--uss-text);\\n    transition: background .12s, color .12s; user-select: none;\\n    border: none; background: none; font-family: var(--uss-font); position: relative;\\n  }\\n  .uss-cal__day:hover:not(.is-empty):not(.is-selected) { background: var(--uss-bg-hover); color: var(--uss-primary); }\\n  .uss-cal__day.is-empty { cursor: default; pointer-events: none; }\\n  .uss-cal__day.is-today { color: var(--uss-primary); font-weight: 700; }\\n  .uss-cal__day.is-today::after {\\n    content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%);\\n    width: 3px; height: 3px; border-radius: 50%; background: var(--uss-accent);\\n  }\\n  .uss-cal__day.is-selected { background: var(--uss-primary) !important; color: #fff !important; font-weight: 700; }\\n  .uss-cal__day.is-selected::after { display: none; }\\n  .uss-cal__footer {\\n    border-top: 1px solid var(--uss-border); padding: 6px 12px;\\n    display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;\\n  }\\n  .uss-cal__selected-label { font-size: 10px; color: var(--uss-text-muted); }\\n  .uss-cal__selected-label strong { color: var(--uss-primary); font-size: 11px; }\\n  .uss-cal__today-btn {\\n    font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;\\n    color: var(--uss-primary); background: var(--uss-primary-light);\\n    border: none; border-radius: 4px; padding: 4px 9px; cursor: pointer; font-family: var(--uss-font);\\n  }\\n  .uss-cal__today-btn:hover { background: #cdd9f0; }\\n  .uss-cal__empty-state {\\n    flex: 1; display: flex; align-items: center; justify-content: center;\\n    color: var(--uss-text-muted); font-size: 11px; text-align: center; padding: 16px;\\n  }\\n\",e.element.appendChild(t),this.container=document.createElement(\"div\"),this.container.className=\"uss-cal\",e.element.appendChild(this.container),this.render()}update(e){const t=e.dataViews;if(t&&t[0]&&t[0].categorical&&t[0].categorical.categories&&t[0].categorical.categories[0]){const e=t[0].categorical.categories[0].source,s=(e.queryName||\"\").split(\".\");this.targetTable=s[0]||\"\",this.targetColumn=e.displayName||\"Date\",this.selectedDate&&this.applyFilter(this.selectedDate)}this.render()}render(){for(;this.container.firstChild;)this.container.removeChild(this.container.firstChild);this.container.appendChild(this.buildHeader()),this.targetColumn?(this.container.appendChild(this.buildWeekdays()),this.container.appendChild(this.buildGrid()),this.container.appendChild(this.buildFooter())):this.container.appendChild(this.buildEmptyState())}buildHeader(){const e=document.createElement(\"div\");e.className=\"uss-cal__header\";const t=document.createElement(\"button\");t.className=\"uss-cal__nav\",t.textContent=\"‹\",t.title=\"Mes anterior\",t.onclick=()=>{this.viewMonth--,this.viewMonth<0&&(this.viewMonth=11,this.viewYear--),this.render()};const a=document.createElement(\"span\");a.className=\"uss-cal__title\",a.textContent=`${s[this.viewMonth]} ${this.viewYear}`;const n=document.createElement(\"button\");return n.className=\"uss-cal__nav\",n.textContent=\"›\",n.title=\"Mes siguiente\",n.onclick=()=>{this.viewMonth++,this.viewMonth>11&&(this.viewMonth=0,this.viewYear++),this.render()},e.appendChild(t),e.appendChild(a),e.appendChild(n),e}buildWeekdays(){const e=document.createElement(\"div\");return e.className=\"uss-cal__weekdays\",[\"Lu\",\"Ma\",\"Mi\",\"Ju\",\"Vi\",\"Sá\",\"Do\"].forEach(t=>{const s=document.createElement(\"span\");s.textContent=t,e.appendChild(s)}),e}buildGrid(){const e=document.createElement(\"div\");e.className=\"uss-cal__grid\";const t=new Date(this.viewYear,this.viewMonth,1).getDay(),s=0===t?6:t-1,a=new Date(this.viewYear,this.viewMonth+1,0).getDate();for(let t=0;t<s;t++){const t=document.createElement(\"button\");t.className=\"uss-cal__day is-empty\",e.appendChild(t)}for(let t=1;t<=a;t++){const s=document.createElement(\"button\");s.className=\"uss-cal__day\",s.textContent=String(t);const a=new Date(this.viewYear,this.viewMonth,t);a.getTime()===this.today.getTime()&&s.classList.add(\"is-today\"),this.selectedDate&&a.getTime()===this.selectedDate.getTime()&&s.classList.add(\"is-selected\"),s.onclick=()=>{this.handleDayClick(a)},e.appendChild(s)}return e}buildFooter(){const e=document.createElement(\"div\");e.className=\"uss-cal__footer\";const t=document.createElement(\"div\");if(t.className=\"uss-cal__selected-label\",this.selectedDate){const e=document.createElement(\"strong\");e.textContent=this.formatDate(this.selectedDate),t.appendChild(e)}else t.textContent=\"Sin selección\";const s=document.createElement(\"button\");return s.className=\"uss-cal__today-btn\",s.textContent=\"Hoy\",s.onclick=()=>{this.viewYear=this.today.getFullYear(),this.viewMonth=this.today.getMonth(),this.selectedDate=new Date(this.today),this.applyFilter(this.selectedDate),this.render()},e.appendChild(t),e.appendChild(s),e}buildEmptyState(){const e=document.createElement(\"div\");return e.className=\"uss-cal__empty-state\",e.textContent=\"Arrastra tu columna Date al campo Fecha\",e}handleDayClick(e){this.selectedDate&&this.selectedDate.getTime()===e.getTime()?(this.selectedDate=null,this.clearFilter()):(this.selectedDate=e,this.applyFilter(e)),this.render()}applyFilter(e){if(!this.targetTable||!this.targetColumn)return;const t={$schema:\"https://powerbi.com/product/schema#basic\",target:{table:this.targetTable,column:this.targetColumn},filterType:1,operator:\"In\",values:[this.toISODate(e)]};this.host.applyJsonFilter(t,\"dateField\",\"filter\",0)}clearFilter(){if(!this.targetTable||!this.targetColumn)return;const e={$schema:\"https://powerbi.com/product/schema#basic\",target:{table:this.targetTable,column:this.targetColumn},filterType:1,operator:\"In\",values:[]};this.host.applyJsonFilter(e,\"dateField\",\"filter\",1)}toISODate(e){return`${e.getFullYear()}-${String(e.getMonth()+1).padStart(2,\"0\")}-${String(e.getDate()).padStart(2,\"0\")}`}formatDate(e){return e.toLocaleDateString(\"es-CL\",{weekday:\"short\",day:\"numeric\",month:\"long\",year:\"numeric\"})}}}},t={};function s(a){var n=t[a];if(void 0!==n)return n.exports;var i=t[a]={exports:{}};return e[a](i,i.exports,s),i.exports}var a={};(()=>{var e=a;Object.defineProperty(e,\"__esModule\",{value:!0});const t=s(848);var n=window.powerbi,i={name:\"ussDatePicker1A2B3C4D5E6F7A8B9C0D\",displayName:\"USS Date Picker\",class:\"USSDatePicker\",apiVersion:\"5.11.0\",create:e=>{if(t.USSDatePicker)return new t.USSDatePicker(e);throw\"Visual instance not found\"},createModalDialog:(e,t,s)=>{const a=globalThis.dialogRegistry;e in a&&new a[e](t,s)},custom:!0};void 0!==n&&(n.visuals=n.visuals||{},n.visuals.plugins=n.visuals.plugins||{},n.visuals.plugins.ussDatePicker1A2B3C4D5E6F7A8B9C0D=i),e.default=i})(),ussDatePicker1A2B3C4D5E6F7A8B9C0D=a})();",
+    "iconBase64": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAAAdZJREFUeAGtlbtO60AQhv9d78ZO4uToBAQNVwGiggLRUCJ4DVqehDeg4h3oKaClowB6EAogCHK4hBATJ/Yyu1iIBCdOBCP5svb4m9l/ZtcsUkrhD40P7jpY3CGAbCAvnoZgXWOgP1p0DhU5M/jvTbzU6mAsnqjqpGrg2GiJ3rMfQvAuHnSNpBC4uS6jReO2PhBf46PiPRlYgwL3z5Cc7h+qODg+w+bKPHb29s2H3yPqOayvLKI0UoJFo6yTwXcRWHfb3FU8CM5Qq9d1uiaIdg+jiG45hGUhDEPMTE3Ae3zG+FipA5hQFAbHsTE/O23uI/q4VntF+foWnueh4ftgFFAI68u/95RjC4IA1eojikUXSmfGOdoEzufzKBZcZKREL0sAKpqSwihVUcMEFcg92sWkzOB2dQv//xVh25lhgFq6yOinYcH5EeTyuukAJ2ebIunnvSxRQy2+ZX1qJJc2EJweIrw4QUQ9w63+i6tHhoo0fIKQwkheWdvG21sD/PnFVNnN51AgLZNW94+2afjvyNo2Lq/KGm0AQbuFZrNlKiuFRBSFWJibjQkpVc5lHaOf67pfzxx9KnT6+c2AmtpGaoafC3ewnSXJEovyG0vdD4fFpwKH/T98AK6lqqyz1H9sAAAAAElFTkSuQmCC"
+  },
+  "visualEntryPoint": "",
+  "externalJS": [],
+  "assets": {
+    "icon": "assets/icon.png"
+  }
+}

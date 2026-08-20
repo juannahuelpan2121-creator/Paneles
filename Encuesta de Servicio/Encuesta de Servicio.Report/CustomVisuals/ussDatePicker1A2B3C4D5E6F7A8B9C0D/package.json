@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0.0",
+  "author": {
+    "name": "USS – Dirección de Desarrollo Digital",
+    "email": "desarrollo.digital@uss.cl"
+  },
+  "resources": [
+    {
+      "resourceId": "rId0",
+      "sourceType": 5,
+      "file": "resources/ussDatePicker1A2B3C4D5E6F7A8B9C0D.pbiviz.json"
+    }
+  ],
+  "visual": {
+    "guid": "ussDatePicker1A2B3C4D5E6F7A8B9C0D",
+    "name": "ussDatePicker",
+    "displayName": "USS Date Picker",
+    "version": "1.0.0.0",
+    "description": "Calendario date picker con estilos Kit Digital USS. Selecciona hoy por defecto y aplica filtro sobre columna Date.",
+    "supportUrl": "https://www.uss.cl",
+    "gitHubUrl": "",
+    "visualClassName": "USSDatePicker"
+  },
+  "metadata": {
+    "pbivizjson": {
+      "resourceId": "rId0"
+    }
+  }
+}

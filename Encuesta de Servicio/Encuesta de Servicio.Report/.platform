@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Encuesta de Servicio"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "012a2522-0cfd-49c0-9aff-61ed0028134b"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/2.1.0/schema.json",
+  "displayName": "Filtros - Resumen y participación OFF",
+  "name": "flt_da579c96d09850281cec_off",
+  "options": {
+    "applyOnlyToTargetVisuals": true,
+    "targetVisualNames": [
+      "82ea22c8652738312d56",
+      "0316d1a4c703b07c151a",
+      "1d05d0b57df216b1f870",
+      "305f1d4fa40216afd53c",
+      "fa4c5a12ba2af683aec2",
+      "b37269006cc31111aa50",
+      "3d756450d5031c2f16a8",
+      "bb11cc22dd33ee44ff55",
+      "f82130901c58c8d55599",
+      "51f5d02484bfad132ce2",
+      "612abf1e1d7465a6845f"
+    ],
+    "suppressData": true
+  },
+  "explorationState": {
+    "version": "1.3",
+    "activeSection": "da579c96d09850281cec",
+    "sections": {
+      "da579c96d09850281cec": {
+        "visualContainers": {},
+        "visualContainerGroups": {
+          "82ea22c8652738312d56": {
+            "isHidden": true
+          }
+        }
+      }
+    },
+    "objects": {}
+  }
+}

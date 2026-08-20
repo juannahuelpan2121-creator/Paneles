@@ -1,0 +1,819 @@
+table 'Medidas Encuesta de Servicio'
+	lineageTag: d8ced118-dd97-442d-a13c-ff21146f130e
+
+	measure 'Factor asignación nivel NRC' =
+			VAR HayFiltroNivel = ISFILTERED ( dim_nivel_academico[nivel_academico] )
+			VAR NivelesSeleccionados = VALUES ( dim_nivel_academico[nivel_academico] )
+			VAR LlaveActual = SELECTEDVALUE ( encuestas_docentes[llave] )
+			VAR InscritosTotalesNRC =
+			    CALCULATE (
+			        DISTINCTCOUNT ( inscripciones_estudiantes[id_estudiante] ),
+			        REMOVEFILTERS ( dim_nivel_academico ),
+			        REMOVEFILTERS ( inscripciones_estudiantes[nivel_academico] ),
+			        inscripciones_estudiantes[es_inscrito_real] = 1,
+			        TREATAS ( { LlaveActual }, inscripciones_estudiantes[llave_periodo_nrc] )
+			    )
+			VAR InscritosNivelNRC =
+			    CALCULATE (
+			        DISTINCTCOUNT ( inscripciones_estudiantes[id_estudiante] ),
+			        inscripciones_estudiantes[es_inscrito_real] = 1,
+			        TREATAS ( NivelesSeleccionados, inscripciones_estudiantes[nivel_academico] ),
+			        TREATAS ( { LlaveActual }, inscripciones_estudiantes[llave_periodo_nrc] )
+			    )
+			RETURN
+			    IF ( HayFiltroNivel, DIVIDE ( InscritosNivelNRC, InscritosTotalesNRC ), 1 )
+		isHidden
+		lineageTag: c365f42a-c568-41be-93c0-3f7aad855450
+
+	measure 'N° Respuestas' =
+			VAR TablaRespuestas =
+			    SUMMARIZE (
+			        encuestas_docentes,
+			        encuestas_docentes[llave],
+			        encuestas_docentes[periodo],
+			        encuestas_docentes[nrc],
+			        encuestas_docentes[codigo_encuesta],
+			        "Respondidas", MAX ( encuestas_docentes[total_respuestas] )
+			    )
+			RETURN
+			    SUMX ( TablaRespuestas, [Respondidas] * [Factor asignación nivel NRC] )
+		formatString: #,0
+		displayFolder: 01 KPI
+		lineageTag: 7f840e46-190d-4c7e-9f05-fefac254ecca
+
+	measure 'N° Respuestas Regular' =
+			SUMX (
+			    SUMMARIZE (
+			        encuestas_docentes,
+			        encuestas_docentes[llave],
+			        "Votos", SUM ( encuestas_docentes[votos_4_y_5] )
+			    ),
+			    [Votos] * [Factor asignación nivel NRC]
+			)
+		formatString: #,0
+		displayFolder: 01 KPI
+		lineageTag: ff644afc-8349-4199-bfde-f2f1b6288ea4
+
+	measure 'N° Respuestas Retirado' =
+			SUMX (
+			    SUMMARIZE (
+			        encuestas_docentes,
+			        encuestas_docentes[llave],
+			        "Votos", SUM ( encuestas_docentes[votos_1_y_2] )
+			    ),
+			    [Votos] * [Factor asignación nivel NRC]
+			)
+		formatString: #,0
+		displayFolder: 01 KPI
+		lineageTag: 3a647bdc-9d3c-48f3-a436-72a9385ff0f6
+
+	measure 'N° Respuestas Otros' =
+			SUMX (
+			    SUMMARIZE (
+			        encuestas_docentes,
+			        encuestas_docentes[llave],
+			        "Votos", SUM ( encuestas_docentes[votos_nota_3] )
+			    ),
+			    [Votos] * [Factor asignación nivel NRC]
+			)
+		formatString: #,0
+		displayFolder: 01 KPI
+		lineageTag: 773bd1c6-f51d-418e-b096-68bab86e4f66
+
+	measure Inscritos =
+			VAR HayFiltroNivel = ISFILTERED ( dim_nivel_academico[nivel_academico] )
+			VAR NivelesSeleccionados = VALUES ( dim_nivel_academico[nivel_academico] )
+			VAR LlavesEncuesta =
+			    DISTINCT (
+			        SELECTCOLUMNS (
+			            encuestas_docentes,
+			            "LlaveEncuesta", encuestas_docentes[periodo] & "|" & encuestas_docentes[nrc]
+			        )
+			    )
+			VAR InscripcionesEncuesta =
+			    CALCULATETABLE (
+			        DISTINCT (
+			            SELECTCOLUMNS (
+			                inscripciones_estudiantes,
+			                "EstudiantePeriodo", inscripciones_estudiantes[periodo] & "|" & inscripciones_estudiantes[id_estudiante]
+			            )
+			        ),
+			        inscripciones_estudiantes[es_inscrito_real] = 1,
+			        TREATAS ( LlavesEncuesta, inscripciones_estudiantes[llave_periodo_nrc] )
+			    )
+			VAR InscripcionesEncuestaNivel =
+			    CALCULATETABLE (
+			        DISTINCT (
+			            SELECTCOLUMNS (
+			                inscripciones_estudiantes,
+			                "EstudiantePeriodo", inscripciones_estudiantes[periodo] & "|" & inscripciones_estudiantes[id_estudiante]
+			            )
+			        ),
+			        inscripciones_estudiantes[es_inscrito_real] = 1,
+			        TREATAS ( NivelesSeleccionados, inscripciones_estudiantes[nivel_academico] ),
+			        TREATAS ( LlavesEncuesta, inscripciones_estudiantes[llave_periodo_nrc] )
+			    )
+			RETURN
+			    IF ( HayFiltroNivel, COUNTROWS ( InscripcionesEncuestaNivel ), COUNTROWS ( InscripcionesEncuesta ) )
+		formatString: #,0
+		displayFolder: 01 KPI
+		lineageTag: 21e28624-a8ac-4b95-b38e-5853abdc4b0f
+
+	measure 'Inscritos otros estados' =
+			VAR HayFiltroNivel = ISFILTERED ( dim_nivel_academico[nivel_academico] )
+			VAR NivelesSeleccionados = VALUES ( dim_nivel_academico[nivel_academico] )
+			VAR LlavesEncuesta = DISTINCT ( SELECTCOLUMNS ( encuestas_docentes, "Llave", encuestas_docentes[llave] ) )
+			VAR ParesEstudiantePeriodo =
+			    CALCULATETABLE (
+			        DISTINCT (
+			            SELECTCOLUMNS (
+			                inscripciones_estudiantes,
+			                "EstudiantePeriodo", inscripciones_estudiantes[periodo] & "|" & inscripciones_estudiantes[id_estudiante]
+			            )
+			        ),
+			        inscripciones_estudiantes[es_inscrito_real] = 0,
+			        TREATAS ( LlavesEncuesta, inscripciones_estudiantes[llave_periodo_nrc] )
+			    )
+			VAR ParesEstudiantePeriodoNivel =
+			    CALCULATETABLE (
+			        DISTINCT (
+			            SELECTCOLUMNS (
+			                inscripciones_estudiantes,
+			                "EstudiantePeriodo", inscripciones_estudiantes[periodo] & "|" & inscripciones_estudiantes[id_estudiante]
+			            )
+			        ),
+			        inscripciones_estudiantes[es_inscrito_real] = 0,
+			        TREATAS ( NivelesSeleccionados, inscripciones_estudiantes[nivel_academico] ),
+			        TREATAS ( LlavesEncuesta, inscripciones_estudiantes[llave_periodo_nrc] )
+			    )
+			RETURN
+			    IF ( HayFiltroNivel, COUNTROWS ( ParesEstudiantePeriodoNivel ), COUNTROWS ( ParesEstudiantePeriodo ) )
+		formatString: #,0
+		displayFolder: 01 KPI
+		lineageTag: 0afed99b-34aa-41d9-ade9-560b3c2fd0ac
+
+	measure 'Estudiantes en maestros' =
+			VAR NivelesSeleccionados = VALUES ( dim_nivel_academico[nivel_academico] )
+			RETURN
+			    CALCULATE (
+			        DISTINCTCOUNT ( maestro_estudiantes[ID_ESTUDIANTE] ),
+			        TREATAS ( NivelesSeleccionados, maestro_estudiantes[origen_maestro] )
+			    )
+		formatString: #,0
+		displayFolder: 01 KPI
+		lineageTag: 679463b4-236d-47a6-81ec-739e72f5b4b9
+
+	measure 'N° Inscritos' = [Inscritos]
+		formatString: #,0
+		displayFolder: 01 KPI
+		lineageTag: b8965206-8667-4e7d-a800-f3b59054885b
+
+	measure 'Respuestas escala 1-5' = [N° Respuestas Regular] + [N° Respuestas Retirado] + [N° Respuestas Otros]
+		formatString: #,0
+		displayFolder: 02 Indicadores
+		lineageTag: 0a4b5aed-08aa-4b85-9d91-3ed6c483db3d
+
+	measure '% Cumpl. Meta Evaluación' =
+			DIVIDE(
+			    [N° Respuestas Regular] - [N° Respuestas Retirado],
+			    [Respuestas escala 1-5]
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 02 Indicadores
+		lineageTag: 059801ed-879e-40a4-afc8-d8df45d36742
+
+	measure 'N° Respuestas válidas' = [Respuestas escala 1-5]
+		formatString: #,0
+		displayFolder: 02 Indicadores
+		lineageTag: 0fb8f778-c89b-4eaf-adbe-2c5e8b5cf3a7
+
+	measure '% Neto (n>=10)' =
+			IF(
+			    [N° Respuestas válidas] >= 10,
+			    [% Cumpl. Meta Evaluación],
+			    BLANK()
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 02 Indicadores
+		lineageTag: bf9b720f-6b28-4019-954e-caf52c0264da
+
+	measure '% Neto Servicios (P1-P13)' =
+			CALCULATE(
+			    [% Cumpl. Meta Evaluación],
+			    REMOVEFILTERS(encuestas_docentes[secuencia]),
+			    encuestas_docentes[secuencia] >= 1,
+			    encuestas_docentes[secuencia] <= 13
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 03 Apertura
+		lineageTag: 7f56e641-894f-41e4-8f8d-04802c637c3e
+
+	measure '% Satisfacción general (P14)' =
+			CALCULATE(
+			    [% Cumpl. Meta Evaluación],
+			    REMOVEFILTERS(encuestas_docentes[secuencia]),
+			    encuestas_docentes[secuencia] = 14
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 03 Apertura
+		lineageTag: 69456b4e-4a24-4c8f-a3f7-f5fda4f84c6c
+
+	measure '% Recomendación (P15)' =
+			CALCULATE(
+			    [% Cumpl. Meta Evaluación],
+			    REMOVEFILTERS(encuestas_docentes[secuencia]),
+			    encuestas_docentes[secuencia] = 15
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 03 Apertura
+		lineageTag: 799670c3-9b2f-4b38-8a27-89834db06725
+
+	measure '% Orgullo (P16)' =
+			CALCULATE(
+			    [% Cumpl. Meta Evaluación],
+			    REMOVEFILTERS(encuestas_docentes[secuencia]),
+			    encuestas_docentes[secuencia] = 16
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 03 Apertura
+		lineageTag: a22d414b-73f8-433e-966d-d9b053508633
+
+	measure 'Brecha Neto vs período anterior' =
+			VAR PeriodoActual = MAX(encuestas_docentes[periodo])
+			VAR PeriodoAnterior =
+			    MAXX(
+			        FILTER(
+			            ALL(encuestas_docentes[periodo]),
+			            encuestas_docentes[periodo] < PeriodoActual
+			        ),
+			        encuestas_docentes[periodo]
+			    )
+			VAR NetoAnterior =
+			    CALCULATE(
+			        [% Cumpl. Meta Evaluación],
+			        REMOVEFILTERS(encuestas_docentes[periodo]),
+			        encuestas_docentes[periodo] = PeriodoAnterior
+			    )
+			RETURN
+			    IF(NOT ISBLANK(NetoAnterior), [% Cumpl. Meta Evaluación] - NetoAnterior)
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 03 Apertura
+		lineageTag: 67d51f5d-2296-44c3-96ae-22d6d38048ca
+
+	measure '% Satisfacción' = DIVIDE([N° Respuestas Regular], [Respuestas escala 1-5])
+		formatString: 0.0%
+		displayFolder: 02 Indicadores
+		lineageTag: 4602840e-73e2-4bff-9e0b-2276d86625e1
+
+	measure '% Detractores' = DIVIDE([N° Respuestas Retirado], [Respuestas escala 1-5])
+		formatString: 0.0%
+		displayFolder: 02 Indicadores
+		lineageTag: 5bfc4773-40eb-465b-b38b-ece2525839b8
+
+	measure '% Neutros' = DIVIDE([N° Respuestas Otros], [Respuestas escala 1-5])
+		formatString: 0.0%
+		displayFolder: 02 Indicadores
+		lineageTag: 0f97d14a-5823-432f-8368-08207e0b17e4
+
+	measure '% Cobertura' = DIVIDE([N° Respuestas], [Inscritos])
+		formatString: 0.0%
+		displayFolder: 02 Indicadores
+		lineageTag: 6068588d-26d6-4284-92f6-cd5a78e37fbe
+
+	measure 'Tasa Respuesta' = [% Cobertura]
+		formatString: 0.0%
+		displayFolder: 02 Indicadores
+		lineageTag: fb760d0c-5258-4212-9a56-50ce8c7af389
+
+	measure 'Promedio Ponderado' =
+			VAR Numerador =
+			    SUMX (
+			        SUMMARIZE (
+			            encuestas_docentes,
+			            encuestas_docentes[llave],
+			            "Puntos",
+			                SUMX (
+			                    encuestas_docentes,
+			                    encuestas_docentes[votos_nota_1] * 1
+			                        + encuestas_docentes[votos_nota_2] * 2
+			                        + encuestas_docentes[votos_nota_3] * 3
+			                        + encuestas_docentes[votos_nota_4] * 4
+			                        + encuestas_docentes[votos_nota_5] * 5
+			                )
+			        ),
+			        [Puntos] * [Factor asignación nivel NRC]
+			    )
+			RETURN DIVIDE ( Numerador, [Respuestas escala 1-5] )
+		formatString: 0.00
+		displayFolder: 02 Indicadores
+		lineageTag: 8947cd2e-67e8-4b98-be54-fcd9df6afd3d
+
+	measure '% Cumpl. Meta Inscritos' = [% Cobertura]
+		formatString: 0.0%
+		displayFolder: 90 Compatibilidad visual
+		lineageTag: 4f928f12-c1fd-4199-9249-062301913581
+
+	measure 'Brecha vs Meta (est.)' = [N° Respuestas Regular] - [N° Respuestas Retirado]
+		formatString: +#,0;-#,0;0
+		displayFolder: 90 Compatibilidad visual
+		lineageTag: 593ab57b-4671-4bd4-b186-b4e234d44b4d
+
+	measure 'Brecha Inscritos vs Meta (est.)' = [N° Respuestas] - [Inscritos]
+		formatString: +#,0;-#,0;0
+		displayFolder: 90 Compatibilidad visual
+		lineageTag: 0436475c-f2e5-4256-a4ca-d983e38866a4
+
+	measure 'Tiene datos Evaluación Primer Año' = IF(NOT ISBLANK([N° Respuestas]), 1)
+		formatString: 0
+		displayFolder: 90 Compatibilidad visual
+		lineageTag: 6ad0a7af-c921-431d-9ff2-9f651fa6b9c4
+
+	measure Card_neto_uss = ```
+			
+			// 1. Valores de cumplimiento (ámbito de la card)
+			VAR valor     = [% Cumpl. Meta Evaluación]
+			VAR variacion = BLANK() // Reemplazar por medida YoY si existe
+			
+			// 2. Número grande
+			VAR vtxt =
+			    IF(
+			        ISBLANK(valor), 
+			        "—", 
+			        FORMAT(valor, "0.0%")
+			    )
+			
+			// 3. Chip de variación interanual (verde sube / rojo baja)
+			VAR hay    = NOT ISBLANK(variacion)
+			VAR colV   = IF(variacion > 0, "#007350", IF(variacion < 0, "#B00020", "#49535F"))
+			VAR bgC    = IF(variacion > 0, "#E1F9EE", IF(variacion < 0, "#FFEAEA", "#EEF2F7"))
+			VAR vartxt = IF(variacion > 0, "+", "") & FORMAT(variacion, "0.0%")
+			VAR chip   = IF(hay, "<span class='chip' style='background:" & bgC & ";color:" & colV & "'>" & vartxt & "</span>", "")
+			VAR justif = IF(hay, "space-between", "center")
+			
+			// 4. Estilos y HTML final
+			VAR estilos =
+			    "<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;}#_c{box-sizing:border-box;width:100%;height:100vh;display:flex;flex-direction:column;border-left:4px solid #C6B27F;border-radius:9px 0 0 9px;padding:12px 18px 12px 20px;background:#FFFFFF;font-family:Arial;}#_h{flex:0 0 64px;min-height:64px;}#_t{font-size:14px;font-weight:700;line-height:1.2;color:#112B42;}#_s{margin-top:4px;font-size:12px;font-weight:400;line-height:1.18;color:#58616E;}#_values{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;}.num{font-size:clamp(26px,11.5vw,34px);font-weight:700;line-height:1.1;color:#112B42;white-space:nowrap;}.chip{padding:0.28em 0.85em;border-radius:1000px;font-size:clamp(12px,3.4vw,14px);font-weight:700;line-height:1.4;white-space:nowrap;}</style>"
+			RETURN
+			    estilos &
+			    "<div id='_c'><div id='_h'><div id='_t'>Neto de evaluación</div><div id='_s'>(votos 4+5 menos 1+2) / respuestas 1 a 5</div></div><div id='_values'><div style='display:flex;align-items:center;gap:0.6em;flex-wrap:wrap;justify-content:" & justif & ";'><span class='num'>" & vtxt & "</span>" & chip & "</div></div></div>"
+			```
+		displayFolder: 91 UI
+		lineageTag: 231a411e-a80d-4607-b883-93cc66b729ed
+
+	measure Card_satisfaccion = ```
+			
+			// 1. Valores de cumplimiento (ámbito de la card)
+			VAR valor     = [% Satisfacción]
+			VAR variacion = BLANK() // Reemplazar por medida YoY si existe
+			
+			// 2. Número grande
+			VAR vtxt =
+			    IF(
+			        ISBLANK(valor), 
+			        "—", 
+			        FORMAT(valor, "0.0%")
+			    )
+			
+			// 3. Chip de variación interanual (verde sube / rojo baja)
+			VAR hay    = NOT ISBLANK(variacion)
+			VAR colV   = IF(variacion > 0, "#007350", IF(variacion < 0, "#B00020", "#49535F"))
+			VAR bgC    = IF(variacion > 0, "#E1F9EE", IF(variacion < 0, "#FFEAEA", "#EEF2F7"))
+			VAR vartxt = IF(variacion > 0, "+", "") & FORMAT(variacion, "0.0%")
+			VAR chip   = IF(hay, "<span class='chip' style='background:" & bgC & ";color:" & colV & "'>" & vartxt & "</span>", "")
+			VAR justif = IF(hay, "space-between", "center")
+			
+			// 4. Estilos y HTML final
+			VAR estilos =
+			    "<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;}#_c{box-sizing:border-box;width:100%;height:100vh;display:flex;flex-direction:column;border-left:4px solid #C6B27F;border-radius:9px 0 0 9px;padding:12px 18px 12px 20px;background:#FFFFFF;font-family:Arial;}#_h{flex:0 0 64px;min-height:64px;}#_t{font-size:14px;font-weight:700;line-height:1.2;color:#112B42;}#_s{margin-top:4px;font-size:12px;font-weight:400;line-height:1.18;color:#58616E;}#_values{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;}.num{font-size:clamp(26px,11.5vw,34px);font-weight:700;line-height:1.1;color:#112B42;white-space:nowrap;}.chip{padding:0.28em 0.85em;border-radius:1000px;font-size:clamp(12px,3.4vw,14px);font-weight:700;line-height:1.4;white-space:nowrap;}</style>"
+			RETURN
+			    estilos &
+			    "<div id='_c'><div id='_h'><div id='_t'>Satisfacción</div><div id='_s'>Proporción de respuestas altas (4 y 5)</div></div><div id='_values'><div style='display:flex;align-items:center;gap:0.6em;flex-wrap:wrap;justify-content:" & justif & ";'><span class='num'>" & vtxt & "</span>" & chip & "</div></div></div>"
+			```
+		displayFolder: 91 UI
+		lineageTag: 501f7e07-2bc1-46b8-bfb6-db62aa692a18
+
+	measure Card_tasa_respuesta = ```
+			
+			// 1. Valores de cumplimiento (ámbito de la card)
+			VAR valor     = [Tasa Respuesta]
+			VAR variacion = BLANK() // Reemplazar por medida YoY si existe
+			
+			// 2. Número grande
+			VAR vtxt =
+			    IF(
+			        ISBLANK(valor), 
+			        "—", 
+			        FORMAT(valor, "0.0%")
+			    )
+			
+			// 3. Chip de variación interanual (verde sube / rojo baja)
+			VAR hay    = NOT ISBLANK(variacion)
+			VAR colV   = IF(variacion > 0, "#007350", IF(variacion < 0, "#B00020", "#49535F"))
+			VAR bgC    = IF(variacion > 0, "#E1F9EE", IF(variacion < 0, "#FFEAEA", "#EEF2F7"))
+			VAR vartxt = IF(variacion > 0, "+", "") & FORMAT(variacion, "0.0%")
+			VAR chip   = IF(hay, "<span class='chip' style='background:" & bgC & ";color:" & colV & "'>" & vartxt & "</span>", "")
+			VAR justif = IF(hay, "space-between", "center")
+			
+			// 4. Estilos y HTML final
+			VAR estilos =
+			    "<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;}#_c{box-sizing:border-box;width:100%;height:100vh;display:flex;flex-direction:column;border-left:4px solid #C6B27F;border-radius:9px 0 0 9px;padding:12px 18px 12px 20px;background:#FFFFFF;font-family:Arial;}#_h{flex:0 0 64px;min-height:64px;}#_t{font-size:14px;font-weight:700;line-height:1.2;color:#112B42;}#_s{margin-top:4px;font-size:12px;font-weight:400;line-height:1.18;color:#58616E;}#_values{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;}.num{font-size:clamp(26px,11.5vw,34px);font-weight:700;line-height:1.1;color:#112B42;white-space:nowrap;}.chip{padding:0.28em 0.85em;border-radius:1000px;font-size:clamp(12px,3.4vw,14px);font-weight:700;line-height:1.4;white-space:nowrap;}</style>"
+			RETURN
+			    estilos &
+			    "<div id='_c'><div id='_h'><div id='_t'>Tasa de respuesta</div><div id='_s'>Respondidas / estudiantes con estado RE o RW</div></div><div id='_values'><div style='display:flex;align-items:center;gap:0.6em;flex-wrap:wrap;justify-content:" & justif & ";'><span class='num'>" & vtxt & "</span>" & chip & "</div></div></div>"
+			```
+		displayFolder: 91 UI
+		lineageTag: 273f001e-c4a8-4a83-9787-63f07e8c6df3
+
+	measure 'Tooltip Metodología' =
+			"Neto = (votos 4+5 - votos 1+2) / votos 1 a 5. " &
+			"Satisfacción = votos 4+5 / votos 1 a 5. " &
+			"Se excluyen respuestas 0, 6 y 7 del neto. " &
+			"Los cortes desagregados muestran el neto solo con 10 o más respuestas válidas. " &
+			"Tasa por varios periodos = respuestas acumuladas / estudiantes-periodo inscritos. " &
+			"El nivel proviene del maestro del mismo estudiante y periodo, plan AS y mayor secuencia. " &
+			"Como la encuesta es anónima, los resultados por nivel se estiman según la composición de inscritos del mismo periodo y NRC. " &
+			"Alcance: nombre_encuesta contiene SERVICIO."
+		displayFolder: 91 UI
+		lineageTag: 6da61e68-ef8d-4169-b1e3-e56e43b64c82
+
+	measure Metodologia_HTML = "<style>html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}.m{height:100vh;box-sizing:border-box;padding:22px 26px;border:1px solid #DCE2EA;border-left:5px solid #C6B27F;border-radius:10px;background:#fff;font-family:Arial;color:#263244}.t{font-size:22px;font-weight:700;color:#112B42;margin-bottom:12px}.g{display:grid;grid-template-columns:1fr 1fr;gap:12px}.b{padding:13px 15px;border-radius:8px;background:#F4F6F9}.h{font-size:13px;font-weight:700;color:#1746D1;margin-bottom:5px}.p{font-size:12px;line-height:1.45;color:#465166}</style><div class='m'><div class='t'>Metodología de Encuesta de Servicio</div><div class='g'><div class='b'><div class='h'>Alcance</div><div class='p'>Solo se incluyen registros cuyo nombre_encuesta contiene SERVICIO y preguntas evaluadas con ponderación mayor a cero.</div></div><div class='b'><div class='h'>Neto</div><div class='p'>(votos 4+5 - votos 1+2) / votos 1+2+3+4+5. Las respuestas 0, 6 y 7 se excluyen.</div></div><div class='b'><div class='h'>Nivel académico</div><div class='p'>Se obtiene del maestro de origen del estudiante para el mismo periodo: UG = Pregrado, AV = Advance y MG/DP/PH/PE = Postgrado. Se usa estado de plan AS y la mayor secuencia.</div></div><div class='b'><div class='h'>Tasa de respuesta</div><div class='p'>En varios periodos se comparan respuestas acumuladas con estudiantes-periodo inscritos en los NRC de encuesta con estado RE o RW.</div></div><div class='b'><div class='h'>Resultados por nivel</div><div class='p'>La fuente de encuesta no identifica al respondente. Por ello, al filtrar nivel, respuestas y votos se estiman proporcionalmente según los inscritos del mismo periodo y NRC; sin filtro se muestran totales reales.</div></div><div class='b'><div class='h'>Interpretación</div><div class='p'>Promotores = 4+5; neutros = 3; detractores = 1+2. P1-P13 servicios, P14 satisfacción, P15 recomendación y P16 orgullo.</div></div></div></div>"
+		displayFolder: 91 UI
+		lineageTag: beebfd65-8816-4a15-be43-41ed4afd906c
+
+	measure Encabezado_Encuesta = ```
+			
+			    VAR titulo_base = "Encuesta de Servicio"
+			    VAR subtitulo_base = "Satisfacción, neto, tasa de respuesta y evolución por contexto institucional."
+			    VAR area_base = "Dirección General de Control de Gestión y Análisis Institucional"
+			    VAR rotulo_filtros   = "Filtros aplicados:"
+			    VAR max_len_texto    = 10
+			    VAR color_fuente = "#000000"
+			    VAR font_family  = "'Segoe UI', Arial, sans-serif"
+			    VAR chip_style = "display:inline-flex;align-items:center;min-width:0;max-width:190px;padding:2px 8px;border-radius:999px;background:#EAF1FB;color:#001E61;font-family:Arial,Segoe UI,sans-serif;font-size:11px;line-height:20px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-sizing:border-box;"
+			    
+			    // 1. Captura de Filtros (Encuestas)
+			    VAR periodo_full = IF(ISFILTERED(encuestas_docentes[periodo]), CONCATENATEX(VALUES(encuestas_docentes[periodo]), encuestas_docentes[periodo], ", "), "Todos")
+			    VAR periodo_display = IF(LEN(periodo_full) > max_len_texto, LEFT(periodo_full, max_len_texto) & "…", periodo_full)
+			    
+			VAR nivel_full = IF(ISFILTERED(dim_nivel_academico[nivel_academico]), CONCATENATEX(VALUES(dim_nivel_academico[nivel_academico]), dim_nivel_academico[nivel_academico], ", "), "Todos")
+			    VAR nivel_display = IF(LEN(nivel_full) > max_len_texto, LEFT(nivel_full, max_len_texto) & "…", nivel_full)
+			    
+			    VAR campus_full = IF(ISFILTERED(encuestas_docentes[cod_campus]), CONCATENATEX(VALUES(encuestas_docentes[cod_campus]), encuestas_docentes[cod_campus], ", "), "Todos")
+			    VAR campus_display = IF(LEN(campus_full) > max_len_texto, LEFT(campus_full, max_len_texto) & "…", campus_full)
+			    
+			    VAR facultad_full = IF(ISFILTERED(encuestas_docentes[cod_facultad]), CONCATENATEX(VALUES(encuestas_docentes[cod_facultad]), encuestas_docentes[cod_facultad], ", "), "Todos")
+			    VAR facultad_display = IF(LEN(facultad_full) > max_len_texto, LEFT(facultad_full, max_len_texto) & "…", facultad_full)
+			    
+			    // 2. Construcción de Chips HTML base
+			    VAR chip_periodo = "<span style='" & chip_style & "' title='" & periodo_full & "'>Periodo: <b>" & periodo_display & "</b></span>"
+			    VAR chip_nivel = "<span style='" & chip_style & "' title='" & nivel_full & "'>Nivel: <b>" & nivel_display & "</b></span>"
+			    VAR chip_campus = "<span style='" & chip_style & "' title='" & campus_full & "'>Campus: <b>" & campus_display & "</b></span>"
+			    VAR chip_facultad = "<span style='" & chip_style & "' title='" & facultad_full & "'>Facultad: <b>" & facultad_display & "</b></span>"
+			    
+			    // 3. Parámetros de Truncado Dinámico
+			    VAR ancho_disponible_chips = 1090
+			    VAR ancho_maximo_chip = 190
+			    VAR ancho_resumen = 82
+			    VAR separacion_chips = 5
+			    VAR padding_chip = 20
+			    VAR px_caracter_etiqueta = 5.8
+			    VAR px_caracter_valor = 6.2
+			    VAR max_caracteres_valor = 28
+			    
+			    // 4. Tabla Lógica de Filtros
+			    VAR tabla_filtros_base =
+			        UNION(
+			            ROW("orden", 1, "nombre", "Periodo", "valor", periodo_full, "html", "<span class='uss_chip_hover' title='" & SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE("Periodo: " & periodo_full, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "'", "&#39;") & "'>" & chip_periodo & "</span>", "ancho", MIN(ancho_maximo_chip, padding_chip + LEN("Periodo:") * px_caracter_etiqueta + MIN(max_caracteres_valor, LEN(periodo_full)) * px_caracter_valor)),
+			            ROW("orden", 2, "nombre", "Nivel académico", "valor", nivel_full, "html", "<span class='uss_chip_hover' title='" & SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE("Nivel académico: " & nivel_full, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "'", "&#39;") & "'>" & chip_nivel & "</span>", "ancho", MIN(ancho_maximo_chip, padding_chip + LEN("Nivel:") * px_caracter_etiqueta + MIN(max_caracteres_valor, LEN(nivel_full)) * px_caracter_valor)),
+			            ROW("orden", 3, "nombre", "Campus", "valor", campus_full, "html", "<span class='uss_chip_hover' title='" & SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE("Campus: " & campus_full, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "'", "&#39;") & "'>" & chip_campus & "</span>", "ancho", MIN(ancho_maximo_chip, padding_chip + LEN("Campus:") * px_caracter_etiqueta + MIN(max_caracteres_valor, LEN(campus_full)) * px_caracter_valor)),
+			            ROW("orden", 4, "nombre", "Facultad", "valor", facultad_full, "html", "<span class='uss_chip_hover' title='" & SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE("Facultad: " & facultad_full, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "'", "&#39;") & "'>" & chip_facultad & "</span>", "ancho", MIN(ancho_maximo_chip, padding_chip + LEN("Facultad:") * px_caracter_etiqueta + MIN(max_caracteres_valor, LEN(facultad_full)) * px_caracter_valor))
+			        )
+			        
+			    // 5. Cálculos de Espacio y Visibilidad
+			    VAR cantidad_total = COUNTROWS(tabla_filtros_base)
+			    VAR ancho_total = SUMX(tabla_filtros_base, [ancho]) + MAX(0, cantidad_total - 1) * separacion_chips
+			    VAR requiere_resumen = ancho_total > ancho_disponible_chips
+			    VAR ancho_para_visibles = ancho_disponible_chips - IF(requiere_resumen, ancho_resumen + separacion_chips, 0)
+			    
+			    VAR tabla_acumulada =
+			        ADDCOLUMNS(
+			            tabla_filtros_base,
+			            "ancho_acumulado",
+			            VAR orden_actual = [orden]
+			            RETURN
+			                SUMX(
+			                    FILTER(tabla_filtros_base, [orden] <= orden_actual),
+			                    [ancho]
+			                ) + MAX(0, orden_actual - 1) * separacion_chips
+			        )
+			        
+			    VAR cantidad_visible =
+			        IF(
+			            NOT requiere_resumen,
+			            cantidad_total,
+			            MAX(
+			                1,
+			                COALESCE(
+			                    MAXX(
+			                        FILTER(tabla_acumulada, [ancho_acumulado] <= ancho_para_visibles),
+			                        [orden]
+			                    ),
+			                    1
+			                )
+			            )
+			        )
+			        
+			    VAR tabla_visible = FILTER(tabla_filtros_base, [orden] <= cantidad_visible)
+			    VAR tabla_oculta = FILTER(tabla_filtros_base, [orden] > cantidad_visible)
+			    VAR cantidad_oculta = COUNTROWS(tabla_oculta)
+			    
+			    VAR detalle_oculto = CONCATENATEX(tabla_oculta, [nombre] & ": " & [valor], " | ", [orden], ASC)
+			    VAR detalle_oculto_html = SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(detalle_oculto, "&", "&amp;"), "<", "&lt;"), ">", "&gt;"), "'", "&#39;")
+			    
+			    VAR chips = CONCATENATEX(tabla_filtros_base, [html], "", [orden], ASC)
+			    VAR chip_resumen =
+			        IF(
+			            cantidad_oculta > 0,
+			            "<span class='uss_more' title='Filtros adicionales: " & detalle_oculto_html & "'>+" & FORMAT(cantidad_oculta, "0") & " filtros</span>",
+			            ""
+			        )
+			    VAR chips_visibles = IF(requiere_resumen, CONCATENATEX(tabla_visible, [html], "", [orden], ASC) & chip_resumen, chips)
+			    
+			    // 6. Retorno HTML + CSS Estructurado
+			    RETURN
+			        "<style>" &
+			        "html,body{width:100%;height:100%;margin:0;padding:0;overflow:hidden;box-sizing:border-box;}" &
+			        "#uss_header{position:relative;width:100%;height:100vh;min-height:100%;overflow:hidden;box-sizing:border-box;color:#112B42;font-family:Arial,Segoe UI,sans-serif;}" &
+			        "#uss_divider{position:absolute;left:236px;top:18px;width:2px;height:60px;border-radius:2px;background:#C6B27F;}" &
+			        "#uss_title_block{position:absolute;left:260px;top:12px;right:260px;overflow:visible;}" &
+			        "#uss_title_row{display:flex;align-items:center;min-width:0;gap:8px;}" &
+			        "#uss_title{display:block;min-width:0;font-size:23px;font-weight:700;line-height:29px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#112B42;}" &
+			        "#uss_subtitle{margin-top:2px;font-size:12px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#58616E;}" &
+			        "#uss_area{margin-top:0;font-size:9.5px;font-weight:600;line-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#8A7440;}" &
+			        "#uss_info{position:static;display:inline-flex;align-items:center;flex:0 0 auto;}" &
+			        "#uss_info_dot{display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#C6B27F;color:#FFFFFF;font-size:11px;font-weight:700;line-height:20px;cursor:default;user-select:none;}" &
+			        "#uss_info_panel{position:absolute;left:-24px;top:-8px;width:760px;max-width:calc(100vw - 260px);height:calc(100vh - 16px);overflow:hidden;box-sizing:border-box;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:8px;background:#FFFFFF;box-shadow:0 6px 18px rgba(17,43,66,.16);z-index:5;color:#334155;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .12s ease;}" &
+			        "#uss_info:hover #uss_info_panel{opacity:1;visibility:visible;pointer-events:auto;}" &
+			        "#uss_info_scroll{position:absolute;left:22px;right:48px;top:17px;bottom:31px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:6px;box-sizing:border-box;scrollbar-width:thin;scrollbar-color:#C6B27F transparent;}" &
+			        "#uss_info_scroll::-webkit-scrollbar{width:5px;}" &
+			        "#uss_info_scroll::-webkit-scrollbar-track{background:transparent;}" &
+			        "#uss_info_scroll::-webkit-scrollbar-thumb{border-radius:999px;background:#C6B27F;}" &
+			        "#uss_info_grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 18px;align-items:start;}" &
+			        ".uss_info_item{min-width:0;padding-left:14px;border-left:1px solid #E8DFC8;}" &
+			        ".uss_info_item:first-child{padding-left:0;border-left:0;}" &
+			        ".uss_info_item b{display:block;margin:0 0 3px;color:#8A7440;font-size:10px;line-height:12px;}" &
+			        ".uss_info_item span{display:block;margin:0;color:#334155;font-size:9px;line-height:12px;}" &
+			        "#uss_info_source{position:absolute;left:22px;right:48px;bottom:9px;box-sizing:border-box;padding-top:4px;border-top:1px solid #E8EDF3;color:#58616E;font-size:8px;line-height:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}" &
+			        "#uss_info_source b{color:#8A7440;font-weight:700;}" &
+			        "#uss_filters{position:absolute;left:20px;right:14px;bottom:14px;height:24px;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:visible;}" &
+			        "#uss_filters_label{flex:0 0 auto;margin-right:2px;font-size:12px;color:#475569;}" &
+			        ".uss_chip_hover{display:inline-flex;align-items:center;flex:0 0 auto;min-width:0;cursor:default;}" &
+			        ".uss_chip{position:relative;display:inline-flex;align-items:center;gap:3px;flex:0 0 auto;min-width:0;max-width:190px;height:24px;padding:2px 8px;border-radius:999px;background:#EAF1FB;color:#001E61;font-family:Arial,Segoe UI,sans-serif;font-size:11px;line-height:20px;white-space:nowrap;box-sizing:border-box;cursor:default;}" &
+			        ".uss_chip_label{flex:0 0 auto;font-weight:400;}" &
+			        ".uss_chip_value{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;}" &
+			        ".uss_chip_hover:not([title$='Todos'])>span{background:#F4F0E3!important;border:1px solid #C6B27F!important;color:#112B42!important;padding:1px 7px!important;}" &
+			        ".uss_chip_hover:not([title$='Todos'])>span b,.uss_chip_hover:not([title$='Todos']) .uss_chip_value{color:#7A6428!important;}" &
+			        ".uss_more{flex:0 0 auto;padding:0 2px;color:#475569;font-size:11px;font-weight:600;line-height:20px;border-bottom:1px dotted #94A3B8;cursor:default;}" &
+			        "</style>" &
+			        "<div id='uss_header'>" &
+			            "<div id='uss_divider'></div>" &
+			            "<div id='uss_title_block'>" &
+			                "<div id='uss_title_row'>" &
+			                    "<div id='uss_title'>" & titulo_base & "</div>" &
+			                    "<span id='uss_info'>" &
+			                        "<span id='uss_info_dot' aria-label='Información' title='Pasa el cursor para ver más información'>i</span>" &
+			                        "<div id='uss_info_panel' role='note'>" &
+			                            "<div id='uss_info_scroll'>" &
+			                                "<div id='uss_info_grid'>" &
+			                                    "<div class='uss_info_item'><b>Cálculo y reglas</b><span>Neto = (votos 4+5 - votos 1+2) / votos 1 a 5. Se excluyen 0, 6 y 7. Los cortes requieren al menos 10 respuestas válidas.</span></div>" &
+				                                    "<div class='uss_info_item'><b>Alcance de los datos</b><span>Encuestas SERVICIO. El nivel usa el maestro del mismo estudiante y periodo, plan AS y mayor secuencia: UG Pregrado, AV Advance y MG/DP/PH/PE Postgrado.</span></div>" &
+				                                    "<div class='uss_info_item'><b>Cómo interpretar</b><span>La encuesta es anónima: por nivel, respuestas y votos son una estimación proporcional a los inscritos del mismo periodo y NRC. Sin filtro de nivel son totales reales.</span></div>" &
+			                                "</div>" &
+			                            "</div>" &
+			                            "<div id='uss_info_source'><b>Fuente:</b> Banner / Athena. Tasa de respuesta = respondidas / estudiantes únicos RE-RW por periodo y NRC. Maestros: Pregrado, Advance y Postgrado.</div>" &
+			                        "</div>" &
+			                    "</span>" &
+			                "</div>" &
+			                "<div id='uss_subtitle'>" & subtitulo_base & "</div>" &
+			                "<div id='uss_area'>" & area_base & "</div>" &
+			            "</div>" &
+			            "<div id='uss_filters'>" &
+			                "<span id='uss_filters_label'>" & rotulo_filtros & "</span>" &
+			                chips_visibles &
+			            "</div>" &
+			        "</div>"
+			```
+		displayFolder: 91 UI
+		lineageTag: c9fe8910-8b44-452f-b3b6-f5b863d2f9e9
+
+	measure 'HTML Universo Encuestas' =
+			
+			VAR v_Inscritos =
+			    [Inscritos]
+			
+			VAR v_Respuestas =
+			    [N° Respuestas]
+			
+			VAR v_Tasa =
+			    IF ( ISBLANK ( [Tasa Respuesta] ), "Sin base", FORMAT ( [Tasa Respuesta], "0.0 %" ) )
+			
+			VAR t_Nivel =
+			    COALESCE (
+			        [Nivel académico encuesta],
+			        "No definido"
+			    )
+			
+			VAR t_OrigenMaestro =
+			    COALESCE (
+			        [Origen maestro encuesta],
+			        "No definido"
+			    )
+			
+			VAR v_Periodos =
+			    VALUES ( encuestas_docentes[periodo] )
+			
+			VAR t_Periodo =
+			    SWITCH (
+			        TRUE (),
+			        NOT ISFILTERED ( encuestas_docentes[periodo] ), "Todos",
+			        COUNTROWS ( v_Periodos ) = 0, "No definido",
+			        COUNTROWS ( v_Periodos ) = 1,
+			            SELECTEDVALUE ( encuestas_docentes[periodo] ),
+			        CONCATENATEX (
+			            v_Periodos,
+			            encuestas_docentes[periodo],
+			            ", ",
+			            encuestas_docentes[periodo],
+			            ASC
+				    )
+			    )
+			VAR t_UnidadUniverso =
+			    IF ( COUNTROWS ( v_Periodos ) > 1, "registros estudiante-período", "estudiantes" )
+			
+			VAR v_Areas =
+			    DISTINCTCOUNT (
+			        encuestas_docentes[tipo_pregunta_area]
+			    )
+			
+			VAR v_Preguntas =
+			    DISTINCTCOUNT (
+			        encuestas_docentes[texto_pregunta]
+			    )
+			
+			VAR t_Inscritos =
+			    FORMAT ( COALESCE ( v_Inscritos, 0 ), "#,##0" )
+			
+			VAR t_Respuestas =
+			    FORMAT ( COALESCE ( v_Respuestas, 0 ), "#,##0" )
+			
+			VAR t_Areas =
+			    FORMAT ( v_Areas, "#,##0" )
+			
+			VAR t_Preguntas =
+			    FORMAT ( v_Preguntas, "#,##0" )
+			
+			RETURN
+			    "
+			    <style>
+			        html, body {
+			            margin: 0;
+			            padding: 0;
+			            font-family: 'Segoe UI', Arial, sans-serif;
+			            background: transparent;
+			        }
+			
+			        .uss-card {
+			            width: 100%;
+			            box-sizing: border-box;
+			            padding: 20px 24px;
+			            background: #FFFFFF;
+			            border: 1px solid #D9DEE7;
+			            border-left: 4px solid #C6B27F;
+			            border-radius: 8px;
+			            box-shadow: 0 4px 12px rgba(17,43,66,.08);
+			            color: #334155;
+			        }
+			
+			        .uss-title {
+			            margin-bottom: 12px;
+			            color: #112B42;
+			            font-size: 16px;
+			            font-weight: 700;
+			        }
+			
+			        .uss-list {
+			            margin: 0;
+			            padding-left: 20px;
+			            color: #58616E;
+			            font-size: 14px;
+			            line-height: 1.8;
+			        }
+			
+			        .uss-list li {
+			            margin-bottom: 4px;
+			        }
+			
+			        .uss-highlight {
+			            color: #112B42;
+			            font-weight: 700;
+			        }
+			
+			        .uss-source {
+			            color: #64748B;
+			            font-size: 12px;
+			        }
+			    </style>
+			
+			    <div class='uss-card'>
+			        <div class='uss-title'>
+			            Universo de Evaluación:
+			        </div>
+			
+			        <ul class='uss-list'>
+			            <li>
+			                Nivel académico:
+			                <span class='uss-highlight'>" & t_Nivel & "</span>
+			                <span class='uss-source'>
+			                    (origen: " & t_OrigenMaestro & ")
+			                </span>
+			            </li>
+			
+			            <li>
+			                Período:
+			                <span class='uss-highlight'>" & t_Periodo & "</span>
+			            </li>
+			
+			            <li>
+			                Instrumento compuesto por
+			                <span class='uss-highlight'>" & t_Preguntas & "</span>
+			                preguntas distribuidas en
+			                <span class='uss-highlight'>" & t_Areas & "</span>
+			                áreas evaluadas.
+			            </li>
+			
+			            <li>
+			                De un total de
+			                <span class='uss-highlight'>" & t_Inscritos & "</span>
+				                " & t_UnidadUniverso & ", fueron respondidas
+			                <span class='uss-highlight'>" & t_Respuestas & "</span>
+			                encuestas, alcanzando una tasa de
+			                <span class='uss-highlight'>" & v_Tasa & "</span>.
+			            </li>
+			        </ul>
+			    </div>
+			    "
+		lineageTag: dce444e0-a3f3-4143-97d5-dff7f97e6489
+
+	measure 'Nivel académico encuesta' =
+			VAR HayFiltroNivel = ISFILTERED ( dim_nivel_academico[nivel_academico] )
+			VAR LlavesEncuesta =
+			    DISTINCT ( SELECTCOLUMNS ( encuestas_docentes, "Llave", encuestas_docentes[llave] ) )
+			VAR NivelesDelContexto =
+			    CALCULATETABLE (
+			        VALUES ( inscripciones_estudiantes[nivel_academico] ),
+			        REMOVEFILTERS ( dim_nivel_academico ),
+			        inscripciones_estudiantes[es_inscrito_real] = 1,
+			        TREATAS ( LlavesEncuesta, inscripciones_estudiantes[llave_periodo_nrc] )
+			    )
+			VAR TextoSeleccion =
+			    CONCATENATEX (
+			        FILTER ( VALUES ( dim_nivel_academico[nivel_academico] ), NOT ISBLANK ( dim_nivel_academico[nivel_academico] ) ),
+			        dim_nivel_academico[nivel_academico],
+			        ", ",
+			        dim_nivel_academico[nivel_academico],
+			        ASC
+			    )
+			VAR TextoContexto =
+			    CONCATENATEX (
+			        FILTER ( NivelesDelContexto, NOT ISBLANK ( inscripciones_estudiantes[nivel_academico] ) ),
+			        inscripciones_estudiantes[nivel_academico],
+			        ", ",
+			        inscripciones_estudiantes[nivel_academico],
+			        ASC
+			    )
+			RETURN
+			    IF ( HayFiltroNivel, TextoSeleccion, TextoContexto )
+		lineageTag: 2030feb6-03a1-4aad-b4d4-1a146b8873e9
+
+	measure 'Origen maestro encuesta' = [Nivel académico encuesta]
+		lineageTag: ef96f696-a720-4417-885f-8e9b1c8603be
+
+	column Valor
+		dataType: string
+		lineageTag: 8d7004e1-a989-470b-8282-d3633ab11193
+		summarizeBy: none
+		sourceColumn: Valor
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Medidas Encuesta de Servicio' = m
+		mode: import
+		queryGroup: Medidas
+		source =
+				let
+				    Source = #table(type table [Valor = nullable text], {})
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

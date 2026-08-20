@@ -1,0 +1,35 @@
+model Model
+	culture: es-ES
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: es-CL
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+queryGroup Parámetros
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup Detalles
+
+	annotation PBI_QueryGroupOrder = 1
+
+queryGroup Medidas
+
+	annotation PBI_QueryGroupOrder = 2
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["AthenaDSN","query_encuestas","query_inscripciones","query_maestro_pregrado","query_maestro_advance","query_maestro_postgrado","encuestas_docentes","inscripciones_estudiantes","maestro_estudiantes","Medidas Encuesta de Servicio","query_dim_carrera","dim_carrera","query_dim_facultad","query_dim_campus"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table encuestas_docentes
+ref table inscripciones_estudiantes
+ref table maestro_estudiantes
+ref table 'Medidas Encuesta de Servicio'
+ref table dim_carrera
+ref table dim_nivel_academico
+
+ref cultureInfo es-ES
+

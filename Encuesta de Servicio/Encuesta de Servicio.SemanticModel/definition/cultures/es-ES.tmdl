@@ -1,0 +1,440 @@
+cultureInfo es-ES
+
+	linguisticMetadata =
+			{
+			  "Version": "2.0.0",
+			  "Language": "en-US",
+			  "Entities": {
+			    "encuestas_docentes.tipo_pregunta_area": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "encuestas_docentes",
+			          "ConceptualProperty": "tipo_pregunta_area"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Categoría": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "encuestas_docentes.cod_campus": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "encuestas_docentes",
+			          "ConceptualProperty": "cod_campus"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Campus": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "encuestas_docentes.periodo": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "encuestas_docentes",
+			          "ConceptualProperty": "periodo"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Periodo": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "encuestas_docentes.cod_facultad": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "encuestas_docentes",
+			          "ConceptualProperty": "cod_facultad"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Facultad": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "encuestas_docentes.nivel": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "encuestas_docentes",
+			          "ConceptualProperty": "nivel"
+			        }
+			      },
+			      "State": "Generated"
+			    },
+			    "encuestas_docentes.texto_pregunta": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "encuestas_docentes",
+			          "ConceptualProperty": "texto_pregunta"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Pregunta": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "encuestas_docentes.año": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "encuestas_docentes",
+			          "ConceptualProperty": "año"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Año": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "encuestas_docentes.titulo_oficial_curso": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "encuestas_docentes",
+			          "ConceptualProperty": "titulo_oficial_curso"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Curso": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "encuestas_docentes.nombre_encuesta": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "encuestas_docentes",
+			          "ConceptualProperty": "nombre_encuesta"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Encuesta": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_admisión.n_respuestas": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Encuesta de Servicio",
+			          "ConceptualProperty": "N° Respuestas"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Respuestas": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_admisión.inscritos": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Encuesta de Servicio",
+			          "ConceptualProperty": "Inscritos"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Meta": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_admisión.brecha_vs_meta_est_": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Encuesta de Servicio",
+			          "ConceptualProperty": "Brecha vs Meta (est.)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Brecha respuestas": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_admisión.tooltip_metodología": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Encuesta de Servicio",
+			          "ConceptualProperty": "Tooltip Metodología"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Metodología": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_admisión.neto_n10": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Encuesta de Servicio",
+			          "ConceptualProperty": "% Neto (n>=10)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Neto": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_admisión.tasa_respuesta": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Encuesta de Servicio",
+			          "ConceptualProperty": "Tasa Respuesta"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Tasa respuesta": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_admisión.n_respuestas_válidas": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Encuesta de Servicio",
+			          "ConceptualProperty": "N° Respuestas válidas"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Respuestas válidas": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_admisión.n_respuestas_regular": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Encuesta de Servicio",
+			          "ConceptualProperty": "N° Respuestas Regular"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Promotores": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_admisión.n_respuestas_retirado": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Encuesta de Servicio",
+			          "ConceptualProperty": "N° Respuestas Retirado"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Detractores": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_admisión.n_respuestas_otros": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Encuesta de Servicio",
+			          "ConceptualProperty": "N° Respuestas Otros"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Neutros": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_admisión.satisfacción": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Encuesta de Servicio",
+			          "ConceptualProperty": "% Satisfacción"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Satisfacción": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_admisión.cumpl__meta_evaluación": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Encuesta de Servicio",
+			          "ConceptualProperty": "% Cumpl. Meta Evaluación"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Neto": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    }
+			  }
+			}
+		contentType: json
+
