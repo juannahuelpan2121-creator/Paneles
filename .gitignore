@@ -1,2 +1,16 @@
+# Archivos locales y temporales de Power BI
+**/.pbi/
 **/.pbi/localSettings.json
 **/.pbi/cache.abf
+*.pbix
+*.tmp
+*.bak
+
+# Material de trabajo local de Codex
+work/
+outputs/
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+.vscode/

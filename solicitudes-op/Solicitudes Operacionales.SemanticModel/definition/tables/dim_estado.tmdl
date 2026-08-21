@@ -1,0 +1,14 @@
+table dim_estado
+	lineageTag: 8206a438-ba05-4db3-a8ce-0bbb3658901a
+
+	column estado_operacional
+		dataType: string
+		lineageTag: 6438289a-f1b9-4700-ae83-3551b228a857
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [estado_operacional]
+
+	partition dim_estado = calculated
+		mode: import
+		source = DISTINCT ( SELECTCOLUMNS ( solicitudes_consolidadas, "estado_operacional", solicitudes_consolidadas[estado_operacional] ) )
+

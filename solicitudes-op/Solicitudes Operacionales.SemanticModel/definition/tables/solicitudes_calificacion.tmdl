@@ -1,0 +1,486 @@
+table solicitudes_calificacion
+	lineageTag: 496ecc3b-bdbf-4402-8302-6087d64dd1d9
+
+	column id
+		dataType: int64
+		lineageTag: 2b431517-3834-4aa6-952a-9e1f9e3be8bf
+		summarizeBy: none
+		sourceColumn: id
+
+		annotation SummarizationSetBy = Automatic
+
+	column pd_id
+		dataType: int64
+		lineageTag: bd153528-2f79-45e5-8f2f-5892b1783916
+		summarizeBy: none
+		sourceColumn: pd_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column name
+		dataType: string
+		lineageTag: 0ad3f71f-4963-4466-8f9e-dee876554be9
+		summarizeBy: none
+		sourceColumn: name
+
+		annotation SummarizationSetBy = Automatic
+
+	column desc_estado_estudiante
+		dataType: string
+		lineageTag: 8a628399-99ae-4095-ae4f-1403be701517
+		summarizeBy: none
+		sourceColumn: desc_estado_estudiante
+
+		annotation SummarizationSetBy = Automatic
+
+	column periodo
+		dataType: string
+		lineageTag: 73e9f894-34ae-450d-8bec-306262ae1fc4
+		summarizeBy: none
+		sourceColumn: periodo
+
+		annotation SummarizationSetBy = Automatic
+
+	column nrc
+		dataType: string
+		lineageTag: ddd9e6f2-a473-4242-9974-d372fefb2c0c
+		summarizeBy: none
+		sourceColumn: nrc
+
+		annotation SummarizationSetBy = Automatic
+
+	column curso
+		dataType: string
+		lineageTag: 1934d348-274f-4bba-b0c7-fcffe921110d
+		summarizeBy: none
+		sourceColumn: curso
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_sede
+		dataType: string
+		lineageTag: 547114a9-befa-45c0-8095-6ba17fb77345
+		summarizeBy: none
+		sourceColumn: cod_sede
+
+		annotation SummarizationSetBy = Automatic
+
+	column sede
+		dataType: string
+		lineageTag: f0d4c2e4-22fb-4a87-b6cb-621d54be8ba8
+		summarizeBy: none
+		sourceColumn: sede
+
+		annotation SummarizationSetBy = Automatic
+
+	column fecha_solicitud
+		dataType: string
+		lineageTag: 7a105310-76b1-4eee-9ba8-839b21de1aa2
+		summarizeBy: none
+		sourceColumn: fecha_solicitud
+
+		annotation SummarizationSetBy = Automatic
+
+	column cod_carrera
+		dataType: string
+		lineageTag: 8ac2b2d5-597f-4cfa-91bd-b83336cfb38c
+		summarizeBy: none
+		sourceColumn: cod_carrera
+
+		annotation SummarizationSetBy = Automatic
+
+	column nombre_carrera
+		dataType: string
+		lineageTag: ac77d190-543f-42a4-83fe-0d1b0b4d90ca
+		summarizeBy: none
+		sourceColumn: nombre_carrera
+
+		annotation SummarizationSetBy = Automatic
+
+	column nomescuela
+		dataType: string
+		lineageTag: 2572742c-b08c-4d8b-900e-6618f583576c
+		summarizeBy: none
+		sourceColumn: nomescuela
+
+		annotation SummarizationSetBy = Automatic
+
+	column observacion_szarsol
+		dataType: string
+		lineageTag: 7bb66e43-e539-4819-9a92-640edb8df211
+		summarizeBy: none
+		sourceColumn: observacion_szarsol
+
+		annotation SummarizationSetBy = Automatic
+
+	column seqplan
+		dataType: string
+		lineageTag: 8bda44dc-71aa-494f-ab82-136cf9d6e4c7
+		summarizeBy: none
+		sourceColumn: seqplan
+
+		annotation SummarizationSetBy = Automatic
+
+	column nivel
+		dataType: string
+		lineageTag: 15fafe0b-75e1-46dc-b6a3-80b127a2e752
+		summarizeBy: none
+		sourceColumn: nivel
+
+		annotation SummarizationSetBy = Automatic
+
+	column calificacion_actual
+		dataType: string
+		lineageTag: 527caffe-87b2-42c5-88ac-9c70d0e58ffb
+		summarizeBy: none
+		sourceColumn: calificacion_actual
+
+		annotation SummarizationSetBy = Automatic
+
+	column calificacion_solicitada
+		dataType: string
+		lineageTag: d0603c4f-142f-4031-ab6e-e5ed46562bce
+		summarizeBy: none
+		sourceColumn: calificacion_solicitada
+
+		annotation SummarizationSetBy = Automatic
+
+	column rut_solicitante
+		dataType: string
+		lineageTag: 251ec88e-b3bb-44a3-a786-6fd385f6e36c
+		summarizeBy: none
+		sourceColumn: rut_solicitante
+
+		annotation SummarizationSetBy = Automatic
+
+	column nombre_solicitante
+		dataType: string
+		lineageTag: a6ac7b44-1f4c-48b7-991e-2fa27d91edbc
+		summarizeBy: none
+		sourceColumn: nombre_solicitante
+
+		annotation SummarizationSetBy = Automatic
+
+	column rut_estudiante
+		dataType: string
+		lineageTag: 02eba05a-a0b1-4bf6-b81e-39300d442c7f
+		summarizeBy: none
+		sourceColumn: rut_estudiante
+
+		annotation SummarizationSetBy = Automatic
+
+	column nombre_estudiante
+		dataType: string
+		lineageTag: 133bff4a-f5cf-4755-82e6-8d1d9e2c4767
+		summarizeBy: none
+		sourceColumn: nombre_estudiante
+
+		annotation SummarizationSetBy = Automatic
+
+	column correo_estudiante
+		dataType: string
+		lineageTag: 1fcfeb7f-d0cd-4165-bcaa-33cdd1ecea28
+		summarizeBy: none
+		sourceColumn: correo_estudiante
+
+		annotation SummarizationSetBy = Automatic
+
+	column fono_estudiante
+		dataType: string
+		lineageTag: 285abd9f-a79c-4773-8d57-58994106e52a
+		summarizeBy: none
+		sourceColumn: fono_estudiante
+
+		annotation SummarizationSetBy = Automatic
+
+	column rut_docente
+		dataType: string
+		lineageTag: f0ba4315-91f7-4540-b374-f8ae820bbdbb
+		summarizeBy: none
+		sourceColumn: rut_docente
+
+		annotation SummarizationSetBy = Automatic
+
+	column nombre_docente
+		dataType: string
+		lineageTag: 872a046d-2933-4967-9fec-22311d161186
+		summarizeBy: none
+		sourceColumn: nombre_docente
+
+		annotation SummarizationSetBy = Automatic
+
+	column correo_docente
+		dataType: string
+		lineageTag: df435988-81e0-45bc-bccc-fe75b5638ea6
+		summarizeBy: none
+		sourceColumn: correo_docente
+
+		annotation SummarizationSetBy = Automatic
+
+	column glosa
+		dataType: string
+		lineageTag: 99106c77-1e5b-4731-9147-5c8b71cbe543
+		summarizeBy: none
+		sourceColumn: glosa
+
+		annotation SummarizationSetBy = Automatic
+
+	column rut_decano
+		dataType: string
+		lineageTag: 88cfa22f-556e-4b17-8bb2-a606b1419554
+		summarizeBy: none
+		sourceColumn: rut_decano
+
+		annotation SummarizationSetBy = Automatic
+
+	column nombre_decano
+		dataType: string
+		lineageTag: 6add6d08-a0cc-44d9-9adc-945fa0b3707e
+		summarizeBy: none
+		sourceColumn: nombre_decano
+
+		annotation SummarizationSetBy = Automatic
+
+	column correo_decano
+		dataType: string
+		lineageTag: ac84d330-dd93-40f6-8545-b0f9b02631d3
+		summarizeBy: none
+		sourceColumn: correo_decano
+
+		annotation SummarizationSetBy = Automatic
+
+	column rut_director_academico
+		dataType: string
+		lineageTag: 1a1ae409-b9e0-44d8-9fdc-5b8eb29f0bc6
+		summarizeBy: none
+		sourceColumn: rut_director_academico
+
+		annotation SummarizationSetBy = Automatic
+
+	column nombre_director_academico
+		dataType: string
+		lineageTag: d4bfce78-472c-4876-b6ed-2cb3f64523c0
+		summarizeBy: none
+		sourceColumn: nombre_director_academico
+
+		annotation SummarizationSetBy = Automatic
+
+	column correo_director_academico
+		dataType: string
+		lineageTag: a6dae88a-4088-498f-b146-d4ac78e11624
+		summarizeBy: none
+		sourceColumn: correo_director_academico
+
+		annotation SummarizationSetBy = Automatic
+
+	column rut_dc_o_dd
+		dataType: string
+		lineageTag: c96dd48f-738e-45a7-b338-bfc78f753590
+		summarizeBy: none
+		sourceColumn: rut_dc_o_dd
+
+		annotation SummarizationSetBy = Automatic
+
+	column nombre_dc_o_dd
+		dataType: string
+		lineageTag: 521b23a1-e99a-4ffb-8e2d-108df73fd340
+		summarizeBy: none
+		sourceColumn: nombre_dc_o_dd
+
+		annotation SummarizationSetBy = Automatic
+
+	column correo_dc_o_dd
+		dataType: string
+		lineageTag: 45450f6b-9c0d-4d21-9c6c-01494ed353fd
+		summarizeBy: none
+		sourceColumn: correo_dc_o_dd
+
+		annotation SummarizationSetBy = Automatic
+
+	column rut_registro_academico
+		dataType: string
+		lineageTag: 9e4a8785-736b-496f-8b85-7e2898d4f0ee
+		summarizeBy: none
+		sourceColumn: rut_registro_academico
+
+		annotation SummarizationSetBy = Automatic
+
+	column nombre_registro_academico
+		dataType: string
+		lineageTag: 13125a60-2059-419a-96ce-0f5289f8fdbb
+		summarizeBy: none
+		sourceColumn: nombre_registro_academico
+
+		annotation SummarizationSetBy = Automatic
+
+	column correo_registro_academico
+		dataType: string
+		lineageTag: 98d640e3-5371-434c-9c4d-bea61d800a4a
+		summarizeBy: none
+		sourceColumn: correo_registro_academico
+
+		annotation SummarizationSetBy = Automatic
+
+	column nombre_titulos_y_grados
+		dataType: string
+		lineageTag: a6b9a251-045d-4279-8331-9fda5fe751b8
+		summarizeBy: none
+		sourceColumn: nombre_titulos_y_grados
+
+		annotation SummarizationSetBy = Automatic
+
+	column correo_titulos_y_grados
+		dataType: string
+		lineageTag: b71f9b0c-5997-487e-9943-b5340e0a81c3
+		summarizeBy: none
+		sourceColumn: correo_titulos_y_grados
+
+		annotation SummarizationSetBy = Automatic
+
+	column comentario_solicitante
+		dataType: string
+		lineageTag: 3d33ca4f-8803-403b-aca7-23f9518de96b
+		summarizeBy: none
+		sourceColumn: comentario_solicitante
+
+		annotation SummarizationSetBy = Automatic
+
+	column estado_actual
+		dataType: string
+		lineageTag: bcbb2c18-1fba-48de-abb9-98d007c8b799
+		summarizeBy: none
+		sourceColumn: estado_actual
+
+		annotation SummarizationSetBy = Automatic
+
+	column start_date
+		dataType: int64
+		lineageTag: 12c4d1c5-a87a-41e3-81b4-6024d44b1e82
+		summarizeBy: none
+		sourceColumn: start_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column stop_date
+		dataType: int64
+		lineageTag: 51b49827-0cb4-44fe-9e0e-3d719ea3d65b
+		summarizeBy: none
+		sourceColumn: stop_date
+
+		annotation SummarizationSetBy = Automatic
+
+	column ejecutandose
+		dataType: string
+		lineageTag: 969c78d0-ab93-49cf-9479-05e6f8a08258
+		summarizeBy: none
+		sourceColumn: ejecutandose
+
+		annotation SummarizationSetBy = Automatic
+
+	column ultimo_estado
+		dataType: string
+		lineageTag: ae5787ad-a073-4f80-9474-53ff378781ea
+		summarizeBy: none
+		sourceColumn: ultimo_estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column originating_user_id
+		dataType: string
+		lineageTag: c0f2c6bb-4a18-4392-9e75-f87469be3c50
+		summarizeBy: none
+		sourceColumn: originating_user_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column originating_event_id
+		dataType: string
+		lineageTag: 0a451099-9628-4924-8a08-4b131ba1eb53
+		summarizeBy: none
+		sourceColumn: originating_event_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column originating_process_id
+		dataType: string
+		lineageTag: 8e5938a0-2d57-400d-a950-31cdb1036490
+		summarizeBy: none
+		sourceColumn: originating_process_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column owner_role_id
+		dataType: string
+		lineageTag: c3c39940-6d3b-4957-ab1c-302227a7d295
+		summarizeBy: none
+		sourceColumn: owner_role_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column admin_role_id
+		dataType: string
+		lineageTag: 5832fe92-9ab8-48a5-aa01-80f2d21cf586
+		summarizeBy: none
+		sourceColumn: admin_role_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column requires_execution_plan
+		dataType: string
+		lineageTag: 8696241a-fc61-4933-af31-7dee05357d9c
+		summarizeBy: none
+		sourceColumn: requires_execution_plan
+
+		annotation SummarizationSetBy = Automatic
+
+	column estado_operacional
+		dataType: string
+		lineageTag: fc2f9f9d-8ba8-4aea-8f3c-d85a7a559368
+		summarizeBy: none
+		sourceColumn: estado_operacional
+
+		annotation SummarizationSetBy = Automatic
+
+	column start_datetime =
+			VAR epoch_ms = [start_date]
+			RETURN
+				IF (
+					ISBLANK ( epoch_ms ),
+					BLANK (),
+					DATE ( 1970, 1, 1 ) + DIVIDE ( epoch_ms, 86400000 )
+				)
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: bab5d1ac-3be4-4fa5-9a60-b2c820fa2cdd
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column stop_datetime =
+			VAR epoch_ms = [stop_date]
+			RETURN
+				IF (
+					ISBLANK ( epoch_ms ),
+					BLANK (),
+					DATE ( 1970, 1, 1 ) + DIVIDE ( epoch_ms, 86400000 )
+				)
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 6718aa45-966e-459b-a83e-6e12cfc644cf
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition solicitudes_calificacion = m
+		mode: import
+		queryGroup: Datos
+		source =
+				let
+				    Origen = Odbc.Query("dsn=uss-athena-datalake-prod", query_solicitudes_calificacion)
+				in
+				    Origen
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

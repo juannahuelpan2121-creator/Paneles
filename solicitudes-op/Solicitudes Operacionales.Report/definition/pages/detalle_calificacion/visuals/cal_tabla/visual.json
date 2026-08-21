@@ -1,0 +1,999 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "cal_tabla",
+  "position": {
+    "x": 24,
+    "height": 520,
+    "tabOrder": 2000,
+    "z": 2000,
+    "y": 335,
+    "width": 1232
+  },
+  "visual": {
+    "visualContainerObjects": {
+      "border": [
+        {
+          "properties": {
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#D9DEE7'"
+                    }
+                  }
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Sábana histórica - Cambio de calificación'"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#112B42'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualType": "tableEx",
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "values": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            },
+            "fontColorPrimary": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#334155'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            },
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#EAF1FB'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#112B42'"
+                    }
+                  }
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "nativeQueryRef": "id",
+              "field": {
+                "Column": {
+                  "Property": "id",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.id"
+            },
+            {
+              "nativeQueryRef": "pd_id",
+              "field": {
+                "Column": {
+                  "Property": "pd_id",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.pd_id"
+            },
+            {
+              "nativeQueryRef": "name",
+              "field": {
+                "Column": {
+                  "Property": "name",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.name"
+            },
+            {
+              "nativeQueryRef": "desc_estado_estudiante",
+              "field": {
+                "Column": {
+                  "Property": "desc_estado_estudiante",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.desc_estado_estudiante"
+            },
+            {
+              "nativeQueryRef": "periodo",
+              "field": {
+                "Column": {
+                  "Property": "periodo",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.periodo"
+            },
+            {
+              "nativeQueryRef": "nrc",
+              "field": {
+                "Column": {
+                  "Property": "nrc",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.nrc"
+            },
+            {
+              "nativeQueryRef": "curso",
+              "field": {
+                "Column": {
+                  "Property": "curso",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.curso"
+            },
+            {
+              "nativeQueryRef": "cod_sede",
+              "field": {
+                "Column": {
+                  "Property": "cod_sede",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.cod_sede"
+            },
+            {
+              "nativeQueryRef": "sede",
+              "field": {
+                "Column": {
+                  "Property": "sede",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.sede"
+            },
+            {
+              "nativeQueryRef": "fecha_solicitud",
+              "field": {
+                "Column": {
+                  "Property": "fecha_solicitud",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.fecha_solicitud"
+            },
+            {
+              "nativeQueryRef": "cod_carrera",
+              "field": {
+                "Column": {
+                  "Property": "cod_carrera",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.cod_carrera"
+            },
+            {
+              "nativeQueryRef": "nombre_carrera",
+              "field": {
+                "Column": {
+                  "Property": "nombre_carrera",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.nombre_carrera"
+            },
+            {
+              "nativeQueryRef": "nomescuela",
+              "field": {
+                "Column": {
+                  "Property": "nomescuela",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.nomescuela"
+            },
+            {
+              "nativeQueryRef": "observacion_szarsol",
+              "field": {
+                "Column": {
+                  "Property": "observacion_szarsol",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.observacion_szarsol"
+            },
+            {
+              "nativeQueryRef": "seqplan",
+              "field": {
+                "Column": {
+                  "Property": "seqplan",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.seqplan"
+            },
+            {
+              "nativeQueryRef": "nivel",
+              "field": {
+                "Column": {
+                  "Property": "nivel",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.nivel"
+            },
+            {
+              "nativeQueryRef": "calificacion_actual",
+              "field": {
+                "Column": {
+                  "Property": "calificacion_actual",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.calificacion_actual"
+            },
+            {
+              "nativeQueryRef": "calificacion_solicitada",
+              "field": {
+                "Column": {
+                  "Property": "calificacion_solicitada",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.calificacion_solicitada"
+            },
+            {
+              "nativeQueryRef": "rut_solicitante",
+              "field": {
+                "Column": {
+                  "Property": "rut_solicitante",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.rut_solicitante"
+            },
+            {
+              "nativeQueryRef": "nombre_solicitante",
+              "field": {
+                "Column": {
+                  "Property": "nombre_solicitante",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.nombre_solicitante"
+            },
+            {
+              "nativeQueryRef": "rut_estudiante",
+              "field": {
+                "Column": {
+                  "Property": "rut_estudiante",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.rut_estudiante"
+            },
+            {
+              "nativeQueryRef": "nombre_estudiante",
+              "field": {
+                "Column": {
+                  "Property": "nombre_estudiante",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.nombre_estudiante"
+            },
+            {
+              "nativeQueryRef": "correo_estudiante",
+              "field": {
+                "Column": {
+                  "Property": "correo_estudiante",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.correo_estudiante"
+            },
+            {
+              "nativeQueryRef": "fono_estudiante",
+              "field": {
+                "Column": {
+                  "Property": "fono_estudiante",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.fono_estudiante"
+            },
+            {
+              "nativeQueryRef": "rut_docente",
+              "field": {
+                "Column": {
+                  "Property": "rut_docente",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.rut_docente"
+            },
+            {
+              "nativeQueryRef": "nombre_docente",
+              "field": {
+                "Column": {
+                  "Property": "nombre_docente",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.nombre_docente"
+            },
+            {
+              "nativeQueryRef": "correo_docente",
+              "field": {
+                "Column": {
+                  "Property": "correo_docente",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.correo_docente"
+            },
+            {
+              "nativeQueryRef": "glosa",
+              "field": {
+                "Column": {
+                  "Property": "glosa",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.glosa"
+            },
+            {
+              "nativeQueryRef": "rut_decano",
+              "field": {
+                "Column": {
+                  "Property": "rut_decano",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.rut_decano"
+            },
+            {
+              "nativeQueryRef": "nombre_decano",
+              "field": {
+                "Column": {
+                  "Property": "nombre_decano",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.nombre_decano"
+            },
+            {
+              "nativeQueryRef": "correo_decano",
+              "field": {
+                "Column": {
+                  "Property": "correo_decano",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.correo_decano"
+            },
+            {
+              "nativeQueryRef": "rut_director_academico",
+              "field": {
+                "Column": {
+                  "Property": "rut_director_academico",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.rut_director_academico"
+            },
+            {
+              "nativeQueryRef": "nombre_director_academico",
+              "field": {
+                "Column": {
+                  "Property": "nombre_director_academico",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.nombre_director_academico"
+            },
+            {
+              "nativeQueryRef": "correo_director_academico",
+              "field": {
+                "Column": {
+                  "Property": "correo_director_academico",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.correo_director_academico"
+            },
+            {
+              "nativeQueryRef": "rut_dc_o_dd",
+              "field": {
+                "Column": {
+                  "Property": "rut_dc_o_dd",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.rut_dc_o_dd"
+            },
+            {
+              "nativeQueryRef": "nombre_dc_o_dd",
+              "field": {
+                "Column": {
+                  "Property": "nombre_dc_o_dd",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.nombre_dc_o_dd"
+            },
+            {
+              "nativeQueryRef": "correo_dc_o_dd",
+              "field": {
+                "Column": {
+                  "Property": "correo_dc_o_dd",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.correo_dc_o_dd"
+            },
+            {
+              "nativeQueryRef": "rut_registro_academico",
+              "field": {
+                "Column": {
+                  "Property": "rut_registro_academico",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.rut_registro_academico"
+            },
+            {
+              "nativeQueryRef": "nombre_registro_academico",
+              "field": {
+                "Column": {
+                  "Property": "nombre_registro_academico",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.nombre_registro_academico"
+            },
+            {
+              "nativeQueryRef": "correo_registro_academico",
+              "field": {
+                "Column": {
+                  "Property": "correo_registro_academico",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.correo_registro_academico"
+            },
+            {
+              "nativeQueryRef": "nombre_titulos_y_grados",
+              "field": {
+                "Column": {
+                  "Property": "nombre_titulos_y_grados",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.nombre_titulos_y_grados"
+            },
+            {
+              "nativeQueryRef": "correo_titulos_y_grados",
+              "field": {
+                "Column": {
+                  "Property": "correo_titulos_y_grados",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.correo_titulos_y_grados"
+            },
+            {
+              "nativeQueryRef": "comentario_solicitante",
+              "field": {
+                "Column": {
+                  "Property": "comentario_solicitante",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.comentario_solicitante"
+            },
+            {
+              "nativeQueryRef": "estado_actual",
+              "field": {
+                "Column": {
+                  "Property": "estado_actual",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.estado_actual"
+            },
+            {
+              "nativeQueryRef": "start_date",
+              "field": {
+                "Column": {
+                  "Property": "start_date",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.start_date"
+            },
+            {
+              "nativeQueryRef": "stop_date",
+              "field": {
+                "Column": {
+                  "Property": "stop_date",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.stop_date"
+            },
+            {
+              "nativeQueryRef": "ejecutandose",
+              "field": {
+                "Column": {
+                  "Property": "ejecutandose",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.ejecutandose"
+            },
+            {
+              "nativeQueryRef": "ultimo_estado",
+              "field": {
+                "Column": {
+                  "Property": "ultimo_estado",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.ultimo_estado"
+            },
+            {
+              "nativeQueryRef": "originating_user_id",
+              "field": {
+                "Column": {
+                  "Property": "originating_user_id",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.originating_user_id"
+            },
+            {
+              "nativeQueryRef": "originating_event_id",
+              "field": {
+                "Column": {
+                  "Property": "originating_event_id",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.originating_event_id"
+            },
+            {
+              "nativeQueryRef": "originating_process_id",
+              "field": {
+                "Column": {
+                  "Property": "originating_process_id",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.originating_process_id"
+            },
+            {
+              "nativeQueryRef": "owner_role_id",
+              "field": {
+                "Column": {
+                  "Property": "owner_role_id",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.owner_role_id"
+            },
+            {
+              "nativeQueryRef": "admin_role_id",
+              "field": {
+                "Column": {
+                  "Property": "admin_role_id",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.admin_role_id"
+            },
+            {
+              "nativeQueryRef": "requires_execution_plan",
+              "field": {
+                "Column": {
+                  "Property": "requires_execution_plan",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.requires_execution_plan"
+            },
+            {
+              "nativeQueryRef": "estado_operacional",
+              "field": {
+                "Column": {
+                  "Property": "estado_operacional",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.estado_operacional"
+            },
+            {
+              "nativeQueryRef": "start_datetime",
+              "field": {
+                "Column": {
+                  "Property": "start_datetime",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.start_datetime"
+            },
+            {
+              "nativeQueryRef": "stop_datetime",
+              "field": {
+                "Column": {
+                  "Property": "stop_datetime",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_calificacion"
+                    }
+                  }
+                }
+              },
+              "queryRef": "solicitudes_calificacion.stop_datetime"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

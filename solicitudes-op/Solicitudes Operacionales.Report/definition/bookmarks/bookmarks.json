@@ -1,0 +1,41 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmarksMetadata/1.0.0/schema.json",
+  "items": [
+    {
+      "name": "res_filter_on"
+    },
+    {
+      "name": "res_filter_off"
+    },
+    {
+      "name": "res_menu_on"
+    },
+    {
+      "name": "res_menu_off"
+    },
+    {
+      "name": "ins_filter_on"
+    },
+    {
+      "name": "ins_filter_off"
+    },
+    {
+      "name": "ins_menu_on"
+    },
+    {
+      "name": "ins_menu_off"
+    },
+    {
+      "name": "cal_filter_on"
+    },
+    {
+      "name": "cal_filter_off"
+    },
+    {
+      "name": "cal_menu_on"
+    },
+    {
+      "name": "cal_menu_off"
+    }
+  ]
+}

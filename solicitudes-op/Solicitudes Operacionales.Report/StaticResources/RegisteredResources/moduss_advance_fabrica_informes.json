@@ -1,0 +1,70 @@
+{
+  "name": "MODUSS USS Advance - Fabrica Informes",
+  "dataColors": [
+    "#CFB47C",
+    "#001E61",
+    "#6CC6BE",
+    "#FF9E5D",
+    "#5E71EE",
+    "#B787FD",
+    "#D9B300",
+    "#D64550"
+  ],
+  "background": "#FFFFFF",
+  "foreground": "#1F2933",
+  "tableAccent": "#CFB47C",
+  "visualStyles": {
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#F7F8FA"
+              }
+            },
+            "transparency": 0
+          }
+        ]
+      }
+    },
+    "*": {
+      "*": {
+        "title": [
+          {
+            "show": true,
+            "fontFamily": "Segoe UI",
+            "fontSize": 11,
+            "color": {
+              "solid": {
+                "color": "#001E61"
+              }
+            }
+          }
+        ],
+        "background": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#D9DEE2"
+              }
+            },
+            "radius": 6
+          }
+        ]
+      }
+    }
+  }
+}

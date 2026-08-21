@@ -1,0 +1,14 @@
+table dim_tipo_solicitud
+	lineageTag: 90dbab2c-89a8-4b19-8790-8b0b43b19883
+
+	column tipo_solicitud
+		dataType: string
+		lineageTag: d138c3e5-9c8e-4a91-94eb-68ea815d8a90
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [tipo_solicitud]
+
+	partition dim_tipo_solicitud = calculated
+		mode: import
+		source = DISTINCT ( SELECTCOLUMNS ( solicitudes_consolidadas, "tipo_solicitud", solicitudes_consolidadas[tipo_solicitud] ) )
+

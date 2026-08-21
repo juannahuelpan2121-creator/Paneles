@@ -1,0 +1,62 @@
+{
+  "name": "Custom",
+  "textClasses": {
+    "label": {
+      "fontFace": "Arial",
+      "fontSize": 8,
+      "color": "#4A4A4A"
+    },
+    "callout": {
+      "fontFace": "Arial",
+      "fontSize": 14,
+      "color": "#4A4A4A"
+    },
+    "title": {
+      "fontFace": "Arial",
+      "fontSize": 14
+    },
+    "header": {
+      "fontFace": "Arial",
+      "fontSize": 10
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "transparency": 100
+          }
+        ]
+      }
+    }
+  },
+  "dataColors": [
+    "#CFB47C",
+    "#506474",
+    "#6CC6BE",
+    "#FF9E5D",
+    "#5E71EE",
+    "#B787FD",
+    "#D9B300",
+    "#D64550"
+  ]
+}

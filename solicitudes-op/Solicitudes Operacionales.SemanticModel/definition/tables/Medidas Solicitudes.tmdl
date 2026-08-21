@@ -1,0 +1,179 @@
+table 'Medidas Solicitudes'
+	lineageTag: 4116aeb2-d563-46d3-92d9-cb6f8288bdc4
+
+	measure 'Solicitudes Total' = ```
+				COUNTROWS ( solicitudes_consolidadas )
+			```
+		formatString: #,0
+		lineageTag: 80b556e8-bc3e-4c73-aba8-ae31ce0a7c02
+
+	measure 'Solicitudes Finalizadas' = ```
+				CALCULATE ( [Solicitudes Total], solicitudes_consolidadas[estado_operacional] = "FINALIZADA" )
+			```
+		formatString: #,0
+		lineageTag: d83a0540-a604-4a4d-bff5-434cb12e29ca
+
+	measure 'Solicitudes En Curso' = ```
+				CALCULATE ( [Solicitudes Total], solicitudes_consolidadas[estado_operacional] = "EN CURSO" )
+			```
+		formatString: #,0
+		lineageTag: c12eb950-927f-4870-8218-33a065ff014b
+
+	measure '% Solicitudes Finalizadas' = ```
+				DIVIDE ( [Solicitudes Finalizadas], [Solicitudes Total] )
+			```
+		formatString: 0.0%
+		lineageTag: d39ae25f-c379-42fd-8678-d79322fedd41
+
+	measure 'Solicitudes Inscripción' = ```
+				CALCULATE ( [Solicitudes Total], solicitudes_consolidadas[tipo_solicitud] = "Inscripción extraordinaria" )
+			```
+		formatString: #,0
+		lineageTag: d0c5719b-0cc8-4f25-adaa-4b8ac3fffebd
+
+	measure 'Solicitudes Calificación' = ```
+				CALCULATE ( [Solicitudes Total], solicitudes_consolidadas[tipo_solicitud] = "Cambio de calificación" )
+			```
+		formatString: #,0
+		lineageTag: e05d241b-bdbf-4aa4-8648-def3d8728e27
+
+	measure 'Inscripción Total' = ```
+				COUNTROWS ( solicitudes_inscripcion )
+			```
+		formatString: #,0
+		lineageTag: c2af88ff-a9b1-4dcb-959d-0bf993ab7e53
+
+	measure 'Inscripción Finalizadas' = ```
+				CALCULATE ( [Inscripción Total], solicitudes_inscripcion[estado_operacional] = "FINALIZADA" )
+			```
+		formatString: #,0
+		lineageTag: eb037307-163a-4a92-a43c-97a1dcafc222
+
+	measure 'Inscripción En Curso' = ```
+				CALCULATE ( [Inscripción Total], solicitudes_inscripcion[estado_operacional] = "EN CURSO" )
+			```
+		formatString: #,0
+		lineageTag: 29bfb739-a76f-4da0-a572-17e8c58c0429
+
+	measure '% Inscripción Finalizadas' = ```
+				DIVIDE ( [Inscripción Finalizadas], [Inscripción Total] )
+			```
+		formatString: 0.0%
+		lineageTag: b0105f21-1cc8-4a82-bdb9-8de53b1337b8
+
+	measure 'Calificación Total' = ```
+				COUNTROWS ( solicitudes_calificacion )
+			```
+		formatString: #,0
+		lineageTag: b81a4df6-6692-42a1-b58d-c9cf6182fd57
+
+	measure 'Calificación Finalizadas' = ```
+				CALCULATE ( [Calificación Total], solicitudes_calificacion[estado_operacional] = "FINALIZADA" )
+			```
+		formatString: #,0
+		lineageTag: d34659bf-dfe6-4ecd-8f26-9072338c7e45
+
+	measure 'Calificación En Curso' = ```
+				CALCULATE ( [Calificación Total], solicitudes_calificacion[estado_operacional] = "EN CURSO" )
+			```
+		formatString: #,0
+		lineageTag: c6fce60e-f914-4152-8f8e-fdd62167714b
+
+	measure '% Calificación Finalizadas' = ```
+				DIVIDE ( [Calificación Finalizadas], [Calificación Total] )
+			```
+		formatString: 0.0%
+		lineageTag: a5ac0b97-970e-46f1-9bb8-5325315be57b
+
+	measure 'Encabezado Resumen' = ```
+				VAR vPeriodo = IF ( ISFILTERED ( dim_periodo[periodo] ), CONCATENATEX ( VALUES ( dim_periodo[periodo] ), dim_periodo[periodo], ", " ), "Todos" )
+				VAR vEstado = IF ( ISFILTERED ( dim_estado[estado_operacional] ), CONCATENATEX ( VALUES ( dim_estado[estado_operacional] ), dim_estado[estado_operacional], ", " ), "Todos" )
+				VAR cPeriodo = IF ( ISFILTERED ( dim_periodo[periodo] ), "#F3E7C4", "#EAF1FB" )
+				VAR cEstado = IF ( ISFILTERED ( dim_estado[estado_operacional] ), "#F3E7C4", "#EAF1FB" )
+				VAR vExtra1 = IF ( ISFILTERED ( dim_tipo_solicitud[tipo_solicitud] ), CONCATENATEX ( VALUES ( dim_tipo_solicitud[tipo_solicitud] ), dim_tipo_solicitud[tipo_solicitud], ", " ), "Todos" )
+				VAR cExtra1 = IF ( ISFILTERED ( dim_tipo_solicitud[tipo_solicitud] ), "#F3E7C4", "#EAF1FB" )
+				VAR vExtra2 = ""
+				VAR cExtra2 = "#EAF1FB"
+				RETURN
+				"<style>html,body{margin:0;padding:0;background:transparent;font-family:Arial,Segoe UI,sans-serif;overflow:hidden}.hdr{height:122px;box-sizing:border-box;background:#fff;border:1px solid #E1E6ED;border-radius:10px;box-shadow:0 4px 12px rgba(17,43,66,.08);position:relative;color:#112B42;overflow:hidden}.divider{position:absolute;left:230px;top:20px;width:2px;height:58px;background:#C6B27F}.title{position:absolute;left:255px;top:16px;font-size:23px;font-weight:700;display:flex;align-items:center;gap:7px}.subtitle{position:absolute;left:255px;top:49px;font-size:12px;color:#58616E}.area{position:absolute;left:255px;top:69px;font-size:10px;font-weight:600;color:#8A7440}.chips{position:absolute;left:18px;bottom:12px;display:flex;gap:7px;align-items:center;font-size:10px;color:#475569;max-width:1070px;white-space:nowrap;overflow:hidden}.chip{padding:3px 8px;border-radius:999px;color:#112B42}.info{position:static;display:block;font-size:11px}.info>summary{display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#C6B27F;color:#fff;font-size:11px;line-height:20px;list-style:none;cursor:pointer}.info>summary::-webkit-details-marker{display:none}.info>summary::marker{content:''}.info[open]>summary{position:fixed;left:931px;top:10px;z-index:10001;background:#F4F0E3;color:#112B42;font-size:0}.info[open]>summary::after{content:'×';font-size:14px;font-weight:700}.tip{display:none;position:fixed;left:270px;top:5px;width:690px;height:112px;z-index:9999;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:8px;box-shadow:0 6px 18px rgba(17,43,66,.16);padding:10px 15px 18px;box-sizing:border-box}.info[open]>.tip{display:block}.tipgrid{display:grid;grid-template-columns:1fr 1fr 1fr;height:76px}.tipgrid>div{padding:2px 15px;border-right:1px solid #E1E6ED}.tipgrid>div:first-child{padding-left:8px}.tipgrid>div:last-child{border-right:0}.tip b{display:block;color:#8A7440;font-size:9px;margin-bottom:5px}.tip span{display:block;color:#334155;font-size:8px;line-height:11px}.source{position:absolute;left:23px;right:23px;bottom:5px;padding-top:4px;border-top:1px solid #E1E6ED;color:#64748B;font-size:7px}</style>" &
+				"<div class='hdr'><div class='divider'></div><div class='title'><span>Solicitudes académicas</span><details class='info'><summary title='Haz clic para ver la metodología'>i</summary><div class='tip'><div class='tipgrid'><div><b>Objetivo</b><span>Consolidar y monitorear las solicitudes académicas registradas en los workflows institucionales.</span></div><div><b>Descriptor</b><span>Cantidad de solicitudes según período, tipo, estado operacional, nivel académico y sede.</span></div><div><b>Fórmula de cálculo</b><span>Finalizada: posee fecha de término o running es falso. En curso: resto de solicitudes. La tasa divide finalizadas por solicitudes totales.</span></div></div><div class='source'>Fuente: Banner Workflow en Data Lake USS. Actualización según programación del modelo.</div></div></details></div><div class='subtitle'>Resumen operacional consolidado de workflows académicos.</div><div class='area'>Dirección General de Control de Gestión y Análisis Institucional</div>" &
+				"<div class='chips'><span>Filtros aplicados:</span><span class='chip' style='background:" & cPeriodo & "'>Periodo: <b>" & vPeriodo & "</b></span><span class='chip' style='background:" & cEstado & "'>Estado: <b>" & vEstado & "</b></span><span class='chip' style='background:" & cExtra1 & "'>Tipo: <b>" & vExtra1 & "</b></span></div></div>"
+			```
+		lineageTag: a11bda10-bb1a-428e-ae4e-22d9a5a02877
+
+	measure 'Encabezado Inscripción' = ```
+				VAR vPeriodo = IF ( ISFILTERED ( dim_periodo[periodo] ), CONCATENATEX ( VALUES ( dim_periodo[periodo] ), dim_periodo[periodo], ", " ), "Todos" )
+				VAR vEstado = IF ( ISFILTERED ( dim_estado[estado_operacional] ), CONCATENATEX ( VALUES ( dim_estado[estado_operacional] ), dim_estado[estado_operacional], ", " ), "Todos" )
+				VAR cPeriodo = IF ( ISFILTERED ( dim_periodo[periodo] ), "#F3E7C4", "#EAF1FB" )
+				VAR cEstado = IF ( ISFILTERED ( dim_estado[estado_operacional] ), "#F3E7C4", "#EAF1FB" )
+				VAR vExtra1 = IF ( ISFILTERED ( solicitudes_inscripcion[nivel] ), CONCATENATEX ( VALUES ( solicitudes_inscripcion[nivel] ), solicitudes_inscripcion[nivel], ", " ), "Todos" )
+				VAR cExtra1 = IF ( ISFILTERED ( solicitudes_inscripcion[nivel] ), "#F3E7C4", "#EAF1FB" )
+				VAR vExtra2 = IF ( ISFILTERED ( solicitudes_inscripcion[sede] ), CONCATENATEX ( VALUES ( solicitudes_inscripcion[sede] ), solicitudes_inscripcion[sede], ", " ), "Todos" )
+				VAR cExtra2 = IF ( ISFILTERED ( solicitudes_inscripcion[sede] ), "#F3E7C4", "#EAF1FB" )
+				RETURN
+				"<style>html,body{margin:0;padding:0;background:transparent;font-family:Arial,Segoe UI,sans-serif;overflow:hidden}.hdr{height:122px;box-sizing:border-box;background:#fff;border:1px solid #E1E6ED;border-radius:10px;box-shadow:0 4px 12px rgba(17,43,66,.08);position:relative;color:#112B42;overflow:hidden}.divider{position:absolute;left:230px;top:20px;width:2px;height:58px;background:#C6B27F}.title{position:absolute;left:255px;top:16px;font-size:23px;font-weight:700;display:flex;align-items:center;gap:7px}.subtitle{position:absolute;left:255px;top:49px;font-size:12px;color:#58616E}.area{position:absolute;left:255px;top:69px;font-size:10px;font-weight:600;color:#8A7440}.chips{position:absolute;left:18px;bottom:12px;display:flex;gap:7px;align-items:center;font-size:10px;color:#475569;max-width:1070px;white-space:nowrap;overflow:hidden}.chip{padding:3px 8px;border-radius:999px;color:#112B42}.info{position:static;display:block;font-size:11px}.info>summary{display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#C6B27F;color:#fff;font-size:11px;line-height:20px;list-style:none;cursor:pointer}.info>summary::-webkit-details-marker{display:none}.info>summary::marker{content:''}.info[open]>summary{position:fixed;left:931px;top:10px;z-index:10001;background:#F4F0E3;color:#112B42;font-size:0}.info[open]>summary::after{content:'×';font-size:14px;font-weight:700}.tip{display:none;position:fixed;left:270px;top:5px;width:690px;height:112px;z-index:9999;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:8px;box-shadow:0 6px 18px rgba(17,43,66,.16);padding:10px 15px 18px;box-sizing:border-box}.info[open]>.tip{display:block}.tipgrid{display:grid;grid-template-columns:1fr 1fr 1fr;height:76px}.tipgrid>div{padding:2px 15px;border-right:1px solid #E1E6ED}.tipgrid>div:first-child{padding-left:8px}.tipgrid>div:last-child{border-right:0}.tip b{display:block;color:#8A7440;font-size:9px;margin-bottom:5px}.tip span{display:block;color:#334155;font-size:8px;line-height:11px}.source{position:absolute;left:23px;right:23px;bottom:5px;padding-top:4px;border-top:1px solid #E1E6ED;color:#64748B;font-size:7px}</style>" &
+				"<div class='hdr'><div class='divider'></div><div class='title'><span>Inscripción extraordinaria</span><details class='info'><summary title='Haz clic para ver la metodología'>i</summary><div class='tip'><div class='tipgrid'><div><b>Objetivo</b><span>Consolidar y monitorear las solicitudes académicas registradas en los workflows institucionales.</span></div><div><b>Descriptor</b><span>Cantidad de solicitudes según período, tipo, estado operacional, nivel académico y sede.</span></div><div><b>Fórmula de cálculo</b><span>Finalizada: posee fecha de término o running es falso. En curso: resto de solicitudes. La tasa divide finalizadas por solicitudes totales.</span></div></div><div class='source'>Fuente: Banner Workflow en Data Lake USS. Actualización según programación del modelo.</div></div></details></div><div class='subtitle'>Seguimiento histórico de solicitudes extraordinarias de inscripción de asignaturas.</div><div class='area'>Dirección General de Control de Gestión y Análisis Institucional</div>" &
+				"<div class='chips'><span>Filtros aplicados:</span><span class='chip' style='background:" & cPeriodo & "'>Periodo: <b>" & vPeriodo & "</b></span><span class='chip' style='background:" & cEstado & "'>Estado: <b>" & vEstado & "</b></span><span class='chip' style='background:" & cExtra1 & "'>Nivel: <b>" & vExtra1 & "</b></span><span class='chip' style='background:" & cExtra2 & "'>Sede: <b>" & vExtra2 & "</b></span></div></div>"
+			```
+		lineageTag: 85a42cdf-72cc-4094-9973-fe55c0c5b526
+
+	measure 'Encabezado Calificación' = ```
+				VAR vPeriodo = IF ( ISFILTERED ( dim_periodo[periodo] ), CONCATENATEX ( VALUES ( dim_periodo[periodo] ), dim_periodo[periodo], ", " ), "Todos" )
+				VAR vEstado = IF ( ISFILTERED ( dim_estado[estado_operacional] ), CONCATENATEX ( VALUES ( dim_estado[estado_operacional] ), dim_estado[estado_operacional], ", " ), "Todos" )
+				VAR cPeriodo = IF ( ISFILTERED ( dim_periodo[periodo] ), "#F3E7C4", "#EAF1FB" )
+				VAR cEstado = IF ( ISFILTERED ( dim_estado[estado_operacional] ), "#F3E7C4", "#EAF1FB" )
+				VAR vExtra1 = IF ( ISFILTERED ( solicitudes_calificacion[nivel] ), CONCATENATEX ( VALUES ( solicitudes_calificacion[nivel] ), solicitudes_calificacion[nivel], ", " ), "Todos" )
+				VAR cExtra1 = IF ( ISFILTERED ( solicitudes_calificacion[nivel] ), "#F3E7C4", "#EAF1FB" )
+				VAR vExtra2 = IF ( ISFILTERED ( solicitudes_calificacion[sede] ), CONCATENATEX ( VALUES ( solicitudes_calificacion[sede] ), solicitudes_calificacion[sede], ", " ), "Todos" )
+				VAR cExtra2 = IF ( ISFILTERED ( solicitudes_calificacion[sede] ), "#F3E7C4", "#EAF1FB" )
+				RETURN
+				"<style>html,body{margin:0;padding:0;background:transparent;font-family:Arial,Segoe UI,sans-serif;overflow:hidden}.hdr{height:122px;box-sizing:border-box;background:#fff;border:1px solid #E1E6ED;border-radius:10px;box-shadow:0 4px 12px rgba(17,43,66,.08);position:relative;color:#112B42;overflow:hidden}.divider{position:absolute;left:230px;top:20px;width:2px;height:58px;background:#C6B27F}.title{position:absolute;left:255px;top:16px;font-size:23px;font-weight:700;display:flex;align-items:center;gap:7px}.subtitle{position:absolute;left:255px;top:49px;font-size:12px;color:#58616E}.area{position:absolute;left:255px;top:69px;font-size:10px;font-weight:600;color:#8A7440}.chips{position:absolute;left:18px;bottom:12px;display:flex;gap:7px;align-items:center;font-size:10px;color:#475569;max-width:1070px;white-space:nowrap;overflow:hidden}.chip{padding:3px 8px;border-radius:999px;color:#112B42}.info{position:static;display:block;font-size:11px}.info>summary{display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#C6B27F;color:#fff;font-size:11px;line-height:20px;list-style:none;cursor:pointer}.info>summary::-webkit-details-marker{display:none}.info>summary::marker{content:''}.info[open]>summary{position:fixed;left:931px;top:10px;z-index:10001;background:#F4F0E3;color:#112B42;font-size:0}.info[open]>summary::after{content:'×';font-size:14px;font-weight:700}.tip{display:none;position:fixed;left:270px;top:5px;width:690px;height:112px;z-index:9999;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:8px;box-shadow:0 6px 18px rgba(17,43,66,.16);padding:10px 15px 18px;box-sizing:border-box}.info[open]>.tip{display:block}.tipgrid{display:grid;grid-template-columns:1fr 1fr 1fr;height:76px}.tipgrid>div{padding:2px 15px;border-right:1px solid #E1E6ED}.tipgrid>div:first-child{padding-left:8px}.tipgrid>div:last-child{border-right:0}.tip b{display:block;color:#8A7440;font-size:9px;margin-bottom:5px}.tip span{display:block;color:#334155;font-size:8px;line-height:11px}.source{position:absolute;left:23px;right:23px;bottom:5px;padding-top:4px;border-top:1px solid #E1E6ED;color:#64748B;font-size:7px}</style>" &
+				"<div class='hdr'><div class='divider'></div><div class='title'><span>Cambio de calificación</span><details class='info'><summary title='Haz clic para ver la metodología'>i</summary><div class='tip'><div class='tipgrid'><div><b>Objetivo</b><span>Consolidar y monitorear las solicitudes académicas registradas en los workflows institucionales.</span></div><div><b>Descriptor</b><span>Cantidad de solicitudes según período, tipo, estado operacional, nivel académico y sede.</span></div><div><b>Fórmula de cálculo</b><span>Finalizada: posee fecha de término o running es falso. En curso: resto de solicitudes. La tasa divide finalizadas por solicitudes totales.</span></div></div><div class='source'>Fuente: Banner Workflow en Data Lake USS. Actualización según programación del modelo.</div></div></details></div><div class='subtitle'>Seguimiento histórico de solicitudes de modificación de calificaciones.</div><div class='area'>Dirección General de Control de Gestión y Análisis Institucional</div>" &
+				"<div class='chips'><span>Filtros aplicados:</span><span class='chip' style='background:" & cPeriodo & "'>Periodo: <b>" & vPeriodo & "</b></span><span class='chip' style='background:" & cEstado & "'>Estado: <b>" & vEstado & "</b></span><span class='chip' style='background:" & cExtra1 & "'>Nivel: <b>" & vExtra1 & "</b></span><span class='chip' style='background:" & cExtra2 & "'>Sede: <b>" & vExtra2 & "</b></span></div></div>"
+			```
+		lineageTag: c30c3cf4-5ab5-4b1c-ad7a-a23b14d9c381
+
+	measure 'HTML KPI Resumen' = ```
+				VAR total = [Solicitudes Total]
+				VAR fin = [Solicitudes Finalizadas]
+				VAR curso = [Solicitudes En Curso]
+				VAR tasa = [% Solicitudes Finalizadas]
+				VAR ins = [Solicitudes Inscripción]
+				VAR cal = [Solicitudes Calificación]
+				RETURN
+				"<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;background:transparent;font-family:Arial,Segoe UI,sans-serif}.wrap{height:100%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:12px}.card{box-sizing:border-box;height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:11px 16px 10px 18px;box-shadow:0 3px 10px rgba(17,43,66,.06)}.head{flex:0 0 37px;min-height:37px}.title{font-size:12px;font-weight:700;line-height:15px;color:#112B42}.desc{margin-top:2px;font-size:9px;line-height:11px;color:#58616E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.value{flex:1;display:flex;align-items:center;font-size:27px;font-weight:700;line-height:1;color:#112B42}</style>" &
+				"<div class='wrap'><div class='card'><div class='head'><div class='title'>Solicitudes totales</div><div class='desc'>Total de workflows registrados.</div></div><div class='value'>" & FORMAT(total,"#,##0") & "</div></div><div class='card'><div class='head'><div class='title'>Finalizadas</div><div class='desc'>Procesos con término registrado.</div></div><div class='value'>" & FORMAT(fin,"#,##0") & "</div></div><div class='card'><div class='head'><div class='title'>En curso</div><div class='desc'>Procesos actualmente activos.</div></div><div class='value'>" & FORMAT(curso,"#,##0") & "</div></div><div class='card'><div class='head'><div class='title'>Tasa de finalización</div><div class='desc'>Finalizadas respecto del total.</div></div><div class='value'>" & FORMAT(tasa,"0.0%") & "</div></div><div class='card'><div class='head'><div class='title'>Inscripción extraordinaria</div><div class='desc'>Solicitudes extraordinarias de asignaturas.</div></div><div class='value'>" & FORMAT(ins,"#,##0") & "</div></div><div class='card'><div class='head'><div class='title'>Cambio de calificación</div><div class='desc'>Solicitudes de modificación de nota.</div></div><div class='value'>" & FORMAT(cal,"#,##0") & "</div></div></div>"
+			```
+		lineageTag: 8ea8d40e-7cc5-495a-a45a-1631586e97de
+
+	measure 'HTML KPI Inscripción' = ```
+				VAR total = [Inscripción Total]
+				VAR fin = [Inscripción Finalizadas]
+				VAR curso = [Inscripción En Curso]
+				VAR tasa = [% Inscripción Finalizadas]
+				RETURN
+				"<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;background:transparent;font-family:Arial,Segoe UI,sans-serif}.wrap{height:100%;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{box-sizing:border-box;height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:14px 18px 12px 20px;box-shadow:0 3px 10px rgba(17,43,66,.06)}.head{flex:0 0 55px;min-height:55px}.title{font-size:14px;font-weight:700;line-height:17px;color:#112B42}.desc{margin-top:4px;font-size:11px;line-height:14px;color:#58616E}.value{flex:1;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;line-height:1;color:#112B42}</style>" &
+				"<div class='wrap'><div class='card'><div class='head'><div class='title'>Solicitudes</div><div class='desc'>Total registrado según filtros.</div></div><div class='value'>" & FORMAT(total,"#,##0") & "</div></div><div class='card'><div class='head'><div class='title'>Finalizadas</div><div class='desc'>Procesos con término registrado.</div></div><div class='value'>" & FORMAT(fin,"#,##0") & "</div></div><div class='card'><div class='head'><div class='title'>En curso</div><div class='desc'>Procesos actualmente activos.</div></div><div class='value'>" & FORMAT(curso,"#,##0") & "</div></div><div class='card'><div class='head'><div class='title'>Tasa de finalización</div><div class='desc'>Finalizadas respecto del total.</div></div><div class='value'>" & FORMAT(tasa,"0.0%") & "</div></div></div>"
+			```
+		lineageTag: 9863d3e1-7aef-4e77-93cb-14cae1252650
+
+	measure 'HTML KPI Calificación' = ```
+				VAR total = [Calificación Total]
+				VAR fin = [Calificación Finalizadas]
+				VAR curso = [Calificación En Curso]
+				VAR tasa = [% Calificación Finalizadas]
+				RETURN
+				"<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;background:transparent;font-family:Arial,Segoe UI,sans-serif}.wrap{height:100%;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{box-sizing:border-box;height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:14px 18px 12px 20px;box-shadow:0 3px 10px rgba(17,43,66,.06)}.head{flex:0 0 55px;min-height:55px}.title{font-size:14px;font-weight:700;line-height:17px;color:#112B42}.desc{margin-top:4px;font-size:11px;line-height:14px;color:#58616E}.value{flex:1;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;line-height:1;color:#112B42}</style>" &
+				"<div class='wrap'><div class='card'><div class='head'><div class='title'>Solicitudes</div><div class='desc'>Total registrado según filtros.</div></div><div class='value'>" & FORMAT(total,"#,##0") & "</div></div><div class='card'><div class='head'><div class='title'>Finalizadas</div><div class='desc'>Procesos con término registrado.</div></div><div class='value'>" & FORMAT(fin,"#,##0") & "</div></div><div class='card'><div class='head'><div class='title'>En curso</div><div class='desc'>Procesos actualmente activos.</div></div><div class='value'>" & FORMAT(curso,"#,##0") & "</div></div><div class='card'><div class='head'><div class='title'>Tasa de finalización</div><div class='desc'>Finalizadas respecto del total.</div></div><div class='value'>" & FORMAT(tasa,"0.0%") & "</div></div></div>"
+			```
+		lineageTag: 1a343f89-d8b6-4506-82dc-bb69b420241e
+
+	column Marcador
+		lineageTag: 3df4006c-cee4-4227-8953-30770f3534b6
+		isNameInferred
+		sourceColumn: [Marcador]
+
+	partition 'Medidas Solicitudes' = calculated
+		mode: import
+		source = DATATABLE ( "Marcador", STRING, { { "Medidas" } } )
+
