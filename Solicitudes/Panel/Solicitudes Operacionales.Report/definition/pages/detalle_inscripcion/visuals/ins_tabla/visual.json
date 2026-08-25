@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.id",
-              "nativeQueryRef": "id"
+              "nativeQueryRef": "id",
+              "displayName": "ID Solicitud"
             },
             {
               "field": {
@@ -41,7 +42,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.pd_id",
-              "nativeQueryRef": "pd_id"
+              "nativeQueryRef": "pd_id",
+              "displayName": "ID Tipo de Solicitud"
             },
             {
               "field": {
@@ -55,7 +57,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.name",
-              "nativeQueryRef": "name"
+              "nativeQueryRef": "name",
+              "displayName": "Solicitud"
             },
             {
               "field": {
@@ -69,7 +72,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.rut_estudiante",
-              "nativeQueryRef": "rut_estudiante"
+              "nativeQueryRef": "rut_estudiante",
+              "displayName": "RUT Estudiante"
             },
             {
               "field": {
@@ -83,7 +87,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nombre_estudiante",
-              "nativeQueryRef": "nombre_estudiante"
+              "nativeQueryRef": "nombre_estudiante",
+              "displayName": "Nombre Estudiante"
             },
             {
               "field": {
@@ -97,7 +102,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.c_carrera",
-              "nativeQueryRef": "c_carrera"
+              "nativeQueryRef": "c_carrera",
+              "displayName": "C carrera"
             },
             {
               "field": {
@@ -111,7 +117,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.estado_alumno",
-              "nativeQueryRef": "estado_alumno"
+              "nativeQueryRef": "estado_alumno",
+              "displayName": "Estado del Estudiante"
             },
             {
               "field": {
@@ -125,7 +132,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.email_alumno",
-              "nativeQueryRef": "email_alumno"
+              "nativeQueryRef": "email_alumno",
+              "displayName": "Correo Estudiante"
             },
             {
               "field": {
@@ -139,7 +147,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nivel",
-              "nativeQueryRef": "nivel"
+              "nativeQueryRef": "nivel",
+              "displayName": "Nivel Académico"
             },
             {
               "field": {
@@ -153,7 +162,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.periodo_adm",
-              "nativeQueryRef": "periodo_adm"
+              "nativeQueryRef": "periodo_adm",
+              "displayName": "Período de Admisión"
             },
             {
               "field": {
@@ -167,7 +177,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.retencion",
-              "nativeQueryRef": "retencion"
+              "nativeQueryRef": "retencion",
+              "displayName": "Retencion"
             },
             {
               "field": {
@@ -181,7 +192,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.sede",
-              "nativeQueryRef": "sede"
+              "nativeQueryRef": "sede",
+              "displayName": "Sede"
             },
             {
               "field": {
@@ -195,7 +207,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.secuencia_plan",
-              "nativeQueryRef": "secuencia_plan"
+              "nativeQueryRef": "secuencia_plan",
+              "displayName": "Secuencia de Plan"
             },
             {
               "field": {
@@ -209,7 +222,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.pga",
-              "nativeQueryRef": "pga"
+              "nativeQueryRef": "pga",
+              "displayName": "PGA"
             },
             {
               "field": {
@@ -223,7 +237,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.asignaturas_aprobadas",
-              "nativeQueryRef": "asignaturas_aprobadas"
+              "nativeQueryRef": "asignaturas_aprobadas",
+              "displayName": "Asignaturas aprobadas"
             },
             {
               "field": {
@@ -237,7 +252,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.fecha_solicitud",
-              "nativeQueryRef": "fecha_solicitud"
+              "nativeQueryRef": "fecha_solicitud",
+              "displayName": "Fecha de Solicitud"
             },
             {
               "field": {
@@ -251,7 +267,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.periodo",
-              "nativeQueryRef": "periodo"
+              "nativeQueryRef": "periodo",
+              "displayName": "Período"
             },
             {
               "field": {
@@ -265,7 +282,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.c_codigo_solicitud",
-              "nativeQueryRef": "c_codigo_solicitud"
+              "nativeQueryRef": "c_codigo_solicitud",
+              "displayName": "C codigo solicitud"
             },
             {
               "field": {
@@ -279,7 +297,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.comentario",
-              "nativeQueryRef": "comentario"
+              "nativeQueryRef": "comentario",
+              "displayName": "Comentario"
             },
             {
               "field": {
@@ -293,7 +312,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nrc1",
-              "nativeQueryRef": "nrc1"
+              "nativeQueryRef": "nrc1",
+              "displayName": "NRC 1"
             },
             {
               "field": {
@@ -307,7 +327,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.resp_nrc1",
-              "nativeQueryRef": "resp_nrc1"
+              "nativeQueryRef": "resp_nrc1",
+              "displayName": "Resp NRC 1"
             },
             {
               "field": {
@@ -321,7 +342,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nrc2",
-              "nativeQueryRef": "nrc2"
+              "nativeQueryRef": "nrc2",
+              "displayName": "NRC 2"
             },
             {
               "field": {
@@ -335,7 +357,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.resp_nrc2",
-              "nativeQueryRef": "resp_nrc2"
+              "nativeQueryRef": "resp_nrc2",
+              "displayName": "Resp NRC 2"
             },
             {
               "field": {
@@ -349,7 +372,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nrc3",
-              "nativeQueryRef": "nrc3"
+              "nativeQueryRef": "nrc3",
+              "displayName": "NRC 3"
             },
             {
               "field": {
@@ -363,7 +387,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.resp_nrc3",
-              "nativeQueryRef": "resp_nrc3"
+              "nativeQueryRef": "resp_nrc3",
+              "displayName": "Resp NRC 3"
             },
             {
               "field": {
@@ -377,7 +402,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nrc4",
-              "nativeQueryRef": "nrc4"
+              "nativeQueryRef": "nrc4",
+              "displayName": "NRC 4"
             },
             {
               "field": {
@@ -391,7 +417,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.resp_nrc4",
-              "nativeQueryRef": "resp_nrc4"
+              "nativeQueryRef": "resp_nrc4",
+              "displayName": "Resp NRC 4"
             },
             {
               "field": {
@@ -405,7 +432,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nrc5",
-              "nativeQueryRef": "nrc5"
+              "nativeQueryRef": "nrc5",
+              "displayName": "NRC 5"
             },
             {
               "field": {
@@ -419,7 +447,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.resp_nrc5",
-              "nativeQueryRef": "resp_nrc5"
+              "nativeQueryRef": "resp_nrc5",
+              "displayName": "Resp NRC 5"
             },
             {
               "field": {
@@ -433,7 +462,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nrc6",
-              "nativeQueryRef": "nrc6"
+              "nativeQueryRef": "nrc6",
+              "displayName": "NRC 6"
             },
             {
               "field": {
@@ -447,7 +477,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.resp_nrc6",
-              "nativeQueryRef": "resp_nrc6"
+              "nativeQueryRef": "resp_nrc6",
+              "displayName": "Resp NRC 6"
             },
             {
               "field": {
@@ -461,7 +492,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nrc7",
-              "nativeQueryRef": "nrc7"
+              "nativeQueryRef": "nrc7",
+              "displayName": "NRC 7"
             },
             {
               "field": {
@@ -475,7 +507,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.resp_nrc7",
-              "nativeQueryRef": "resp_nrc7"
+              "nativeQueryRef": "resp_nrc7",
+              "displayName": "Resp NRC 7"
             },
             {
               "field": {
@@ -489,7 +522,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nrc8",
-              "nativeQueryRef": "nrc8"
+              "nativeQueryRef": "nrc8",
+              "displayName": "NRC 8"
             },
             {
               "field": {
@@ -503,7 +537,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.resp_nrc8",
-              "nativeQueryRef": "resp_nrc8"
+              "nativeQueryRef": "resp_nrc8",
+              "displayName": "Resp NRC 8"
             },
             {
               "field": {
@@ -517,7 +552,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nrc9",
-              "nativeQueryRef": "nrc9"
+              "nativeQueryRef": "nrc9",
+              "displayName": "NRC 9"
             },
             {
               "field": {
@@ -531,7 +567,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.resp_nrc9",
-              "nativeQueryRef": "resp_nrc9"
+              "nativeQueryRef": "resp_nrc9",
+              "displayName": "Resp NRC 9"
             },
             {
               "field": {
@@ -545,7 +582,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nrc10",
-              "nativeQueryRef": "nrc10"
+              "nativeQueryRef": "nrc10",
+              "displayName": "NRC 10"
             },
             {
               "field": {
@@ -559,7 +597,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.resp_nrc10",
-              "nativeQueryRef": "resp_nrc10"
+              "nativeQueryRef": "resp_nrc10",
+              "displayName": "Resp NRC 10"
             },
             {
               "field": {
@@ -573,7 +612,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nrc11",
-              "nativeQueryRef": "nrc11"
+              "nativeQueryRef": "nrc11",
+              "displayName": "NRC 11"
             },
             {
               "field": {
@@ -587,7 +627,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.resp_nrc11",
-              "nativeQueryRef": "resp_nrc11"
+              "nativeQueryRef": "resp_nrc11",
+              "displayName": "Resp NRC 11"
             },
             {
               "field": {
@@ -601,7 +642,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nrc12",
-              "nativeQueryRef": "nrc12"
+              "nativeQueryRef": "nrc12",
+              "displayName": "NRC 12"
             },
             {
               "field": {
@@ -615,7 +657,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.resp_nrc12",
-              "nativeQueryRef": "resp_nrc12"
+              "nativeQueryRef": "resp_nrc12",
+              "displayName": "Resp NRC 12"
             },
             {
               "field": {
@@ -629,7 +672,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nrcs_solicitados",
-              "nativeQueryRef": "nrcs_solicitados"
+              "nativeQueryRef": "nrcs_solicitados",
+              "displayName": "Nrcs solicitados"
             },
             {
               "field": {
@@ -643,7 +687,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.nrcs_rechazado",
-              "nativeQueryRef": "nrcs_rechazado"
+              "nativeQueryRef": "nrcs_rechazado",
+              "displayName": "Nrcs rechazado"
             },
             {
               "field": {
@@ -657,7 +702,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.mensaje",
-              "nativeQueryRef": "mensaje"
+              "nativeQueryRef": "mensaje",
+              "displayName": "Mensaje"
             },
             {
               "field": {
@@ -671,7 +717,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.estado_actual",
-              "nativeQueryRef": "estado_actual"
+              "nativeQueryRef": "estado_actual",
+              "displayName": "Estado Técnico"
             },
             {
               "field": {
@@ -685,7 +732,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.start_date",
-              "nativeQueryRef": "start_date"
+              "nativeQueryRef": "start_date",
+              "displayName": "Inicio (epoch)"
             },
             {
               "field": {
@@ -699,7 +747,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.stop_date",
-              "nativeQueryRef": "stop_date"
+              "nativeQueryRef": "stop_date",
+              "displayName": "Cierre (epoch)"
             },
             {
               "field": {
@@ -713,7 +762,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.ejecutandose",
-              "nativeQueryRef": "ejecutandose"
+              "nativeQueryRef": "ejecutandose",
+              "displayName": "Ejecutandose"
             },
             {
               "field": {
@@ -727,7 +777,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.ultimo_estado",
-              "nativeQueryRef": "ultimo_estado"
+              "nativeQueryRef": "ultimo_estado",
+              "displayName": "Ultimo estado"
             },
             {
               "field": {
@@ -741,7 +792,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.originating_user_id",
-              "nativeQueryRef": "originating_user_id"
+              "nativeQueryRef": "originating_user_id",
+              "displayName": "Originating user ID"
             },
             {
               "field": {
@@ -755,7 +807,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.originating_event_id",
-              "nativeQueryRef": "originating_event_id"
+              "nativeQueryRef": "originating_event_id",
+              "displayName": "Originating event ID"
             },
             {
               "field": {
@@ -769,7 +822,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.originating_process_id",
-              "nativeQueryRef": "originating_process_id"
+              "nativeQueryRef": "originating_process_id",
+              "displayName": "Originating process ID"
             },
             {
               "field": {
@@ -783,7 +837,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.owner_role_id",
-              "nativeQueryRef": "owner_role_id"
+              "nativeQueryRef": "owner_role_id",
+              "displayName": "Owner role ID"
             },
             {
               "field": {
@@ -797,7 +852,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.admin_role_id",
-              "nativeQueryRef": "admin_role_id"
+              "nativeQueryRef": "admin_role_id",
+              "displayName": "Admin role ID"
             },
             {
               "field": {
@@ -811,7 +867,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.requires_execution_plan",
-              "nativeQueryRef": "requires_execution_plan"
+              "nativeQueryRef": "requires_execution_plan",
+              "displayName": "Requires execution plan"
             },
             {
               "field": {
@@ -825,7 +882,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.estado_operacional",
-              "nativeQueryRef": "estado_operacional"
+              "nativeQueryRef": "estado_operacional",
+              "displayName": "Estado Operacional"
             },
             {
               "field": {
@@ -839,7 +897,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.start_datetime",
-              "nativeQueryRef": "start_datetime"
+              "nativeQueryRef": "start_datetime",
+              "displayName": "Start datetime"
             },
             {
               "field": {
@@ -853,7 +912,8 @@
                 }
               },
               "queryRef": "solicitudes_inscripcion.stop_datetime",
-              "nativeQueryRef": "stop_datetime"
+              "nativeQueryRef": "stop_datetime",
+              "displayName": "Stop datetime"
             }
           ]
         }

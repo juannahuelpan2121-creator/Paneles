@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.id",
-              "nativeQueryRef": "id"
+              "nativeQueryRef": "id",
+              "displayName": "ID Solicitud"
             },
             {
               "field": {
@@ -41,7 +42,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.pd_id",
-              "nativeQueryRef": "pd_id"
+              "nativeQueryRef": "pd_id",
+              "displayName": "ID Tipo de Solicitud"
             },
             {
               "field": {
@@ -55,63 +57,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.cabecera",
-              "nativeQueryRef": "cabecera"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "estado_actual"
-                }
-              },
-              "queryRef": "solicitudes_workflow.estado_actual",
-              "nativeQueryRef": "estado_actual"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "estado_operacional"
-                }
-              },
-              "queryRef": "solicitudes_workflow.estado_operacional",
-              "nativeQueryRef": "estado_operacional"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "start_date"
-                }
-              },
-              "queryRef": "solicitudes_workflow.start_date",
-              "nativeQueryRef": "start_date"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "stop_date"
-                }
-              },
-              "queryRef": "solicitudes_workflow.stop_date",
-              "nativeQueryRef": "stop_date"
+              "nativeQueryRef": "cabecera",
+              "displayName": "Solicitud"
             },
             {
               "field": {
@@ -125,7 +72,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.tipo_solicitud",
-              "nativeQueryRef": "tipo_solicitud"
+              "nativeQueryRef": "tipo_solicitud",
+              "displayName": "Tipo de Solicitud"
             },
             {
               "field": {
@@ -139,7 +87,38 @@
                 }
               },
               "queryRef": "solicitudes_workflow.categoria_solicitud",
-              "nativeQueryRef": "categoria_solicitud"
+              "nativeQueryRef": "categoria_solicitud",
+              "displayName": "Categoría de Solicitud"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_workflow"
+                    }
+                  },
+                  "Property": "estado_operacional"
+                }
+              },
+              "queryRef": "solicitudes_workflow.estado_operacional",
+              "nativeQueryRef": "estado_operacional",
+              "displayName": "Estado Operacional"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_workflow"
+                    }
+                  },
+                  "Property": "estado_actual"
+                }
+              },
+              "queryRef": "solicitudes_workflow.estado_actual",
+              "nativeQueryRef": "estado_actual",
+              "displayName": "Estado Técnico"
             },
             {
               "field": {
@@ -153,7 +132,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.periodo",
-              "nativeQueryRef": "periodo"
+              "nativeQueryRef": "periodo",
+              "displayName": "Período"
             },
             {
               "field": {
@@ -167,7 +147,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.sede",
-              "nativeQueryRef": "sede"
+              "nativeQueryRef": "sede",
+              "displayName": "Sede"
             },
             {
               "field": {
@@ -181,7 +162,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.nivel",
-              "nativeQueryRef": "nivel"
+              "nativeQueryRef": "nivel",
+              "displayName": "Nivel Académico"
             },
             {
               "field": {
@@ -195,161 +177,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.rut_estudiante",
-              "nativeQueryRef": "rut_estudiante"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "ultima_actividad"
-                }
-              },
-              "queryRef": "solicitudes_workflow.ultima_actividad",
-              "nativeQueryRef": "ultima_actividad"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "origen"
-                }
-              },
-              "queryRef": "solicitudes_workflow.origen",
-              "nativeQueryRef": "origen"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "indicador_en_ejecucion"
-                }
-              },
-              "queryRef": "solicitudes_workflow.indicador_en_ejecucion",
-              "nativeQueryRef": "indicador_en_ejecucion"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "usuario_origen_id"
-                }
-              },
-              "queryRef": "solicitudes_workflow.usuario_origen_id",
-              "nativeQueryRef": "usuario_origen_id"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "rol_propietario_id"
-                }
-              },
-              "queryRef": "solicitudes_workflow.rol_propietario_id",
-              "nativeQueryRef": "rol_propietario_id"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "rol_administrador_id"
-                }
-              },
-              "queryRef": "solicitudes_workflow.rol_administrador_id",
-              "nativeQueryRef": "rol_administrador_id"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "cantidad_propiedades"
-                }
-              },
-              "queryRef": "solicitudes_workflow.cantidad_propiedades",
-              "nativeQueryRef": "cantidad_propiedades"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "descripcion_tipo_solicitud"
-                }
-              },
-              "queryRef": "solicitudes_workflow.descripcion_tipo_solicitud",
-              "nativeQueryRef": "descripcion_tipo_solicitud"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "version_workflow"
-                }
-              },
-              "queryRef": "solicitudes_workflow.version_workflow",
-              "nativeQueryRef": "version_workflow"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "particion_workflow"
-                }
-              },
-              "queryRef": "solicitudes_workflow.particion_workflow",
-              "nativeQueryRef": "particion_workflow"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "particion_propiedad"
-                }
-              },
-              "queryRef": "solicitudes_workflow.particion_propiedad",
-              "nativeQueryRef": "particion_propiedad"
+              "nativeQueryRef": "rut_estudiante",
+              "displayName": "RUT Estudiante"
             },
             {
               "field": {
@@ -363,7 +192,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.fecha_inicio",
-              "nativeQueryRef": "fecha_inicio"
+              "nativeQueryRef": "fecha_inicio",
+              "displayName": "Fecha de Inicio"
             },
             {
               "field": {
@@ -377,7 +207,113 @@
                 }
               },
               "queryRef": "solicitudes_workflow.fecha_cierre",
-              "nativeQueryRef": "fecha_cierre"
+              "nativeQueryRef": "fecha_cierre",
+              "displayName": "Fecha de Cierre"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_workflow"
+                    }
+                  },
+                  "Property": "ultima_actividad"
+                }
+              },
+              "queryRef": "solicitudes_workflow.ultima_actividad",
+              "nativeQueryRef": "ultima_actividad",
+              "displayName": "Última Actividad"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_workflow"
+                    }
+                  },
+                  "Property": "origen"
+                }
+              },
+              "queryRef": "solicitudes_workflow.origen",
+              "nativeQueryRef": "origen",
+              "displayName": "Origen"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_workflow"
+                    }
+                  },
+                  "Property": "indicador_en_ejecucion"
+                }
+              },
+              "queryRef": "solicitudes_workflow.indicador_en_ejecucion",
+              "nativeQueryRef": "indicador_en_ejecucion",
+              "displayName": "En Ejecución"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_workflow"
+                    }
+                  },
+                  "Property": "usuario_origen_id"
+                }
+              },
+              "queryRef": "solicitudes_workflow.usuario_origen_id",
+              "nativeQueryRef": "usuario_origen_id",
+              "displayName": "ID Usuario de Origen"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_workflow"
+                    }
+                  },
+                  "Property": "cantidad_propiedades"
+                }
+              },
+              "queryRef": "solicitudes_workflow.cantidad_propiedades",
+              "nativeQueryRef": "cantidad_propiedades",
+              "displayName": "Cantidad de Datos"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_workflow"
+                    }
+                  },
+                  "Property": "descripcion_tipo_solicitud"
+                }
+              },
+              "queryRef": "solicitudes_workflow.descripcion_tipo_solicitud",
+              "nativeQueryRef": "descripcion_tipo_solicitud",
+              "displayName": "Descripción del Tipo"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_workflow"
+                    }
+                  },
+                  "Property": "version_workflow"
+                }
+              },
+              "queryRef": "solicitudes_workflow.version_workflow",
+              "nativeQueryRef": "version_workflow",
+              "displayName": "Versión del Workflow"
             }
           ]
         }

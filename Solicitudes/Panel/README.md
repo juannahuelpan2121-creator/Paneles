@@ -22,7 +22,9 @@ Proyecto Power BI con interfaz MODUSS estratégica y datos de Banner Workflow en
 - La extracción completa de propiedades se entrega en `Queries/workflow_propiedades_json.sql` y no se importa al modelo.
 - Los indicadores cuentan `DISTINCT id`, evitando inflar los resultados por la cantidad de propiedades.
 - `FINALIZADA`, `EN CURSO`, `CANCELADA` y `OTRO` se determinan a partir del estado y ejecución del workflow.
-- Periodo, sede, nivel y RUT se detectan desde las propiedades disponibles en cada formulario.
+- El período se normaliza extrayendo un código académico de seis dígitos desde las propiedades del formulario.
+- La duración promedio excluye sábados y domingos.
+- Sede, nivel y RUT se detectan desde las propiedades disponibles en cada formulario.
 
 ## Modelo optimizado
 

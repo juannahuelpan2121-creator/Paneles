@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.id",
-              "nativeQueryRef": "id"
+              "nativeQueryRef": "id",
+              "displayName": "ID Solicitud"
             },
             {
               "field": {
@@ -41,7 +42,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.periodo",
-              "nativeQueryRef": "periodo"
+              "nativeQueryRef": "periodo",
+              "displayName": "Período"
             },
             {
               "field": {
@@ -55,7 +57,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.estado_operacional",
-              "nativeQueryRef": "estado_operacional"
+              "nativeQueryRef": "estado_operacional",
+              "displayName": "Estado Operacional"
             },
             {
               "field": {
@@ -69,7 +72,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.estado_actual",
-              "nativeQueryRef": "estado_actual"
+              "nativeQueryRef": "estado_actual",
+              "displayName": "Estado Técnico"
             },
             {
               "field": {
@@ -83,7 +87,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.fecha_inicio",
-              "nativeQueryRef": "fecha_inicio"
+              "nativeQueryRef": "fecha_inicio",
+              "displayName": "Fecha de Inicio"
             },
             {
               "field": {
@@ -97,7 +102,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.fecha_cierre",
-              "nativeQueryRef": "fecha_cierre"
+              "nativeQueryRef": "fecha_cierre",
+              "displayName": "Fecha de Cierre"
             },
             {
               "field": {
@@ -111,7 +117,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.sede",
-              "nativeQueryRef": "sede"
+              "nativeQueryRef": "sede",
+              "displayName": "Sede"
             },
             {
               "field": {
@@ -125,7 +132,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.nivel",
-              "nativeQueryRef": "nivel"
+              "nativeQueryRef": "nivel",
+              "displayName": "Nivel Académico"
             },
             {
               "field": {
@@ -139,7 +147,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.rut_estudiante",
-              "nativeQueryRef": "rut_estudiante"
+              "nativeQueryRef": "rut_estudiante",
+              "displayName": "RUT Estudiante"
             },
             {
               "field": {
@@ -153,7 +162,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.cabecera",
-              "nativeQueryRef": "cabecera"
+              "nativeQueryRef": "cabecera",
+              "displayName": "Solicitud"
             },
             {
               "field": {
@@ -167,7 +177,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.cantidad_propiedades",
-              "nativeQueryRef": "cantidad_propiedades"
+              "nativeQueryRef": "cantidad_propiedades",
+              "displayName": "Cantidad de Datos"
             }
           ]
         }

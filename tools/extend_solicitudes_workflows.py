@@ -64,6 +64,67 @@ GENERIC_COLUMNS: list[tuple[str, str]] = [
     ("particion_propiedad", "string"),
 ]
 
+FRIENDLY_HEADERS = {
+    "id": "ID Solicitud",
+    "pd_id": "ID Tipo de Solicitud",
+    "name": "Solicitud",
+    "cabecera": "Solicitud",
+    "estado_actual": "Estado Técnico",
+    "estado_operacional": "Estado Operacional",
+    "start_date": "Inicio (epoch)",
+    "stop_date": "Cierre (epoch)",
+    "fecha_inicio": "Fecha de Inicio",
+    "fecha_cierre": "Fecha de Cierre",
+    "tipo_solicitud": "Tipo de Solicitud",
+    "categoria_solicitud": "Categoría de Solicitud",
+    "periodo": "Período",
+    "sede": "Sede",
+    "nivel": "Nivel Académico",
+    "rut_estudiante": "RUT Estudiante",
+    "ultima_actividad": "Última Actividad",
+    "origen": "Origen",
+    "indicador_en_ejecucion": "En Ejecución",
+    "usuario_origen_id": "ID Usuario de Origen",
+    "rol_propietario_id": "ID Rol Propietario",
+    "rol_administrador_id": "ID Rol Administrador",
+    "cantidad_propiedades": "Cantidad de Datos",
+    "descripcion_tipo_solicitud": "Descripción del Tipo",
+    "version_workflow": "Versión del Workflow",
+    "particion_workflow": "Partición del Workflow",
+    "particion_propiedad": "Partición de Propiedades",
+    "desc_estado_estudiante": "Estado del Estudiante",
+    "fecha_solicitud": "Fecha de Solicitud",
+    "cod_sede": "Código de Sede",
+    "cod_carrera": "Código de Carrera",
+    "nombre_carrera": "Carrera",
+    "nomescuela": "Escuela",
+    "observacion_szarsol": "Observación",
+    "seqplan": "Secuencia de Plan",
+    "calificacion_actual": "Calificación Actual",
+    "calificacion_solicitada": "Calificación Solicitada",
+    "rut_solicitante": "RUT Solicitante",
+    "nombre_solicitante": "Nombre Solicitante",
+    "nombre_estudiante": "Nombre Estudiante",
+    "correo_estudiante": "Correo Estudiante",
+    "fono_estudiante": "Teléfono Estudiante",
+    "rut_docente": "RUT Docente",
+    "nombre_docente": "Nombre Docente",
+    "correo_docente": "Correo Docente",
+    "secuencia_plan": "Secuencia de Plan",
+    "periodo_adm": "Período de Admisión",
+    "estado_alumno": "Estado del Estudiante",
+    "email_alumno": "Correo Estudiante",
+}
+
+
+def friendly_label(name: str) -> str:
+    if name in FRIENDLY_HEADERS:
+        return FRIENDLY_HEADERS[name]
+    label = re.sub(r"(?<=[A-Za-z])(\d+)$", r" \1", name.replace("_", " ").strip())
+    for source, target in (("rut", "RUT"), ("nrc", "NRC"), ("id", "ID"), ("pga", "PGA"), ("wf", "WF")):
+        label = re.sub(rf"\b{source}\b", target, label, flags=re.I)
+    return label[:1].upper() + label[1:] if label else name
+
 NEW_TYPES = [
     {
         "id": "detalle_reincorporacion",
@@ -394,6 +455,14 @@ def upsert_measure(text: str, name: str, expression: str, fmt: str | None = None
     return text[:insert] + "\n" + block + text[insert:]
 
 
+def remove_measure(text: str, name: str) -> str:
+    pattern = re.compile(
+        rf"^\tmeasure\s+'{re.escape(name)}'\s*=.*?(?=^\tmeasure\s|^\tcolumn\s|\Z)",
+        flags=re.M | re.S,
+    )
+    return pattern.sub("", text)
+
+
 def header_dax(title: str, subtitle: str, raw: bool = False) -> str:
     type_chip = "" if raw else "<span class='chip' style='background:" + '" & cTipo & "' + "'>Tipo: <b>" + '" & vTipo & "' + "</b></span>"
     return f'''VAR vPeriodo = IF ( ISFILTERED ( solicitudes_workflow[periodo] ), CONCATENATEX ( VALUES ( solicitudes_workflow[periodo] ), solicitudes_workflow[periodo], ", " ), "Todos" )
@@ -408,19 +477,18 @@ VAR cNivel = IF ( ISFILTERED ( solicitudes_workflow[nivel] ), "#F3E7C4", "#EAF1F
 VAR cSede = IF ( ISFILTERED ( solicitudes_workflow[sede] ), "#F3E7C4", "#EAF1FB" )
 RETURN
 "<style>html,body{{margin:0;padding:0;background:transparent;font-family:Arial,Segoe UI,sans-serif;overflow:hidden}}.hdr{{height:140px;box-sizing:border-box;background:#fff;border:1px solid #E1E6ED;border-radius:10px;box-shadow:0 4px 12px rgba(17,43,66,.08);position:relative;color:#112B42;overflow:hidden}}.divider{{position:absolute;left:230px;top:20px;width:2px;height:64px;background:#C6B27F}}.title{{position:absolute;left:255px;top:17px;font-size:23px;font-weight:700;display:flex;align-items:center;gap:7px}}.subtitle{{position:absolute;left:255px;top:51px;font-size:12px;color:#58616E}}.area{{position:absolute;left:255px;top:72px;font-size:10px;font-weight:600;color:#8A7440}}.chips{{position:absolute;left:18px;bottom:13px;display:flex;gap:7px;align-items:center;font-size:10px;color:#475569;max-width:1080px;white-space:nowrap;overflow:hidden}}.chip{{padding:4px 9px;border-radius:999px;color:#112B42}}.info{{position:static;display:block;font-size:11px}}.info>summary{{display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#C6B27F;color:#fff;list-style:none;cursor:pointer}}.info>summary::-webkit-details-marker{{display:none}}.info>summary::marker{{content:''}}.info[open]>summary{{position:fixed;left:936px;top:10px;z-index:10001;background:#F4F0E3;color:#112B42;font-size:0}}.info[open]>summary::after{{content:'×';font-size:14px;font-weight:700}}.tip{{display:none;position:fixed;left:270px;top:6px;width:700px;height:126px;z-index:9999;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:8px;box-shadow:0 6px 18px rgba(17,43,66,.16);padding:12px 16px 20px;box-sizing:border-box}}.info[open]>.tip{{display:block}}.tipgrid{{display:grid;grid-template-columns:1fr 1fr 1fr;height:86px}}.tipgrid>div{{padding:2px 15px;border-right:1px solid #E1E6ED}}.tipgrid>div:first-child{{padding-left:8px}}.tipgrid>div:last-child{{border-right:0}}.tip b{{display:block;color:#8A7440;font-size:10px;margin-bottom:6px}}.tip span{{display:block;color:#334155;font-size:9px;line-height:12px}}.source{{position:absolute;left:24px;right:24px;bottom:5px;padding-top:4px;border-top:1px solid #E1E6ED;color:#64748B;font-size:8px}}</style>" &
-"<div class='hdr'><div class='divider'></div><div class='title'><span>{title}</span><details class='info'><summary title='Ver metodología'>i</summary><div class='tip'><div class='tipgrid'><div><b>Objetivo</b><span>Monitorear solicitudes académicas y su avance operacional a lo largo del tiempo.</span></div><div><b>Descriptor</b><span>Una solicitud corresponde a un id único. El modelo importa campos operacionales y el conteo de propiedades sin duplicar filas.</span></div><div><b>Fórmula de cálculo</b><span>Total: DISTINCTCOUNT(id). Finalizada, en curso y cancelada se obtienen del estado del workflow. La tasa divide finalizadas por total.</span></div></div><div class='source'>Fuente: Banner Workflow, Data Lake USS. Histórico completo sin filtro fijo de periodo.</div></div></details></div><div class='subtitle'>{subtitle}</div><div class='area'>Dirección General de Control de Gestión y Análisis Institucional</div>" &
+"<div class='hdr'><div class='divider'></div><div class='title'><span>{title}</span><details class='info'><summary title='Ver metodología'>i</summary><div class='tip'><div class='tipgrid'><div><b>Objetivo</b><span>Monitorear solicitudes académicas y su avance operacional a lo largo del tiempo.</span></div><div><b>Descriptor</b><span>Cada solicitud corresponde a un identificador único. El período se extrae como código académico de seis dígitos.</span></div><div><b>Fórmula de cálculo</b><span>Total: solicitudes únicas. La tasa compara finalizadas con el total. La duración promedio considera solo lunes a viernes.</span></div></div><div class='source'>Fuente: Banner Workflow, Data Lake USS. Histórico completo sin filtro fijo de período.</div></div></details></div><div class='subtitle'>{subtitle}</div><div class='area'>Dirección General de Control de Gestión y Análisis Institucional</div>" &
 "<div class='chips'><span>Filtros aplicados:</span><span class='chip' style='background:" & cPeriodo & "'>Periodo: <b>" & vPeriodo & "</b></span><span class='chip' style='background:" & cEstado & "'>Estado: <b>" & vEstado & "</b></span>{type_chip}<span class='chip' style='background:" & cNivel & "'>Nivel: <b>" & vNivel & "</b></span><span class='chip' style='background:" & cSede & "'>Sede: <b>" & vSede & "</b></span></div></div>"'''
 
 
 KPI_SUMMARY = '''VAR total = [Solicitudes Total]
 VAR fin = [Solicitudes Finalizadas]
 VAR curso = [Solicitudes En Curso]
-VAR cancel = [Solicitudes Canceladas]
 VAR tasa = [% Solicitudes Finalizadas]
 VAR dias = [Duración Promedio Días]
 RETURN
-"<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;background:transparent;font-family:Arial,Segoe UI,sans-serif}.wrap{height:100%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:12px}.card{box-sizing:border-box;height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:14px 18px;box-shadow:0 3px 10px rgba(17,43,66,.06)}.head{flex:0 0 44px}.title{font-size:13px;font-weight:700;color:#112B42}.desc{margin-top:3px;font-size:10px;color:#58616E}.value{flex:1;display:flex;align-items:center;font-size:29px;font-weight:700;color:#112B42}</style>" &
-"<div class='wrap'><div class='card'><div class='head'><div class='title'>Solicitudes totales</div><div class='desc'>Workflows únicos registrados.</div></div><div class='value'>" & FORMAT(total,"#,##0") & "</div></div><div class='card'><div class='head'><div class='title'>Finalizadas</div><div class='desc'>Procesos con término registrado.</div></div><div class='value'>" & FORMAT(fin,"#,##0") & "</div></div><div class='card'><div class='head'><div class='title'>En curso</div><div class='desc'>Procesos actualmente activos.</div></div><div class='value'>" & FORMAT(curso,"#,##0") & "</div></div><div class='card'><div class='head'><div class='title'>Canceladas</div><div class='desc'>Procesos cancelados.</div></div><div class='value'>" & FORMAT(cancel,"#,##0") & "</div></div><div class='card'><div class='head'><div class='title'>Tasa de finalización</div><div class='desc'>Finalizadas respecto del total.</div></div><div class='value'>" & FORMAT(tasa,"0.0%") & "</div></div><div class='card'><div class='head'><div class='title'>Duración promedio</div><div class='desc'>Días entre inicio y cierre.</div></div><div class='value'>" & IF(ISBLANK(dias),"—",FORMAT(dias,"0.0") & " días") & "</div></div></div>"'''
+"<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;background:transparent;font-family:Arial,Segoe UI,sans-serif}.wrap{box-sizing:border-box;height:calc(100% - 2px);display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(2,minmax(0,1fr));gap:12px}.card{box-sizing:border-box;height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:14px 18px;box-shadow:0 3px 10px rgba(17,43,66,.06)}.top{grid-column:span 2}.bottom{grid-column:span 3}.head{flex:0 0 44px}.title{font-size:13px;font-weight:700;color:#112B42}.desc{margin-top:3px;font-size:10px;color:#58616E}.value{flex:1;display:flex;align-items:center;font-size:29px;font-weight:700;color:#112B42}</style>" &
+"<div class='wrap'><div class='card top'><div class='head'><div class='title'>Solicitudes totales</div><div class='desc'>Solicitudes únicas registradas.</div></div><div class='value'>" & FORMAT(total,"#,##0") & "</div></div><div class='card top'><div class='head'><div class='title'>Finalizadas</div><div class='desc'>Procesos con término registrado.</div></div><div class='value'>" & FORMAT(fin,"#,##0") & "</div></div><div class='card top'><div class='head'><div class='title'>En curso</div><div class='desc'>Procesos actualmente activos.</div></div><div class='value'>" & FORMAT(curso,"#,##0") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Tasa de finalización</div><div class='desc'>Finalizadas respecto del total.</div></div><div class='value'>" & FORMAT(tasa,"0.0%") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Duración promedio</div><div class='desc'>Días hábiles entre inicio y cierre.</div></div><div class='value'>" & IF(ISBLANK(dias),"—",FORMAT(dias,"0.0") & " días hábiles") & "</div></div></div>"'''
 
 KPI_DETAIL = '''VAR total = [Solicitudes Total]
 VAR fin = [Solicitudes Finalizadas]
@@ -431,18 +499,18 @@ RETURN
 "<div class='wrap'><div class='card'><div class='title'>Solicitudes</div><div class='desc'>Workflows únicos según filtros.</div><div class='value'>" & FORMAT(total,"#,##0") & "</div></div><div class='card'><div class='title'>Finalizadas</div><div class='desc'>Procesos con término registrado.</div><div class='value'>" & FORMAT(fin,"#,##0") & "</div></div><div class='card'><div class='title'>En curso</div><div class='desc'>Procesos actualmente activos.</div><div class='value'>" & FORMAT(curso,"#,##0") & "</div></div><div class='card'><div class='title'>Tasa de finalización</div><div class='desc'>Finalizadas respecto del total.</div><div class='value'>" & FORMAT(tasa,"0.0%") & "</div></div></div>"'''
 
 KPI_RAW = '''VAR v_HTML =
-"<style>html,body{margin:0;padding:0;background:transparent;font-family:Arial,Segoe UI,sans-serif}.box{height:100%;box-sizing:border-box;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:18px 22px;color:#112B42;box-shadow:0 3px 10px rgba(17,43,66,.06)}.t{font-size:15px;font-weight:700}.d{margin-top:8px;font-size:11px;line-height:16px;color:#58616E}.tag{display:inline-block;margin-top:9px;padding:5px 10px;border-radius:999px;background:#EAF1FB;font-size:10px;font-weight:700}</style><div class='box'><div class='t'>Descarga operacional optimizada</div><div class='d'>La tabla conserva una fila por solicitud y puede exportarse desde el menú <b>…</b>. La extracción con todas las propiedades se mantiene separada en <b>Queries/workflow_propiedades_json.sql</b> para ejecutarla directamente en Athena.</div><span class='tag'>Histórico completo sin duplicados</span></div>"
+"<style>html,body{margin:0;padding:0;background:transparent;font-family:Arial,Segoe UI,sans-serif}.box{height:100%;box-sizing:border-box;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:18px 22px;color:#112B42;box-shadow:0 3px 10px rgba(17,43,66,.06)}.t{font-size:15px;font-weight:700}.d{margin-top:8px;font-size:11px;line-height:16px;color:#58616E}.tag{display:inline-block;margin-top:9px;padding:5px 10px;border-radius:999px;background:#EAF1FB;font-size:10px;font-weight:700}</style><div class='box'><div class='t'>Contenido de la sábana de solicitudes</div><div class='d'>Cada fila corresponde a una solicitud académica. La tabla incluye su identificador, tipo, período, sede, nivel académico, RUT del estudiante, estado y fechas de inicio y cierre. Usa los filtros para acotar la información y el menú <b>…</b> de la tabla para exportarla.</div><span class='tag'>Una fila por solicitud</span></div>"
 RETURN v_HTML'''
 
 
 def update_measures() -> None:
     path = TABLES / "Medidas Solicitudes.tmdl"
     text = read_text(path)
+    text = remove_measure(text, "Solicitudes Canceladas")
     measures = [
         ("Solicitudes Total", "DISTINCTCOUNT ( solicitudes_workflow[id] )", "#,0"),
         ("Solicitudes Finalizadas", 'CALCULATE ( [Solicitudes Total], solicitudes_workflow[estado_operacional] = "FINALIZADA" )', "#,0"),
         ("Solicitudes En Curso", 'CALCULATE ( [Solicitudes Total], solicitudes_workflow[estado_operacional] = "EN CURSO" )', "#,0"),
-        ("Solicitudes Canceladas", 'CALCULATE ( [Solicitudes Total], solicitudes_workflow[estado_operacional] = "CANCELADA" )', "#,0"),
         ("% Solicitudes Finalizadas", "DIVIDE ( [Solicitudes Finalizadas], [Solicitudes Total] )", "0.0%"),
         ("Solicitudes Inscripción", 'CALCULATE ( [Solicitudes Total], solicitudes_workflow[categoria_solicitud] = "Inscripción extraordinaria" )', "#,0"),
         ("Solicitudes Calificación", 'CALCULATE ( [Solicitudes Total], solicitudes_workflow[categoria_solicitud] = "Cambio de calificación" )', "#,0"),
@@ -457,7 +525,22 @@ def update_measures() -> None:
     ),
     VAR inicio = [Inicio]
     VAR cierre = [Cierre]
-    RETURN IF ( NOT ISBLANK ( inicio ) && NOT ISBLANK ( cierre ), DATEDIFF ( inicio, cierre, DAY ) )
+    VAR dias_calendario = DATEDIFF ( inicio, cierre, DAY )
+    RETURN
+        IF (
+            NOT ISBLANK ( inicio ) && NOT ISBLANK ( cierre ) && cierre >= inicio,
+            IF (
+                dias_calendario = 0,
+                0,
+                SUMX (
+                    FILTER (
+                        GENERATESERIES ( 1, dias_calendario, 1 ),
+                        WEEKDAY ( inicio + [Value], 2 ) <= 5
+                    ),
+                    1
+                )
+            )
+        )
 )''',
             "0.0",
         ),
@@ -526,11 +609,39 @@ def categorical_filter(entity: str, prop: str, value: str, name: str):
 
 
 def projection(entity: str, prop: str, kind: str = "Column"):
-    return {
+    result = {
         "field": {kind: {"Expression": {"SourceRef": {"Entity": entity}}, "Property": prop}},
         "queryRef": f"{entity}.{prop}",
         "nativeQueryRef": prop,
     }
+    if kind == "Column":
+        result["displayName"] = friendly_label(prop)
+    return result
+
+
+def apply_friendly_table_headers() -> None:
+    """Asigna nombres funcionales sin alterar los nombres físicos del modelo."""
+    for visual_path in REPORT.rglob("visual.json"):
+        payload = read_json(visual_path)
+        visual = payload.get("visual", {})
+        if visual.get("visualType") not in {"tableEx", "pivotTable"}:
+            continue
+        changed = False
+        query_state = visual.get("query", {}).get("queryState", {})
+        for role in query_state.values():
+            for item in role.get("projections", []):
+                column = item.get("field", {}).get("Column")
+                if not column:
+                    continue
+                prop = column.get("Property")
+                if not prop:
+                    continue
+                label = friendly_label(prop)
+                if item.get("displayName") != label:
+                    item["displayName"] = label
+                    changed = True
+        if changed:
+            write_json(visual_path, payload)
 
 
 def set_title(visual, title: str) -> None:
@@ -980,13 +1091,28 @@ def create_raw_page() -> list[dict]:
         if visual.get("name") == "raw_sede":
             visual["position"]["y"] = 458
 
-    fields = [("solicitudes_workflow", name, "Column") for name, _ in GENERIC_COLUMNS]
-    fields.extend(
-        [
-            ("solicitudes_workflow", "fecha_inicio", "Column"),
-            ("solicitudes_workflow", "fecha_cierre", "Column"),
-        ]
-    )
+    fields = [
+        ("solicitudes_workflow", "id", "Column"),
+        ("solicitudes_workflow", "pd_id", "Column"),
+        ("solicitudes_workflow", "cabecera", "Column"),
+        ("solicitudes_workflow", "tipo_solicitud", "Column"),
+        ("solicitudes_workflow", "categoria_solicitud", "Column"),
+        ("solicitudes_workflow", "estado_operacional", "Column"),
+        ("solicitudes_workflow", "estado_actual", "Column"),
+        ("solicitudes_workflow", "periodo", "Column"),
+        ("solicitudes_workflow", "sede", "Column"),
+        ("solicitudes_workflow", "nivel", "Column"),
+        ("solicitudes_workflow", "rut_estudiante", "Column"),
+        ("solicitudes_workflow", "fecha_inicio", "Column"),
+        ("solicitudes_workflow", "fecha_cierre", "Column"),
+        ("solicitudes_workflow", "ultima_actividad", "Column"),
+        ("solicitudes_workflow", "origen", "Column"),
+        ("solicitudes_workflow", "indicador_en_ejecucion", "Column"),
+        ("solicitudes_workflow", "usuario_origen_id", "Column"),
+        ("solicitudes_workflow", "cantidad_propiedades", "Column"),
+        ("solicitudes_workflow", "descripcion_tipo_solicitud", "Column"),
+        ("solicitudes_workflow", "version_workflow", "Column"),
+    ]
     table_template = read_json(PAGES / "resumen_solicitudes" / "visuals" / "res_tabla" / "visual.json")
     table = make_table(table_template, "raw_tabla", fields, "Sábana completa - una fila por solicitud", 24, 335, 1232, 1425)
     visuals.append(table)
@@ -1064,7 +1190,17 @@ Proyecto Power BI con interfaz MODUSS estratégica y datos de Banner Workflow en
 - La extracción completa de propiedades se entrega en `Queries/workflow_propiedades_json.sql` y no se importa al modelo.
 - Los indicadores cuentan `DISTINCT id`, evitando inflar los resultados por la cantidad de propiedades.
 - `FINALIZADA`, `EN CURSO`, `CANCELADA` y `OTRO` se determinan a partir del estado y ejecución del workflow.
-- Periodo, sede, nivel y RUT se detectan desde las propiedades disponibles en cada formulario.
+- El período se normaliza extrayendo un código académico de seis dígitos desde las propiedades del formulario.
+- La duración promedio excluye sábados y domingos.
+- Sede, nivel y RUT se detectan desde las propiedades disponibles en cada formulario.
+
+## Modelo optimizado
+
+- `solicitudes_workflow`: base operacional transversal, una fila por solicitud; alimenta el resumen, la sábana y seis páginas de tipologías.
+- `solicitudes_inscripcion` y `solicitudes_calificacion`: bases detalladas aprobadas para sus páginas específicas; no se suman entre sí ni con la base transversal.
+- `dim_periodo` y `dim_estado`: dimensiones compartidas por las tres bases de solicitudes.
+- `Medidas Solicitudes`: tabla técnica de medidas y HTML, sin datos operacionales duplicados.
+- Se retiraron `solicitudes_consolidadas` y `dim_tipo_solicitud` porque no tenían consumidores en el informe.
 
 ## Exportación
 
@@ -1092,6 +1228,7 @@ def main() -> None:
     update_measures()
     update_pages_and_bookmarks()
     align_moduss_interface()
+    apply_friendly_table_headers()
     update_readme()
     print(f"Proyecto actualizado: {TARGET}")
     print(f"Respaldo: {backup}")

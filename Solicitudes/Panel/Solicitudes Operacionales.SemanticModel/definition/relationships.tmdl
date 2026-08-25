@@ -6,7 +6,6 @@ relationship dim_periodo_calificacion
 	fromColumn: solicitudes_calificacion.periodo
 	toColumn: dim_periodo.periodo
 
-
 relationship dim_estado_inscripcion
 	fromColumn: solicitudes_inscripcion.estado_operacional
 	toColumn: dim_estado.estado_operacional
@@ -14,8 +13,6 @@ relationship dim_estado_inscripcion
 relationship dim_estado_calificacion
 	fromColumn: solicitudes_calificacion.estado_operacional
 	toColumn: dim_estado.estado_operacional
-
-
 
 relationship dim_periodo_workflow
 	fromColumn: solicitudes_workflow.periodo

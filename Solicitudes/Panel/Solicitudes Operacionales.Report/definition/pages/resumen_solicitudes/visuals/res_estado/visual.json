@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.estado_operacional",
-              "nativeQueryRef": "estado_operacional"
+              "nativeQueryRef": "estado_operacional",
+              "displayName": "Estado Operacional"
             }
           ]
         },

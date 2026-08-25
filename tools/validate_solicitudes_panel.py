@@ -256,7 +256,6 @@ measure_text = (model / "tables" / "Medidas Solicitudes.tmdl").read_text(encodin
 if "DISTINCTCOUNT ( solicitudes_workflow[id] )" not in measure_text:
     errors.append("Solicitudes Total debe contar DISTINCT id en el dataset operacional")
 for required_measure in (
-    "Solicitudes Canceladas",
     "Duración Promedio Días",
     "Encabezado Resumen Workflow",
     "HTML KPI Resumen Workflow",
@@ -277,6 +276,19 @@ else:
     raw_html_expression = raw_html_match.group(1).lstrip()
     if raw_html_expression.upper().startswith("RETURN"):
         errors.append("HTML KPI Sábana no puede comenzar con RETURN sin declarar una variable")
+    for technical_text in ("ATHENA", "WORKFLOW_PROPIEDADES_JSON.SQL", "DESCARGA OPERACIONAL OPTIMIZADA"):
+        if technical_text in raw_html_expression.upper():
+            errors.append(f"HTML KPI Sábana conserva texto técnico: {technical_text}")
+
+summary_html_match = re.search(
+    r"measure 'HTML KPI Resumen Workflow'\s*=\s*```\s*(.*?)\s*```",
+    measure_text,
+    re.S,
+)
+if not summary_html_match or "Canceladas" in summary_html_match.group(1):
+    errors.append("El resumen todavía contiene la tarjeta de solicitudes canceladas")
+if "GENERATESERIES ( 1, dias_calendario, 1 )" not in measure_text or "WEEKDAY ( inicio + [Value], 2 ) <= 5" not in measure_text:
+    errors.append("Duración Promedio Días no excluye sábados y domingos")
 
 expected_workflow_pages = {
     "detalle_reincorporacion": "rei",
@@ -348,6 +360,7 @@ else:
             errors.append(f"La query histórica conserva un filtro temporal fijo: {forbidden}")
     for required_fragment in (
         "REGEXP_REPLACE(",
+        "REGEXP_EXTRACT(TRIM(VALUE), '(20[0-9]{4})', 1)",
         "'[_-]+'",
         "'CAMBIO( DE)? CARRERA( SEDE)?'",
         "THEN 'CAMBIO DE CARRERA/SEDE'",
@@ -384,6 +397,24 @@ else:
             if required_fragment not in properties_text:
                 errors.append(
                     "Extracción externa de propiedades incompleta: " + required_fragment
+                )
+
+# Los nombres físicos pueden conservarse para no romper el modelo, pero todas
+# las columnas visibles en tablas deben presentar una etiqueta funcional.
+for visual_path in report.rglob("visual.json"):
+    payload = json.loads(visual_path.read_text(encoding="utf-8"))
+    visual = payload.get("visual", {})
+    if visual.get("visualType") not in {"tableEx", "pivotTable"}:
+        continue
+    for role in visual.get("query", {}).get("queryState", {}).values():
+        for projection in role.get("projections", []):
+            column = projection.get("field", {}).get("Column")
+            if not column:
+                continue
+            display_name = projection.get("displayName", "")
+            if not display_name or "_" in display_name or not display_name[:1].isupper():
+                errors.append(
+                    f"{visual_path}: encabezado de tabla no funcional para {column.get('Property')}"
                 )
 
 bookmark_meta = json.loads((report / "bookmarks" / "bookmarks.json").read_text(encoding="utf-8"))

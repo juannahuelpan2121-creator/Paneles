@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.periodo",
-              "nativeQueryRef": "periodo"
+              "nativeQueryRef": "periodo",
+              "displayName": "Período"
             }
           ]
         },

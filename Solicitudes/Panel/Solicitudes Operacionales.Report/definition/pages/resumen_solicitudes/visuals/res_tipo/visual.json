@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "solicitudes_workflow.categoria_solicitud",
-              "nativeQueryRef": "categoria_solicitud"
+              "nativeQueryRef": "categoria_solicitud",
+              "displayName": "Categoría de Solicitud"
             }
           ]
         },

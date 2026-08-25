@@ -147,7 +147,7 @@ atributos AS (
             CASE WHEN REGEXP_LIKE(
                 LOWER(COALESCE(name, '')),
                 '(^|_)(periodo|periodo_adm|periodo_academico|periodo_consulta|term|term_code)($|_)'
-            ) THEN value END
+            ) THEN REGEXP_EXTRACT(TRIM(value), '(20[0-9]{4})', 1) END
         ) AS periodo_detectado,
         MAX(
             CASE WHEN REGEXP_LIKE(

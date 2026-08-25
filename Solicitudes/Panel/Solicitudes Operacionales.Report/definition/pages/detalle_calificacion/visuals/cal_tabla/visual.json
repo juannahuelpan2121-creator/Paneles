@@ -212,7 +212,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.id"
+              "queryRef": "solicitudes_calificacion.id",
+              "displayName": "ID Solicitud"
             },
             {
               "nativeQueryRef": "pd_id",
@@ -226,7 +227,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.pd_id"
+              "queryRef": "solicitudes_calificacion.pd_id",
+              "displayName": "ID Tipo de Solicitud"
             },
             {
               "nativeQueryRef": "name",
@@ -240,7 +242,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.name"
+              "queryRef": "solicitudes_calificacion.name",
+              "displayName": "Solicitud"
             },
             {
               "nativeQueryRef": "desc_estado_estudiante",
@@ -254,7 +257,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.desc_estado_estudiante"
+              "queryRef": "solicitudes_calificacion.desc_estado_estudiante",
+              "displayName": "Estado del Estudiante"
             },
             {
               "nativeQueryRef": "periodo",
@@ -268,7 +272,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.periodo"
+              "queryRef": "solicitudes_calificacion.periodo",
+              "displayName": "Período"
             },
             {
               "nativeQueryRef": "nrc",
@@ -282,7 +287,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.nrc"
+              "queryRef": "solicitudes_calificacion.nrc",
+              "displayName": "NRC"
             },
             {
               "nativeQueryRef": "curso",
@@ -296,7 +302,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.curso"
+              "queryRef": "solicitudes_calificacion.curso",
+              "displayName": "Curso"
             },
             {
               "nativeQueryRef": "cod_sede",
@@ -310,7 +317,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.cod_sede"
+              "queryRef": "solicitudes_calificacion.cod_sede",
+              "displayName": "Código de Sede"
             },
             {
               "nativeQueryRef": "sede",
@@ -324,7 +332,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.sede"
+              "queryRef": "solicitudes_calificacion.sede",
+              "displayName": "Sede"
             },
             {
               "nativeQueryRef": "fecha_solicitud",
@@ -338,7 +347,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.fecha_solicitud"
+              "queryRef": "solicitudes_calificacion.fecha_solicitud",
+              "displayName": "Fecha de Solicitud"
             },
             {
               "nativeQueryRef": "cod_carrera",
@@ -352,7 +362,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.cod_carrera"
+              "queryRef": "solicitudes_calificacion.cod_carrera",
+              "displayName": "Código de Carrera"
             },
             {
               "nativeQueryRef": "nombre_carrera",
@@ -366,7 +377,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.nombre_carrera"
+              "queryRef": "solicitudes_calificacion.nombre_carrera",
+              "displayName": "Carrera"
             },
             {
               "nativeQueryRef": "nomescuela",
@@ -380,7 +392,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.nomescuela"
+              "queryRef": "solicitudes_calificacion.nomescuela",
+              "displayName": "Escuela"
             },
             {
               "nativeQueryRef": "observacion_szarsol",
@@ -394,7 +407,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.observacion_szarsol"
+              "queryRef": "solicitudes_calificacion.observacion_szarsol",
+              "displayName": "Observación"
             },
             {
               "nativeQueryRef": "seqplan",
@@ -408,7 +422,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.seqplan"
+              "queryRef": "solicitudes_calificacion.seqplan",
+              "displayName": "Secuencia de Plan"
             },
             {
               "nativeQueryRef": "nivel",
@@ -422,7 +437,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.nivel"
+              "queryRef": "solicitudes_calificacion.nivel",
+              "displayName": "Nivel Académico"
             },
             {
               "nativeQueryRef": "calificacion_actual",
@@ -436,7 +452,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.calificacion_actual"
+              "queryRef": "solicitudes_calificacion.calificacion_actual",
+              "displayName": "Calificación Actual"
             },
             {
               "nativeQueryRef": "calificacion_solicitada",
@@ -450,7 +467,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.calificacion_solicitada"
+              "queryRef": "solicitudes_calificacion.calificacion_solicitada",
+              "displayName": "Calificación Solicitada"
             },
             {
               "nativeQueryRef": "rut_solicitante",
@@ -464,7 +482,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.rut_solicitante"
+              "queryRef": "solicitudes_calificacion.rut_solicitante",
+              "displayName": "RUT Solicitante"
             },
             {
               "nativeQueryRef": "nombre_solicitante",
@@ -478,7 +497,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.nombre_solicitante"
+              "queryRef": "solicitudes_calificacion.nombre_solicitante",
+              "displayName": "Nombre Solicitante"
             },
             {
               "nativeQueryRef": "rut_estudiante",
@@ -492,7 +512,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.rut_estudiante"
+              "queryRef": "solicitudes_calificacion.rut_estudiante",
+              "displayName": "RUT Estudiante"
             },
             {
               "nativeQueryRef": "nombre_estudiante",
@@ -506,7 +527,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.nombre_estudiante"
+              "queryRef": "solicitudes_calificacion.nombre_estudiante",
+              "displayName": "Nombre Estudiante"
             },
             {
               "nativeQueryRef": "correo_estudiante",
@@ -520,7 +542,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.correo_estudiante"
+              "queryRef": "solicitudes_calificacion.correo_estudiante",
+              "displayName": "Correo Estudiante"
             },
             {
               "nativeQueryRef": "fono_estudiante",
@@ -534,7 +557,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.fono_estudiante"
+              "queryRef": "solicitudes_calificacion.fono_estudiante",
+              "displayName": "Teléfono Estudiante"
             },
             {
               "nativeQueryRef": "rut_docente",
@@ -548,7 +572,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.rut_docente"
+              "queryRef": "solicitudes_calificacion.rut_docente",
+              "displayName": "RUT Docente"
             },
             {
               "nativeQueryRef": "nombre_docente",
@@ -562,7 +587,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.nombre_docente"
+              "queryRef": "solicitudes_calificacion.nombre_docente",
+              "displayName": "Nombre Docente"
             },
             {
               "nativeQueryRef": "correo_docente",
@@ -576,7 +602,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.correo_docente"
+              "queryRef": "solicitudes_calificacion.correo_docente",
+              "displayName": "Correo Docente"
             },
             {
               "nativeQueryRef": "glosa",
@@ -590,7 +617,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.glosa"
+              "queryRef": "solicitudes_calificacion.glosa",
+              "displayName": "Glosa"
             },
             {
               "nativeQueryRef": "rut_decano",
@@ -604,7 +632,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.rut_decano"
+              "queryRef": "solicitudes_calificacion.rut_decano",
+              "displayName": "RUT decano"
             },
             {
               "nativeQueryRef": "nombre_decano",
@@ -618,7 +647,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.nombre_decano"
+              "queryRef": "solicitudes_calificacion.nombre_decano",
+              "displayName": "Nombre decano"
             },
             {
               "nativeQueryRef": "correo_decano",
@@ -632,7 +662,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.correo_decano"
+              "queryRef": "solicitudes_calificacion.correo_decano",
+              "displayName": "Correo decano"
             },
             {
               "nativeQueryRef": "rut_director_academico",
@@ -646,7 +677,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.rut_director_academico"
+              "queryRef": "solicitudes_calificacion.rut_director_academico",
+              "displayName": "RUT director academico"
             },
             {
               "nativeQueryRef": "nombre_director_academico",
@@ -660,7 +692,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.nombre_director_academico"
+              "queryRef": "solicitudes_calificacion.nombre_director_academico",
+              "displayName": "Nombre director academico"
             },
             {
               "nativeQueryRef": "correo_director_academico",
@@ -674,7 +707,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.correo_director_academico"
+              "queryRef": "solicitudes_calificacion.correo_director_academico",
+              "displayName": "Correo director academico"
             },
             {
               "nativeQueryRef": "rut_dc_o_dd",
@@ -688,7 +722,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.rut_dc_o_dd"
+              "queryRef": "solicitudes_calificacion.rut_dc_o_dd",
+              "displayName": "RUT dc o dd"
             },
             {
               "nativeQueryRef": "nombre_dc_o_dd",
@@ -702,7 +737,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.nombre_dc_o_dd"
+              "queryRef": "solicitudes_calificacion.nombre_dc_o_dd",
+              "displayName": "Nombre dc o dd"
             },
             {
               "nativeQueryRef": "correo_dc_o_dd",
@@ -716,7 +752,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.correo_dc_o_dd"
+              "queryRef": "solicitudes_calificacion.correo_dc_o_dd",
+              "displayName": "Correo dc o dd"
             },
             {
               "nativeQueryRef": "rut_registro_academico",
@@ -730,7 +767,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.rut_registro_academico"
+              "queryRef": "solicitudes_calificacion.rut_registro_academico",
+              "displayName": "RUT registro academico"
             },
             {
               "nativeQueryRef": "nombre_registro_academico",
@@ -744,7 +782,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.nombre_registro_academico"
+              "queryRef": "solicitudes_calificacion.nombre_registro_academico",
+              "displayName": "Nombre registro academico"
             },
             {
               "nativeQueryRef": "correo_registro_academico",
@@ -758,7 +797,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.correo_registro_academico"
+              "queryRef": "solicitudes_calificacion.correo_registro_academico",
+              "displayName": "Correo registro academico"
             },
             {
               "nativeQueryRef": "nombre_titulos_y_grados",
@@ -772,7 +812,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.nombre_titulos_y_grados"
+              "queryRef": "solicitudes_calificacion.nombre_titulos_y_grados",
+              "displayName": "Nombre titulos y grados"
             },
             {
               "nativeQueryRef": "correo_titulos_y_grados",
@@ -786,7 +827,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.correo_titulos_y_grados"
+              "queryRef": "solicitudes_calificacion.correo_titulos_y_grados",
+              "displayName": "Correo titulos y grados"
             },
             {
               "nativeQueryRef": "comentario_solicitante",
@@ -800,7 +842,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.comentario_solicitante"
+              "queryRef": "solicitudes_calificacion.comentario_solicitante",
+              "displayName": "Comentario solicitante"
             },
             {
               "nativeQueryRef": "estado_actual",
@@ -814,7 +857,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.estado_actual"
+              "queryRef": "solicitudes_calificacion.estado_actual",
+              "displayName": "Estado Técnico"
             },
             {
               "nativeQueryRef": "start_date",
@@ -828,7 +872,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.start_date"
+              "queryRef": "solicitudes_calificacion.start_date",
+              "displayName": "Inicio (epoch)"
             },
             {
               "nativeQueryRef": "stop_date",
@@ -842,7 +887,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.stop_date"
+              "queryRef": "solicitudes_calificacion.stop_date",
+              "displayName": "Cierre (epoch)"
             },
             {
               "nativeQueryRef": "ejecutandose",
@@ -856,7 +902,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.ejecutandose"
+              "queryRef": "solicitudes_calificacion.ejecutandose",
+              "displayName": "Ejecutandose"
             },
             {
               "nativeQueryRef": "ultimo_estado",
@@ -870,7 +917,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.ultimo_estado"
+              "queryRef": "solicitudes_calificacion.ultimo_estado",
+              "displayName": "Ultimo estado"
             },
             {
               "nativeQueryRef": "originating_user_id",
@@ -884,7 +932,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.originating_user_id"
+              "queryRef": "solicitudes_calificacion.originating_user_id",
+              "displayName": "Originating user ID"
             },
             {
               "nativeQueryRef": "originating_event_id",
@@ -898,7 +947,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.originating_event_id"
+              "queryRef": "solicitudes_calificacion.originating_event_id",
+              "displayName": "Originating event ID"
             },
             {
               "nativeQueryRef": "originating_process_id",
@@ -912,7 +962,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.originating_process_id"
+              "queryRef": "solicitudes_calificacion.originating_process_id",
+              "displayName": "Originating process ID"
             },
             {
               "nativeQueryRef": "owner_role_id",
@@ -926,7 +977,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.owner_role_id"
+              "queryRef": "solicitudes_calificacion.owner_role_id",
+              "displayName": "Owner role ID"
             },
             {
               "nativeQueryRef": "admin_role_id",
@@ -940,7 +992,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.admin_role_id"
+              "queryRef": "solicitudes_calificacion.admin_role_id",
+              "displayName": "Admin role ID"
             },
             {
               "nativeQueryRef": "requires_execution_plan",
@@ -954,7 +1007,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.requires_execution_plan"
+              "queryRef": "solicitudes_calificacion.requires_execution_plan",
+              "displayName": "Requires execution plan"
             },
             {
               "nativeQueryRef": "estado_operacional",
@@ -968,7 +1022,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.estado_operacional"
+              "queryRef": "solicitudes_calificacion.estado_operacional",
+              "displayName": "Estado Operacional"
             },
             {
               "nativeQueryRef": "start_datetime",
@@ -982,7 +1037,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.start_datetime"
+              "queryRef": "solicitudes_calificacion.start_datetime",
+              "displayName": "Start datetime"
             },
             {
               "nativeQueryRef": "stop_datetime",
@@ -996,7 +1052,8 @@
                   }
                 }
               },
-              "queryRef": "solicitudes_calificacion.stop_datetime"
+              "queryRef": "solicitudes_calificacion.stop_datetime",
+              "displayName": "Stop datetime"
             }
           ]
         }
