@@ -26,9 +26,7 @@ annotation PBI_ProTooling = ["TMDLView_Desktop","DevMode"]
 
 ref table solicitudes_inscripcion
 ref table solicitudes_calificacion
-ref table solicitudes_workflow
-ref table solicitudes_consolidadas
 ref table dim_periodo
 ref table dim_estado
-ref table dim_tipo_solicitud
 ref table 'Medidas Solicitudes'
+ref table solicitudes_workflow

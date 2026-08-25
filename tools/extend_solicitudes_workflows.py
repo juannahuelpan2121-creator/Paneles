@@ -19,6 +19,7 @@ TARGET = Path(
 )
 REPO = Path(__file__).resolve().parents[1]
 SQL_SOURCE = REPO / "Solicitudes" / "Queries" / "WORKFLOW_SOLICITUDES_TODAS_HISTORICO.sql"
+SQL_PROPERTIES_SOURCE = REPO / "Solicitudes" / "Queries" / "WORKFLOW_PROPIEDADES_JSON_HISTORICO.sql"
 INVENTORY_SOURCE = Path(
     r"C:\Users\juan.nahuelpan\Documents\Codex\2026-08-21"
     r"\select-sala-codigo-periodo-periodo-periodo\outputs\workflow_inventario_propiedades_athena.txt"
@@ -56,10 +57,7 @@ GENERIC_COLUMNS: list[tuple[str, str]] = [
     ("usuario_origen_id", "string"),
     ("rol_propietario_id", "string"),
     ("rol_administrador_id", "string"),
-    ("nombre_propiedad", "string"),
-    ("tipo_propiedad", "string"),
-    ("secuencia_propiedad", "int64"),
-    ("valor_propiedad", "string"),
+    ("cantidad_propiedades", "int64"),
     ("descripcion_tipo_solicitud", "string"),
     ("version_workflow", "int64"),
     ("particion_workflow", "string"),
@@ -168,32 +166,37 @@ def add_query_expression(sql: str) -> None:
     path = MODEL / "expressions.tmdl"
     text = read_text(path)
     name = "query_workflow_solicitudes_todas"
-    existing = re.search(
-        rf"^expression {name}\s*=\s*```.*?(?=^expression |\Z)",
-        text,
-        flags=re.M | re.S,
+    existing = list(
+        re.finditer(
+            rf"^expression {name}\s*=.*?(?=^expression |\Z)",
+            text,
+            flags=re.M | re.S,
+        )
     )
     if existing:
-        current_block = existing.group(0)
+        current_block = existing[0].group(0)
         updated_block = re.sub(
-            r'^    Query = ".*"$',
-            f'    Query = "{sql_to_m(sql)}"',
+            r'^(\s*)Query = ".*"$',
+            rf'\1Query = "{sql_to_m(sql)}"',
             current_block,
             count=1,
             flags=re.M,
         )
-        write_text(
-            path,
-            text[: existing.start()] + updated_block + text[existing.end() :],
-        )
+        pieces: list[str] = []
+        cursor = 0
+        for index, match in enumerate(existing):
+            pieces.append(text[cursor : match.start()])
+            if index == 0:
+                pieces.append(updated_block)
+            cursor = match.end()
+        pieces.append(text[cursor:])
+        write_text(path, "".join(pieces).rstrip() + "\n")
         return
-    block = f'''\n\nexpression {name} = ```
-let
-    Query = "{sql_to_m(sql)}"
-in
-    Query
-```
-
+    block = f'''\n\nexpression {name} =
+\tlet
+\t    Query = "{sql_to_m(sql)}"
+\tin
+\t    Query
 \tlineageTag: {lineage()}
 \tqueryGroup: Queries
 
@@ -204,14 +207,29 @@ in
     write_text(path, text.rstrip() + block)
 
 
-def generic_table_tmdl() -> str:
-    lines = ["table solicitudes_workflow", f"\tlineageTag: {lineage()}", ""]
+def generic_table_tmdl(existing_text: str = "") -> str:
+    def preserved_tag(column_name: str | None = None) -> str:
+        if column_name is None:
+            match = re.search(
+                r"^table solicitudes_workflow\s*\n\s*lineageTag:\s*([^\s]+)",
+                existing_text,
+                flags=re.M,
+            )
+        else:
+            match = re.search(
+                rf"^\s*column {re.escape(column_name)}(?:\s*=)?\s*.*?^\s*lineageTag:\s*([^\s]+)",
+                existing_text,
+                flags=re.M | re.S,
+            )
+        return match.group(1) if match else lineage()
+
+    lines = ["table solicitudes_workflow", f"\tlineageTag: {preserved_tag()}", ""]
     for name, dtype in GENERIC_COLUMNS:
         lines.extend(
             [
                 f"\tcolumn {name}",
                 f"\t\tdataType: {dtype}",
-                f"\t\tlineageTag: {lineage()}",
+                f"\t\tlineageTag: {preserved_tag(name)}",
                 "\t\tsummarizeBy: none",
                 f"\t\tsourceColumn: {name}",
                 "",
@@ -233,7 +251,7 @@ def generic_table_tmdl() -> str:
                 "\t\t\t\t)",
                 "\t\tdataType: dateTime",
                 "\t\tformatString: General Date",
-                f"\t\tlineageTag: {lineage()}",
+                f"\t\tlineageTag: {preserved_tag(name)}",
                 "\t\tsummarizeBy: none",
                 "",
                 "\t\tannotation SummarizationSetBy = Automatic",
@@ -278,15 +296,31 @@ def dimension_tmdl(name: str, column: str, source: str) -> str:
 
 
 def update_model() -> None:
-    write_text(TABLES / "solicitudes_workflow.tmdl", generic_table_tmdl())
-    write_text(TABLES / "dim_periodo.tmdl", dimension_tmdl("dim_periodo", "periodo", "periodo"))
-    write_text(TABLES / "dim_estado.tmdl", dimension_tmdl("dim_estado", "estado_operacional", "estado_operacional"))
-    write_text(
-        TABLES / "dim_tipo_solicitud.tmdl",
-        dimension_tmdl("dim_tipo_solicitud", "tipo_solicitud", "categoria_solicitud"),
-    )
+    workflow_path = TABLES / "solicitudes_workflow.tmdl"
+    existing_workflow = read_text(workflow_path) if workflow_path.exists() else ""
+    write_text(workflow_path, generic_table_tmdl(existing_workflow))
+    if not (TABLES / "dim_periodo.tmdl").exists():
+        write_text(TABLES / "dim_periodo.tmdl", dimension_tmdl("dim_periodo", "periodo", "periodo"))
+    if not (TABLES / "dim_estado.tmdl").exists():
+        write_text(TABLES / "dim_estado.tmdl", dimension_tmdl("dim_estado", "estado_operacional", "estado_operacional"))
+    for obsolete_table in ("solicitudes_consolidadas.tmdl", "dim_tipo_solicitud.tmdl"):
+        obsolete_path = TABLES / obsolete_table
+        if obsolete_path.exists():
+            obsolete_path.unlink()
 
     relationships = read_text(MODEL / "relationships.tmdl")
+    for obsolete_relationship in (
+        "dim_periodo_consolidado",
+        "dim_estado_consolidado",
+        "dim_tipo_consolidado",
+        "dim_tipo_workflow",
+    ):
+        relationships = re.sub(
+            rf"\nrelationship {obsolete_relationship}\n.*?(?=\nrelationship |\Z)",
+            "\n",
+            relationships,
+            flags=re.S,
+        )
     if "relationship dim_periodo_workflow" not in relationships:
         relationships = relationships.rstrip() + '''
 
@@ -297,14 +331,16 @@ relationship dim_periodo_workflow
 relationship dim_estado_workflow
 \tfromColumn: solicitudes_workflow.estado_operacional
 \ttoColumn: dim_estado.estado_operacional
-
-relationship dim_tipo_workflow
-\tfromColumn: solicitudes_workflow.categoria_solicitud
-\ttoColumn: dim_tipo_solicitud.tipo_solicitud
 '''
     write_text(MODEL / "relationships.tmdl", relationships)
 
     model = read_text(MODEL / "model.tmdl")
+    model = re.sub(
+        r"^ref table (?:solicitudes_consolidadas|dim_tipo_solicitud)\s*$\n?",
+        "",
+        model,
+        flags=re.M,
+    )
     if "ref table solicitudes_workflow" not in model:
         marker = "ref table solicitudes_consolidadas"
         model = model.replace(marker, "ref table solicitudes_workflow\n" + marker)
@@ -333,20 +369,24 @@ def measure_block(
 
 
 def upsert_measure(text: str, name: str, expression: str, fmt: str | None = None) -> str:
-    start_marker = f"\tmeasure '{name}' = ```"
-    start = text.find(start_marker)
-    if start >= 0:
-        candidates = [p for p in (text.find("\n\tmeasure ", start + 1), text.find("\n\tcolumn ", start + 1)) if p >= 0]
-        end = min(candidates) if candidates else len(text)
-        current_block = text[start:end]
-        tag_match = re.search(r"\n\t\tlineageTag:\s*([^\s]+)", current_block)
-        block = measure_block(
-            name,
-            expression,
-            fmt,
-            tag_match.group(1) if tag_match else None,
-        )
-        return text[:start] + block + text[end + 1 :]
+    # Power BI puede normalizar una medida en formato inline o multilínea y
+    # quitar los delimitadores ```. Detectamos cualquier representación TMDL y
+    # eliminamos duplicados antes de escribir una única versión canónica.
+    pattern = re.compile(
+        rf"^\tmeasure\s+'{re.escape(name)}'\s*=.*?(?=^\tmeasure\s|^\tcolumn\s|\Z)",
+        flags=re.M | re.S,
+    )
+    matches = list(pattern.finditer(text))
+    if matches:
+        tag_match = re.search(r"^\t\tlineageTag:\s*([^\s]+)", matches[0].group(0), flags=re.M)
+        block = measure_block(name, expression, fmt, tag_match.group(1) if tag_match else None)
+        parts = [text[: matches[0].start()], block]
+        cursor = matches[0].end()
+        for duplicate in matches[1:]:
+            parts.append(text[cursor : duplicate.start()])
+            cursor = duplicate.end()
+        parts.append(text[cursor:])
+        return "".join(parts)
     block = measure_block(name, expression, fmt)
     insert = text.find("\n\tcolumn Marcador")
     if insert < 0:
@@ -368,7 +408,7 @@ VAR cNivel = IF ( ISFILTERED ( solicitudes_workflow[nivel] ), "#F3E7C4", "#EAF1F
 VAR cSede = IF ( ISFILTERED ( solicitudes_workflow[sede] ), "#F3E7C4", "#EAF1FB" )
 RETURN
 "<style>html,body{{margin:0;padding:0;background:transparent;font-family:Arial,Segoe UI,sans-serif;overflow:hidden}}.hdr{{height:140px;box-sizing:border-box;background:#fff;border:1px solid #E1E6ED;border-radius:10px;box-shadow:0 4px 12px rgba(17,43,66,.08);position:relative;color:#112B42;overflow:hidden}}.divider{{position:absolute;left:230px;top:20px;width:2px;height:64px;background:#C6B27F}}.title{{position:absolute;left:255px;top:17px;font-size:23px;font-weight:700;display:flex;align-items:center;gap:7px}}.subtitle{{position:absolute;left:255px;top:51px;font-size:12px;color:#58616E}}.area{{position:absolute;left:255px;top:72px;font-size:10px;font-weight:600;color:#8A7440}}.chips{{position:absolute;left:18px;bottom:13px;display:flex;gap:7px;align-items:center;font-size:10px;color:#475569;max-width:1080px;white-space:nowrap;overflow:hidden}}.chip{{padding:4px 9px;border-radius:999px;color:#112B42}}.info{{position:static;display:block;font-size:11px}}.info>summary{{display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#C6B27F;color:#fff;list-style:none;cursor:pointer}}.info>summary::-webkit-details-marker{{display:none}}.info>summary::marker{{content:''}}.info[open]>summary{{position:fixed;left:936px;top:10px;z-index:10001;background:#F4F0E3;color:#112B42;font-size:0}}.info[open]>summary::after{{content:'×';font-size:14px;font-weight:700}}.tip{{display:none;position:fixed;left:270px;top:6px;width:700px;height:126px;z-index:9999;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:8px;box-shadow:0 6px 18px rgba(17,43,66,.16);padding:12px 16px 20px;box-sizing:border-box}}.info[open]>.tip{{display:block}}.tipgrid{{display:grid;grid-template-columns:1fr 1fr 1fr;height:86px}}.tipgrid>div{{padding:2px 15px;border-right:1px solid #E1E6ED}}.tipgrid>div:first-child{{padding-left:8px}}.tipgrid>div:last-child{{border-right:0}}.tip b{{display:block;color:#8A7440;font-size:10px;margin-bottom:6px}}.tip span{{display:block;color:#334155;font-size:9px;line-height:12px}}.source{{position:absolute;left:24px;right:24px;bottom:5px;padding-top:4px;border-top:1px solid #E1E6ED;color:#64748B;font-size:8px}}</style>" &
-"<div class='hdr'><div class='divider'></div><div class='title'><span>{title}</span><details class='info'><summary title='Ver metodología'>i</summary><div class='tip'><div class='tipgrid'><div><b>Objetivo</b><span>Monitorear solicitudes académicas y su avance operacional a lo largo del tiempo.</span></div><div><b>Descriptor</b><span>Una solicitud corresponde a un id único. Las propiedades del formulario se conservan en formato largo para su descarga.</span></div><div><b>Fórmula de cálculo</b><span>Total: DISTINCTCOUNT(id). Finalizada, en curso y cancelada se obtienen del estado del workflow. La tasa divide finalizadas por total.</span></div></div><div class='source'>Fuente: Banner Workflow, Data Lake USS. Histórico completo sin filtro fijo de periodo.</div></div></details></div><div class='subtitle'>{subtitle}</div><div class='area'>Dirección General de Control de Gestión y Análisis Institucional</div>" &
+"<div class='hdr'><div class='divider'></div><div class='title'><span>{title}</span><details class='info'><summary title='Ver metodología'>i</summary><div class='tip'><div class='tipgrid'><div><b>Objetivo</b><span>Monitorear solicitudes académicas y su avance operacional a lo largo del tiempo.</span></div><div><b>Descriptor</b><span>Una solicitud corresponde a un id único. El modelo importa campos operacionales y el conteo de propiedades sin duplicar filas.</span></div><div><b>Fórmula de cálculo</b><span>Total: DISTINCTCOUNT(id). Finalizada, en curso y cancelada se obtienen del estado del workflow. La tasa divide finalizadas por total.</span></div></div><div class='source'>Fuente: Banner Workflow, Data Lake USS. Histórico completo sin filtro fijo de periodo.</div></div></details></div><div class='subtitle'>{subtitle}</div><div class='area'>Dirección General de Control de Gestión y Análisis Institucional</div>" &
 "<div class='chips'><span>Filtros aplicados:</span><span class='chip' style='background:" & cPeriodo & "'>Periodo: <b>" & vPeriodo & "</b></span><span class='chip' style='background:" & cEstado & "'>Estado: <b>" & vEstado & "</b></span>{type_chip}<span class='chip' style='background:" & cNivel & "'>Nivel: <b>" & vNivel & "</b></span><span class='chip' style='background:" & cSede & "'>Sede: <b>" & vSede & "</b></span></div></div>"'''
 
 
@@ -391,7 +431,7 @@ RETURN
 "<div class='wrap'><div class='card'><div class='title'>Solicitudes</div><div class='desc'>Workflows únicos según filtros.</div><div class='value'>" & FORMAT(total,"#,##0") & "</div></div><div class='card'><div class='title'>Finalizadas</div><div class='desc'>Procesos con término registrado.</div><div class='value'>" & FORMAT(fin,"#,##0") & "</div></div><div class='card'><div class='title'>En curso</div><div class='desc'>Procesos actualmente activos.</div><div class='value'>" & FORMAT(curso,"#,##0") & "</div></div><div class='card'><div class='title'>Tasa de finalización</div><div class='desc'>Finalizadas respecto del total.</div><div class='value'>" & FORMAT(tasa,"0.0%") & "</div></div></div>"'''
 
 KPI_RAW = '''VAR v_HTML =
-"<style>html,body{margin:0;padding:0;background:transparent;font-family:Arial,Segoe UI,sans-serif}.box{height:100%;box-sizing:border-box;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:18px 22px;color:#112B42;box-shadow:0 3px 10px rgba(17,43,66,.06)}.t{font-size:15px;font-weight:700}.d{margin-top:8px;font-size:11px;line-height:16px;color:#58616E}.tag{display:inline-block;margin-top:9px;padding:5px 10px;border-radius:999px;background:#EAF1FB;font-size:10px;font-weight:700}</style><div class='box'><div class='t'>Descarga de datos en crudo</div><div class='d'>La tabla conserva una fila por solicitud y propiedad del formulario. Selecciona la tabla, abre el menú <b>…</b> del visual y elige <b>Exportar datos</b>. Usa los filtros para acotar la descarga si lo necesitas.</div><span class='tag'>Histórico completo</span></div>"
+"<style>html,body{margin:0;padding:0;background:transparent;font-family:Arial,Segoe UI,sans-serif}.box{height:100%;box-sizing:border-box;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:18px 22px;color:#112B42;box-shadow:0 3px 10px rgba(17,43,66,.06)}.t{font-size:15px;font-weight:700}.d{margin-top:8px;font-size:11px;line-height:16px;color:#58616E}.tag{display:inline-block;margin-top:9px;padding:5px 10px;border-radius:999px;background:#EAF1FB;font-size:10px;font-weight:700}</style><div class='box'><div class='t'>Descarga operacional optimizada</div><div class='d'>La tabla conserva una fila por solicitud y puede exportarse desde el menú <b>…</b>. La extracción con todas las propiedades se mantiene separada en <b>Queries/workflow_propiedades_json.sql</b> para ejecutarla directamente en Athena.</div><span class='tag'>Histórico completo sin duplicados</span></div>"
 RETURN v_HTML'''
 
 
@@ -404,6 +444,8 @@ def update_measures() -> None:
         ("Solicitudes En Curso", 'CALCULATE ( [Solicitudes Total], solicitudes_workflow[estado_operacional] = "EN CURSO" )', "#,0"),
         ("Solicitudes Canceladas", 'CALCULATE ( [Solicitudes Total], solicitudes_workflow[estado_operacional] = "CANCELADA" )', "#,0"),
         ("% Solicitudes Finalizadas", "DIVIDE ( [Solicitudes Finalizadas], [Solicitudes Total] )", "0.0%"),
+        ("Solicitudes Inscripción", 'CALCULATE ( [Solicitudes Total], solicitudes_workflow[categoria_solicitud] = "Inscripción extraordinaria" )', "#,0"),
+        ("Solicitudes Calificación", 'CALCULATE ( [Solicitudes Total], solicitudes_workflow[categoria_solicitud] = "Cambio de calificación" )', "#,0"),
         (
             "Duración Promedio Días",
             '''AVERAGEX (
@@ -421,6 +463,8 @@ def update_measures() -> None:
         ),
         ("Encabezado Resumen Workflow", header_dax("Solicitudes académicas", "Resumen operacional consolidado de workflows académicos."), None),
         ("HTML KPI Resumen Workflow", KPI_SUMMARY, None),
+        ("Encabezado Resumen", header_dax("Solicitudes académicas", "Resumen operacional consolidado de workflows académicos."), None),
+        ("HTML KPI Resumen", KPI_SUMMARY, None),
         ("HTML KPI Detalle Workflow", KPI_DETAIL, None),
         ("Encabezado Sábana", header_dax("Sábana completa de solicitudes", "Datos históricos en crudo para análisis y exportación.", raw=True), None),
         ("HTML KPI Sábana", KPI_RAW, None),
@@ -749,8 +793,8 @@ def clone_page(item: dict) -> list[dict]:
         ("solicitudes_workflow", "sede", "Column"),
         ("solicitudes_workflow", "nivel", "Column"),
         ("solicitudes_workflow", "rut_estudiante", "Column"),
-        ("solicitudes_workflow", "nombre_propiedad", "Column"),
-        ("solicitudes_workflow", "valor_propiedad", "Column"),
+        ("solicitudes_workflow", "cabecera", "Column"),
+        ("solicitudes_workflow", "cantidad_propiedades", "Column"),
     ]
     table = make_table(table_template, f"{item['prefix']}_tabla", detail_fields, f"Sábana histórica - {item['display']}", 24, 735, 1232, 1025)
     table["filterConfig"] = categorical_filter("solicitudes_workflow", "categoria_solicitud", item["category"], f"flt_{item['prefix']}_tabla")
@@ -944,7 +988,7 @@ def create_raw_page() -> list[dict]:
         ]
     )
     table_template = read_json(PAGES / "resumen_solicitudes" / "visuals" / "res_tabla" / "visual.json")
-    table = make_table(table_template, "raw_tabla", fields, "Sábana completa - una fila por solicitud y propiedad", 24, 335, 1232, 1425)
+    table = make_table(table_template, "raw_tabla", fields, "Sábana completa - una fila por solicitud", 24, 335, 1232, 1425)
     visuals.append(table)
     for visual in visuals:
         write_json(target / "visuals" / visual["name"] / "visual.json", visual)
@@ -1016,7 +1060,8 @@ Proyecto Power BI con interfaz MODUSS estratégica y datos de Banner Workflow en
 ## Criterios
 
 - La consulta genérica conserva el histórico sin filtro temporal fijo.
-- El formato largo contiene una fila por solicitud y propiedad.
+- La sábana del panel contiene una fila operacional por solicitud, sin duplicados.
+- La extracción completa de propiedades se entrega en `Queries/workflow_propiedades_json.sql` y no se importa al modelo.
 - Los indicadores cuentan `DISTINCT id`, evitando inflar los resultados por la cantidad de propiedades.
 - `FINALIZADA`, `EN CURSO`, `CANCELADA` y `OTRO` se determinan a partir del estado y ejecución del workflow.
 - Periodo, sede, nivel y RUT se detectan desde las propiedades disponibles en cada formulario.
@@ -1038,6 +1083,7 @@ def main() -> None:
     backup = make_backup()
     QUERIES.mkdir(parents=True, exist_ok=True)
     shutil.copy2(SQL_SOURCE, QUERIES / "workflow_solicitudes_todas_historico.sql")
+    shutil.copy2(SQL_PROPERTIES_SOURCE, QUERIES / "workflow_propiedades_json.sql")
     if INVENTORY_SOURCE.exists():
         shutil.copy2(INVENTORY_SOURCE, QUERIES / "workflow_inventario_propiedades_athena.sql")
     sql = read_text(SQL_SOURCE)

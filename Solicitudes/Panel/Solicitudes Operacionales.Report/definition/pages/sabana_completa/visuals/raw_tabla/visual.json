@@ -289,53 +289,11 @@
                       "Entity": "solicitudes_workflow"
                     }
                   },
-                  "Property": "nombre_propiedad"
+                  "Property": "cantidad_propiedades"
                 }
               },
-              "queryRef": "solicitudes_workflow.nombre_propiedad",
-              "nativeQueryRef": "nombre_propiedad"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "tipo_propiedad"
-                }
-              },
-              "queryRef": "solicitudes_workflow.tipo_propiedad",
-              "nativeQueryRef": "tipo_propiedad"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "secuencia_propiedad"
-                }
-              },
-              "queryRef": "solicitudes_workflow.secuencia_propiedad",
-              "nativeQueryRef": "secuencia_propiedad"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "valor_propiedad"
-                }
-              },
-              "queryRef": "solicitudes_workflow.valor_propiedad",
-              "nativeQueryRef": "valor_propiedad"
+              "queryRef": "solicitudes_workflow.cantidad_propiedades",
+              "nativeQueryRef": "cantidad_propiedades"
             },
             {
               "field": {
@@ -569,7 +527,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Sábana completa - una fila por solicitud y propiedad'"
+                  "Value": "'Sábana completa - una fila por solicitud'"
                 }
               }
             },

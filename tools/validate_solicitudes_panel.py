@@ -26,6 +26,7 @@ for artifact in required_artifacts:
 
 tables: dict[str, set[str]] = {}
 measures: dict[str, set[str]] = {}
+measure_name_lists: dict[str, list[str]] = {}
 for path in (model / "tables").glob("*.tmdl"):
     text = path.read_text(encoding="utf-8")
     match = re.search(r"^table\s+(?:'([^']+)'|(\S+))", text, re.M)
@@ -36,9 +37,16 @@ for path in (model / "tables").glob("*.tmdl"):
         m.group(1) or m.group(2)
         for m in re.finditer(r"^\s*column\s+(?:'([^']+)'|(\S+?))(?:\s*=.*)?$", text, re.M)
     }
-    measures[table] = set(re.findall(r"^\s*measure\s+'([^']+)'\s*=", text, re.M))
+    measure_names = re.findall(r"^\s*measure\s+'([^']+)'\s*=", text, re.M)
+    measure_name_lists[table] = measure_names
+    measures[table] = set(measure_names)
 
 errors: list[str] = []
+for table_name, measure_names in measure_name_lists.items():
+    duplicates = sorted({name for name in measure_names if measure_names.count(name) > 1})
+    if duplicates:
+        errors.append(f"Medidas duplicadas en {table_name}: {', '.join(duplicates)}")
+
 json_count = 0
 page_visuals: dict[str, set[str]] = {}
 page_groups: dict[str, set[str]] = {}
@@ -86,6 +94,8 @@ for path in list(report.rglob("*.json")) + list(model.rglob("*.tmdl")):
 # después de la importación. Así el controlador ODBC no intenta interpretar
 # milisegundos como DateTime durante la apertura del proyecto.
 expressions_text = (model / "expressions.tmdl").read_text(encoding="utf-8").upper()
+if expressions_text.count("EXPRESSION QUERY_WORKFLOW_SOLICITUDES_TODAS") != 1:
+    errors.append("Debe existir exactamente una expresión query_workflow_solicitudes_todas")
 if "FROM_UNIXTIME" in expressions_text:
     errors.append("Las queries no deben convertir epoch en SQL: el ODBC lo vuelve a exponer como número")
 if expressions_text.count("WF.START_DATE") < 2 or expressions_text.count("WF.STOP_DATE") < 2:
@@ -103,15 +113,21 @@ for table_name in ("solicitudes_inscripcion", "solicitudes_calificacion"):
         if required_fragment not in table_text:
             errors.append(f"{table_name}: falta conversión segura de epoch: {required_fragment}")
 
-consolidated_text = (model / "tables" / "solicitudes_consolidadas.tmdl").read_text(encoding="utf-8")
-for required_fragment in (
-    "solicitudes_inscripcion[start_datetime]",
-    "solicitudes_inscripcion[stop_datetime]",
-    "solicitudes_calificacion[start_datetime]",
-    "solicitudes_calificacion[stop_datetime]",
+for obsolete_table in ("solicitudes_consolidadas.tmdl", "dim_tipo_solicitud.tmdl"):
+    if (model / "tables" / obsolete_table).exists():
+        errors.append(f"Tabla calculada sin uso todavía cargada: {obsolete_table}")
+model_text = (model / "model.tmdl").read_text(encoding="utf-8")
+relationships_text = (model / "relationships.tmdl").read_text(encoding="utf-8")
+for obsolete_reference in (
+    "solicitudes_consolidadas",
+    "dim_tipo_solicitud",
+    "dim_periodo_consolidado",
+    "dim_estado_consolidado",
+    "dim_tipo_consolidado",
+    "dim_tipo_workflow",
 ):
-    if required_fragment not in consolidated_text:
-        errors.append(f"Consolidado no usa la fecha convertida: {required_fragment}")
+    if obsolete_reference in model_text or obsolete_reference in relationships_text:
+        errors.append(f"Referencia obsoleta en el modelo: {obsolete_reference}")
 
 page_meta = json.loads((report / "pages" / "pages.json").read_text(encoding="utf-8"))
 for page in page_meta["pageOrder"]:
@@ -222,13 +238,13 @@ for page, prefix in page_prefix.items():
                 f"{action_path}: apunta a {bookmark!r}; se esperaba {expected_bookmark!r}"
             )
 
-# Ampliación de workflows: el dataset está en formato largo, por lo que los
-# indicadores deben contar ids únicos. También se exige una página histórica
-# por tipología y una sábana de exportación.
+# Ampliación de workflows: el dataset importado tiene una fila por solicitud y
+# los indicadores cuentan ids únicos. También se exige una página histórica
+# por tipología y una sábana operacional de exportación.
 workflow_required_columns = {
     "id", "pd_id", "estado_actual", "estado_operacional", "start_date", "stop_date",
     "tipo_solicitud", "categoria_solicitud", "periodo", "sede", "nivel",
-    "rut_estudiante", "nombre_propiedad", "valor_propiedad", "fecha_inicio", "fecha_cierre",
+    "rut_estudiante", "cantidad_propiedades", "fecha_inicio", "fecha_cierre",
 }
 missing_workflow_columns = workflow_required_columns - tables.get("solicitudes_workflow", set())
 if missing_workflow_columns:
@@ -238,7 +254,7 @@ if missing_workflow_columns:
 
 measure_text = (model / "tables" / "Medidas Solicitudes.tmdl").read_text(encoding="utf-8")
 if "DISTINCTCOUNT ( solicitudes_workflow[id] )" not in measure_text:
-    errors.append("Solicitudes Total debe contar DISTINCT id en el dataset largo")
+    errors.append("Solicitudes Total debe contar DISTINCT id en el dataset operacional")
 for required_measure in (
     "Solicitudes Canceladas",
     "Duración Promedio Días",
@@ -335,16 +351,40 @@ else:
         "'[_-]+'",
         "'CAMBIO( DE)? CARRERA( SEDE)?'",
         "THEN 'CAMBIO DE CARRERA/SEDE'",
+        "WHEN ID = CAST(19994978 AS BIGINT) THEN 'INSCRIPCIÓN EXTRAORDINARIA'",
+        "WHERE CATEGORIA_SOLICITUD IS NOT NULL",
+        "COUNT(*) AS CANTIDAD_PROPIEDADES",
+        "LEFT JOIN ATRIBUTOS AS A",
     ):
         if required_fragment not in sql_text:
             errors.append(
-                "La homologación de cambio de carrera/sede no reconoce códigos con guiones bajos: "
+                "La query histórica no contiene la optimización u homologación requerida: "
                 + required_fragment
+            )
+    for forbidden_fragment in ("BASE_LARGA AS", "FROM ENRIQUECIDA"):
+        if forbidden_fragment in sql_text:
+            errors.append(
+                "La query volvió al formato largo que multiplica las solicitudes: "
+                + forbidden_fragment
             )
     if "'CAMBIO( DE)? CARRERA( SEDE)?'" not in expressions_text:
         errors.append(
             "La query externa fue corregida, pero expressions.tmdl conserva la homologación antigua"
         )
+    if "MAP_AGG(" in expressions_text or "AS PROPIEDADES_JSON" in expressions_text:
+        errors.append(
+            "La query importada conserva el JSON masivo de propiedades"
+        )
+    properties_sql = root / "Queries" / "workflow_propiedades_json.sql"
+    if not properties_sql.exists():
+        errors.append("Falta la extracción externa de propiedades completas")
+    else:
+        properties_text = properties_sql.read_text(encoding="utf-8").upper()
+        for required_fragment in ("MAP_AGG(", "AS PROPIEDADES_JSON", "NO IMPORTAR"):
+            if required_fragment not in properties_text:
+                errors.append(
+                    "Extracción externa de propiedades incompleta: " + required_fragment
+                )
 
 bookmark_meta = json.loads((report / "bookmarks" / "bookmarks.json").read_text(encoding="utf-8"))
 for item in bookmark_meta["items"]:

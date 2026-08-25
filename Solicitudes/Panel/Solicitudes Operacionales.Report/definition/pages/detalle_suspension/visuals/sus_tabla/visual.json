@@ -149,11 +149,11 @@
                       "Entity": "solicitudes_workflow"
                     }
                   },
-                  "Property": "nombre_propiedad"
+                  "Property": "cabecera"
                 }
               },
-              "queryRef": "solicitudes_workflow.nombre_propiedad",
-              "nativeQueryRef": "nombre_propiedad"
+              "queryRef": "solicitudes_workflow.cabecera",
+              "nativeQueryRef": "cabecera"
             },
             {
               "field": {
@@ -163,11 +163,11 @@
                       "Entity": "solicitudes_workflow"
                     }
                   },
-                  "Property": "valor_propiedad"
+                  "Property": "cantidad_propiedades"
                 }
               },
-              "queryRef": "solicitudes_workflow.valor_propiedad",
-              "nativeQueryRef": "valor_propiedad"
+              "queryRef": "solicitudes_workflow.cantidad_propiedades",
+              "nativeQueryRef": "cantidad_propiedades"
             }
           ]
         }

@@ -1,6 +1,6 @@
--- SOLICITUDES WORKFLOW: DATASET HISTORICO OPTIMIZADO
--- Amazon Athena / Trino. Una fila por solicitud.
--- Sin filtro fijo de periodo. Las propiedades se agregan sin importar su texto.
+-- EXTRACCION EXTERNA: PROPIEDADES COMPLETAS DE SOLICITUDES EN JSON
+-- Amazon Athena / Trino. Una fila por solicitud, para ejecución y descarga directa.
+-- No importar esta consulta al modelo Power BI: el JSON histórico supera 1 GB.
 
 WITH definiciones_base AS (
     SELECT
@@ -168,6 +168,18 @@ atributos AS (
             ) THEN value END
         ) AS rut_estudiante_detectado,
         COUNT(*) AS cantidad_propiedades,
+        JSON_FORMAT(
+            CAST(
+                MAP_AGG(
+                    CONCAT(
+                        COALESCE(name, 'sin_nombre'),
+                        '#',
+                        CAST(COALESCE(seq, 0) AS VARCHAR)
+                    ),
+                    COALESCE(value, '')
+                ) AS JSON
+            )
+        ) AS propiedades_json,
         MAX(CAST(dt AS VARCHAR)) AS particion_propiedad
     FROM propiedades
     GROUP BY id
@@ -192,7 +204,10 @@ SELECT
     w.usuario_origen_id,
     w.rol_propietario_id,
     w.rol_administrador_id,
-    CAST(COALESCE(a.cantidad_propiedades, 0) AS BIGINT) AS cantidad_propiedades,
+    CONCAT('Propiedades consolidadas (', CAST(COALESCE(a.cantidad_propiedades, 0) AS VARCHAR), ')') AS nombre_propiedad,
+    'JSON' AS tipo_propiedad,
+    CAST(COALESCE(a.cantidad_propiedades, 0) AS BIGINT) AS secuencia_propiedad,
+    COALESCE(a.propiedades_json, '{}') AS valor_propiedad,
     w.descripcion_tipo_solicitud,
     w.version_workflow,
     w.particion_workflow,

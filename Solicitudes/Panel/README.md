@@ -18,10 +18,19 @@ Proyecto Power BI con interfaz MODUSS estratégica y datos de Banner Workflow en
 ## Criterios
 
 - La consulta genérica conserva el histórico sin filtro temporal fijo.
-- El formato largo contiene una fila por solicitud y propiedad.
+- La sábana del panel contiene una fila operacional por solicitud, sin duplicados.
+- La extracción completa de propiedades se entrega en `Queries/workflow_propiedades_json.sql` y no se importa al modelo.
 - Los indicadores cuentan `DISTINCT id`, evitando inflar los resultados por la cantidad de propiedades.
 - `FINALIZADA`, `EN CURSO`, `CANCELADA` y `OTRO` se determinan a partir del estado y ejecución del workflow.
 - Periodo, sede, nivel y RUT se detectan desde las propiedades disponibles en cada formulario.
+
+## Modelo optimizado
+
+- `solicitudes_workflow`: base operacional transversal, una fila por solicitud; alimenta el resumen, la sábana y seis páginas de tipologías.
+- `solicitudes_inscripcion` y `solicitudes_calificacion`: bases detalladas aprobadas para sus páginas específicas; no se suman entre sí ni con la base transversal.
+- `dim_periodo` y `dim_estado`: dimensiones compartidas por las tres bases de solicitudes.
+- `Medidas Solicitudes`: tabla técnica de medidas y HTML, sin datos operacionales duplicados.
+- Se retiraron `solicitudes_consolidadas` y `dim_tipo_solicitud` porque no tenían consumidores en el informe.
 
 ## Exportación
 

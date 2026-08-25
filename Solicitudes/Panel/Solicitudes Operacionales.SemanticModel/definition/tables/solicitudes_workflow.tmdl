@@ -1,9 +1,9 @@
 table solicitudes_workflow
-	lineageTag: 170fa654-119d-4fab-8f6a-0e8fad4ee12d
+	lineageTag: 9bf64449-f0dc-494d-b085-0e80caa592d8
 
 	column id
 		dataType: int64
-		lineageTag: f93498b3-6839-4e2c-8bdd-2f841a9e3560
+		lineageTag: 201d7349-d76c-4441-b436-3cff11b8cb19
 		summarizeBy: none
 		sourceColumn: id
 
@@ -11,7 +11,7 @@ table solicitudes_workflow
 
 	column pd_id
 		dataType: int64
-		lineageTag: 198671ab-7539-4dfa-86a7-4dbf7b449b6b
+		lineageTag: d5d8da8d-088f-4046-a461-5af005c0facc
 		summarizeBy: none
 		sourceColumn: pd_id
 
@@ -19,7 +19,7 @@ table solicitudes_workflow
 
 	column cabecera
 		dataType: string
-		lineageTag: 87dc03fc-544a-4011-8f19-ee6d776eda4b
+		lineageTag: c3c9a9c6-92e3-47bf-89da-1f9c02cb0364
 		summarizeBy: none
 		sourceColumn: cabecera
 
@@ -27,7 +27,7 @@ table solicitudes_workflow
 
 	column estado_actual
 		dataType: string
-		lineageTag: 837de396-b857-4283-ac07-8ebc61dcb6ad
+		lineageTag: 25997ab8-fe98-4d1f-8764-540dfb1aed72
 		summarizeBy: none
 		sourceColumn: estado_actual
 
@@ -35,7 +35,7 @@ table solicitudes_workflow
 
 	column estado_operacional
 		dataType: string
-		lineageTag: d316d894-78bd-4d44-ba63-9a016f20a445
+		lineageTag: 0ed23188-e797-4433-af00-acc8df7ae521
 		summarizeBy: none
 		sourceColumn: estado_operacional
 
@@ -43,7 +43,7 @@ table solicitudes_workflow
 
 	column start_date
 		dataType: int64
-		lineageTag: e84d21aa-e121-4654-8593-37879d6a2a63
+		lineageTag: 2a5de4b0-2af8-40c1-b85a-e36ac97899ce
 		summarizeBy: none
 		sourceColumn: start_date
 
@@ -51,7 +51,7 @@ table solicitudes_workflow
 
 	column stop_date
 		dataType: int64
-		lineageTag: 0395ca83-7f77-46a7-a963-e20f13f3fffa
+		lineageTag: d6588941-503a-41d4-857d-a27a6f59a9ef
 		summarizeBy: none
 		sourceColumn: stop_date
 
@@ -59,7 +59,7 @@ table solicitudes_workflow
 
 	column tipo_solicitud
 		dataType: string
-		lineageTag: 734c1025-17cf-4fc5-b7a2-7c933cb4ea31
+		lineageTag: 67a156aa-0914-448b-94f2-8c306870e7ef
 		summarizeBy: none
 		sourceColumn: tipo_solicitud
 
@@ -67,7 +67,7 @@ table solicitudes_workflow
 
 	column categoria_solicitud
 		dataType: string
-		lineageTag: a026ba1c-2977-4509-b904-8ab909347471
+		lineageTag: d43536f8-7ed8-42d9-852e-4f85142ededd
 		summarizeBy: none
 		sourceColumn: categoria_solicitud
 
@@ -75,7 +75,7 @@ table solicitudes_workflow
 
 	column periodo
 		dataType: string
-		lineageTag: 578c3c50-1d97-4547-9b40-6429ca2fa7d4
+		lineageTag: 4555a079-f7f5-49ec-8388-a5c980051fd9
 		summarizeBy: none
 		sourceColumn: periodo
 
@@ -83,7 +83,7 @@ table solicitudes_workflow
 
 	column sede
 		dataType: string
-		lineageTag: 92c6775f-9ce3-4131-8684-d2558545e9cc
+		lineageTag: 3839b96f-be48-4329-837c-9e856c272606
 		summarizeBy: none
 		sourceColumn: sede
 
@@ -91,7 +91,7 @@ table solicitudes_workflow
 
 	column nivel
 		dataType: string
-		lineageTag: 41ba07dd-c35f-401a-87e2-3e9d3a94bcd2
+		lineageTag: 2cc95fac-c394-4068-b508-7dc83ed3c876
 		summarizeBy: none
 		sourceColumn: nivel
 
@@ -99,7 +99,7 @@ table solicitudes_workflow
 
 	column rut_estudiante
 		dataType: string
-		lineageTag: 7ba2a3fd-5276-4a62-b25f-9faa1fa4c37a
+		lineageTag: 450d0d44-ade1-4354-a710-7dffabcaee21
 		summarizeBy: none
 		sourceColumn: rut_estudiante
 
@@ -107,7 +107,7 @@ table solicitudes_workflow
 
 	column ultima_actividad
 		dataType: string
-		lineageTag: e357b616-6b3a-41e1-82cd-7010ddeaeeeb
+		lineageTag: b2d1fef8-279c-4541-b55d-19893ed04c7a
 		summarizeBy: none
 		sourceColumn: ultima_actividad
 
@@ -115,7 +115,7 @@ table solicitudes_workflow
 
 	column origen
 		dataType: string
-		lineageTag: 9faa554b-7c67-4be6-b76e-c01f6f28e960
+		lineageTag: 44d2203e-3a37-46b6-a2e4-aa456fd34691
 		summarizeBy: none
 		sourceColumn: origen
 
@@ -123,7 +123,7 @@ table solicitudes_workflow
 
 	column indicador_en_ejecucion
 		dataType: string
-		lineageTag: 60f40ac8-4469-4084-b0cc-5fcde7c4478d
+		lineageTag: aee9c125-0525-4b6e-a84d-39f4c0dcffd8
 		summarizeBy: none
 		sourceColumn: indicador_en_ejecucion
 
@@ -131,7 +131,7 @@ table solicitudes_workflow
 
 	column usuario_origen_id
 		dataType: string
-		lineageTag: 797ffb16-a271-4427-80db-1828a6f93c6d
+		lineageTag: 43e05b96-447f-4c11-b2b6-1954d270a587
 		summarizeBy: none
 		sourceColumn: usuario_origen_id
 
@@ -139,7 +139,7 @@ table solicitudes_workflow
 
 	column rol_propietario_id
 		dataType: string
-		lineageTag: df3eccf5-5545-4828-ad53-95873fcc2364
+		lineageTag: f070f052-5122-4db9-b831-e2aa95d6f494
 		summarizeBy: none
 		sourceColumn: rol_propietario_id
 
@@ -147,47 +147,23 @@ table solicitudes_workflow
 
 	column rol_administrador_id
 		dataType: string
-		lineageTag: 39545f77-1c16-498d-aeb4-2fd804528901
+		lineageTag: 5d67bf50-d06e-47fc-bf27-07a14090cd2a
 		summarizeBy: none
 		sourceColumn: rol_administrador_id
 
 		annotation SummarizationSetBy = Automatic
 
-	column nombre_propiedad
-		dataType: string
-		lineageTag: 1fb1589d-131a-45b7-b1b9-aaeb098a6828
-		summarizeBy: none
-		sourceColumn: nombre_propiedad
-
-		annotation SummarizationSetBy = Automatic
-
-	column tipo_propiedad
-		dataType: string
-		lineageTag: e6ce8b88-fcfe-49c8-9764-03a257a6962b
-		summarizeBy: none
-		sourceColumn: tipo_propiedad
-
-		annotation SummarizationSetBy = Automatic
-
-	column secuencia_propiedad
+	column cantidad_propiedades
 		dataType: int64
-		lineageTag: 64aeb64a-4df1-4f23-848d-e39d09a6349d
+		lineageTag: 5d40c952-ca68-417c-8ec8-07aaa7c00ed6
 		summarizeBy: none
-		sourceColumn: secuencia_propiedad
-
-		annotation SummarizationSetBy = Automatic
-
-	column valor_propiedad
-		dataType: string
-		lineageTag: b242bb54-8a8f-481a-a781-3f620015ee51
-		summarizeBy: none
-		sourceColumn: valor_propiedad
+		sourceColumn: cantidad_propiedades
 
 		annotation SummarizationSetBy = Automatic
 
 	column descripcion_tipo_solicitud
 		dataType: string
-		lineageTag: 804166af-ebfb-43bf-b74e-540fba9155b5
+		lineageTag: 9a375c1c-763c-400c-9e83-1c924ae18622
 		summarizeBy: none
 		sourceColumn: descripcion_tipo_solicitud
 
@@ -195,7 +171,7 @@ table solicitudes_workflow
 
 	column version_workflow
 		dataType: int64
-		lineageTag: ae066d2e-685f-4611-ba14-e31602a95e5f
+		lineageTag: 75a7af6d-0523-4c3f-8a9d-9f8163baf038
 		summarizeBy: none
 		sourceColumn: version_workflow
 
@@ -203,7 +179,7 @@ table solicitudes_workflow
 
 	column particion_workflow
 		dataType: string
-		lineageTag: 8ba7c9a2-9102-48f2-b05f-877c84d6787b
+		lineageTag: 787c2855-15e5-4824-b103-8f97575e7622
 		summarizeBy: none
 		sourceColumn: particion_workflow
 
@@ -211,7 +187,7 @@ table solicitudes_workflow
 
 	column particion_propiedad
 		dataType: string
-		lineageTag: f918758a-cfa6-40d2-9575-8cf0ac2d764b
+		lineageTag: 97262f94-b407-4887-bb12-510027b8d7c6
 		summarizeBy: none
 		sourceColumn: particion_propiedad
 
@@ -228,7 +204,7 @@ table solicitudes_workflow
 				)
 		dataType: dateTime
 		formatString: General Date
-		lineageTag: c0bb37d1-1cb6-4329-a5c9-860fe49aded1
+		lineageTag: 0b472fab-9c87-4433-a6c3-9ebf26c18caf
 		summarizeBy: none
 
 		annotation SummarizationSetBy = Automatic
@@ -244,7 +220,7 @@ table solicitudes_workflow
 				)
 		dataType: dateTime
 		formatString: General Date
-		lineageTag: b8801ad2-3273-4926-9c75-7fd452dc1736
+		lineageTag: 73a7aed3-0d71-4d54-9e04-a7448ff84e6e
 		summarizeBy: none
 
 		annotation SummarizationSetBy = Automatic
