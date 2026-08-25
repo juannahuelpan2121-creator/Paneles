@@ -62,8 +62,14 @@ base_larga AS (
             WHEN LOWER(COALESCE(pd.name, '')) LIKE '%cambio de nota%'
               OR LOWER(COALESCE(pd.name, '')) LIKE '%calific%' THEN 'Cambio de calificación'
             WHEN LOWER(COALESCE(pd.name, '')) LIKE '%continuidad%' THEN 'Continuidad de estudios'
-            WHEN LOWER(COALESCE(pd.name, '')) LIKE '%cambio carrera%'
-              OR LOWER(COALESCE(pd.name, '')) LIKE '%cambio de carrera%' THEN 'Cambio de carrera/sede'
+            WHEN REGEXP_LIKE(
+                REGEXP_REPLACE(
+                    LOWER(COALESCE(pd.name, '')),
+                    '[_-]+',
+                    ' '
+                ),
+                'cambio( de)? carrera( sede)?'
+            ) THEN 'Cambio de carrera/sede'
             WHEN LOWER(COALESCE(pd.name, '')) LIKE '%suspensi%'
               OR LOWER(COALESCE(pd.name, '')) LIKE '%suspension%' THEN 'Suspensión'
             WHEN LOWER(COALESCE(pd.name, '')) LIKE '%inscripcion especial%'

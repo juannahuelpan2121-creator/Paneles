@@ -168,7 +168,24 @@ def add_query_expression(sql: str) -> None:
     path = MODEL / "expressions.tmdl"
     text = read_text(path)
     name = "query_workflow_solicitudes_todas"
-    if re.search(rf"^expression {name}\s*=", text, flags=re.M):
+    existing = re.search(
+        rf"^expression {name}\s*=\s*```.*?(?=^expression |\Z)",
+        text,
+        flags=re.M | re.S,
+    )
+    if existing:
+        current_block = existing.group(0)
+        updated_block = re.sub(
+            r'^    Query = ".*"$',
+            f'    Query = "{sql_to_m(sql)}"',
+            current_block,
+            count=1,
+            flags=re.M,
+        )
+        write_text(
+            path,
+            text[: existing.start()] + updated_block + text[existing.end() :],
+        )
         return
     block = f'''\n\nexpression {name} = ```
 let
@@ -300,24 +317,37 @@ relationship dim_tipo_workflow
     write_text(MODEL / "model.tmdl", model)
 
 
-def measure_block(name: str, expression: str, fmt: str | None = None) -> str:
+def measure_block(
+    name: str,
+    expression: str,
+    fmt: str | None = None,
+    lineage_tag: str | None = None,
+) -> str:
     block = [f"\tmeasure '{name}' = ```"]
     block.extend(f"\t\t{line}" for line in expression.strip().splitlines())
     block.append("\t\t```")
     if fmt:
         block.append(f"\t\tformatString: {fmt}")
-    block.extend([f"\t\tlineageTag: {lineage()}", ""])
+    block.extend([f"\t\tlineageTag: {lineage_tag or lineage()}", ""])
     return "\n".join(block)
 
 
 def upsert_measure(text: str, name: str, expression: str, fmt: str | None = None) -> str:
-    block = measure_block(name, expression, fmt)
     start_marker = f"\tmeasure '{name}' = ```"
     start = text.find(start_marker)
     if start >= 0:
         candidates = [p for p in (text.find("\n\tmeasure ", start + 1), text.find("\n\tcolumn ", start + 1)) if p >= 0]
         end = min(candidates) if candidates else len(text)
+        current_block = text[start:end]
+        tag_match = re.search(r"\n\t\tlineageTag:\s*([^\s]+)", current_block)
+        block = measure_block(
+            name,
+            expression,
+            fmt,
+            tag_match.group(1) if tag_match else None,
+        )
         return text[:start] + block + text[end + 1 :]
+    block = measure_block(name, expression, fmt)
     insert = text.find("\n\tcolumn Marcador")
     if insert < 0:
         raise RuntimeError("No se encontró el punto de inserción de medidas")
@@ -360,8 +390,9 @@ RETURN
 "<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;background:transparent;font-family:Arial,Segoe UI,sans-serif}.wrap{height:100%;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{box-sizing:border-box;height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:14px 18px;box-shadow:0 3px 10px rgba(17,43,66,.06)}.title{font-size:13px;font-weight:700;color:#112B42}.desc{margin-top:4px;font-size:10px;color:#58616E}.value{flex:1;display:flex;align-items:center;justify-content:center;font-size:31px;font-weight:700;color:#112B42}</style>" &
 "<div class='wrap'><div class='card'><div class='title'>Solicitudes</div><div class='desc'>Workflows únicos según filtros.</div><div class='value'>" & FORMAT(total,"#,##0") & "</div></div><div class='card'><div class='title'>Finalizadas</div><div class='desc'>Procesos con término registrado.</div><div class='value'>" & FORMAT(fin,"#,##0") & "</div></div><div class='card'><div class='title'>En curso</div><div class='desc'>Procesos actualmente activos.</div><div class='value'>" & FORMAT(curso,"#,##0") & "</div></div><div class='card'><div class='title'>Tasa de finalización</div><div class='desc'>Finalizadas respecto del total.</div><div class='value'>" & FORMAT(tasa,"0.0%") & "</div></div></div>"'''
 
-KPI_RAW = '''RETURN
-"<style>html,body{margin:0;padding:0;background:transparent;font-family:Arial,Segoe UI,sans-serif}.box{height:100%;box-sizing:border-box;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:18px 22px;color:#112B42;box-shadow:0 3px 10px rgba(17,43,66,.06)}.t{font-size:15px;font-weight:700}.d{margin-top:8px;font-size:11px;line-height:16px;color:#58616E}.tag{display:inline-block;margin-top:9px;padding:5px 10px;border-radius:999px;background:#EAF1FB;font-size:10px;font-weight:700}</style><div class='box'><div class='t'>Descarga de datos en crudo</div><div class='d'>La tabla conserva una fila por solicitud y propiedad del formulario. Selecciona la tabla, abre el menú <b>…</b> del visual y elige <b>Exportar datos</b>. Usa los filtros para acotar la descarga si lo necesitas.</div><span class='tag'>Histórico completo</span></div>"'''
+KPI_RAW = '''VAR v_HTML =
+"<style>html,body{margin:0;padding:0;background:transparent;font-family:Arial,Segoe UI,sans-serif}.box{height:100%;box-sizing:border-box;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:18px 22px;color:#112B42;box-shadow:0 3px 10px rgba(17,43,66,.06)}.t{font-size:15px;font-weight:700}.d{margin-top:8px;font-size:11px;line-height:16px;color:#58616E}.tag{display:inline-block;margin-top:9px;padding:5px 10px;border-radius:999px;background:#EAF1FB;font-size:10px;font-weight:700}</style><div class='box'><div class='t'>Descarga de datos en crudo</div><div class='d'>La tabla conserva una fila por solicitud y propiedad del formulario. Selecciona la tabla, abre el menú <b>…</b> del visual y elige <b>Exportar datos</b>. Usa los filtros para acotar la descarga si lo necesitas.</div><span class='tag'>Histórico completo</span></div>"
+RETURN v_HTML'''
 
 
 def update_measures() -> None:

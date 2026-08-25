@@ -250,6 +250,17 @@ for required_measure in (
 ):
     if required_measure not in measures.get("Medidas Solicitudes", set()):
         errors.append(f"Medida workflow faltante: {required_measure}")
+raw_html_match = re.search(
+    r"measure 'HTML KPI Sábana'\s*=\s*```\s*(.*?)\s*```",
+    measure_text,
+    re.S,
+)
+if not raw_html_match:
+    errors.append("No se pudo localizar la expresión de HTML KPI Sábana")
+else:
+    raw_html_expression = raw_html_match.group(1).lstrip()
+    if raw_html_expression.upper().startswith("RETURN"):
+        errors.append("HTML KPI Sábana no puede comenzar con RETURN sin declarar una variable")
 
 expected_workflow_pages = {
     "detalle_reincorporacion": "rei",
@@ -319,6 +330,21 @@ else:
     for forbidden in ("YEAR(CURRENT_DATE)", "BETWEEN YEAR(CURRENT_DATE)"):
         if forbidden in sql_text:
             errors.append(f"La query histórica conserva un filtro temporal fijo: {forbidden}")
+    for required_fragment in (
+        "REGEXP_REPLACE(",
+        "'[_-]+'",
+        "'CAMBIO( DE)? CARRERA( SEDE)?'",
+        "THEN 'CAMBIO DE CARRERA/SEDE'",
+    ):
+        if required_fragment not in sql_text:
+            errors.append(
+                "La homologación de cambio de carrera/sede no reconoce códigos con guiones bajos: "
+                + required_fragment
+            )
+    if "'CAMBIO( DE)? CARRERA( SEDE)?'" not in expressions_text:
+        errors.append(
+            "La query externa fue corregida, pero expressions.tmdl conserva la homologación antigua"
+        )
 
 bookmark_meta = json.loads((report / "bookmarks" / "bookmarks.json").read_text(encoding="utf-8"))
 for item in bookmark_meta["items"]:
