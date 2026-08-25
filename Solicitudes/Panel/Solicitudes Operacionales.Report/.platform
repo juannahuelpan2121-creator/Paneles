@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Solicitudes Operacionales"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "a0fbd4f2-6b08-44a4-9711-da258e75ae90"
+  }
+}

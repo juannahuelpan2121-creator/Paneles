@@ -1,0 +1,13 @@
+table dim_tipo_solicitud
+	lineageTag: 9c237116-871f-4076-95e1-a35e77858830
+
+	column tipo_solicitud
+		dataType: string
+		lineageTag: 9be831bc-7973-417a-b7db-5ee410c10296
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [tipo_solicitud]
+
+	partition dim_tipo_solicitud = calculated
+		mode: import
+		source = DISTINCT ( SELECTCOLUMNS ( solicitudes_workflow, "tipo_solicitud", solicitudes_workflow[categoria_solicitud] ) )

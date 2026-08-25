@@ -1,0 +1,125 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmarksMetadata/1.0.0/schema.json",
+  "items": [
+    {
+      "name": "res_filter_on"
+    },
+    {
+      "name": "res_filter_off"
+    },
+    {
+      "name": "res_menu_on"
+    },
+    {
+      "name": "res_menu_off"
+    },
+    {
+      "name": "ins_filter_on"
+    },
+    {
+      "name": "ins_filter_off"
+    },
+    {
+      "name": "ins_menu_on"
+    },
+    {
+      "name": "ins_menu_off"
+    },
+    {
+      "name": "cal_filter_on"
+    },
+    {
+      "name": "cal_filter_off"
+    },
+    {
+      "name": "cal_menu_on"
+    },
+    {
+      "name": "cal_menu_off"
+    },
+    {
+      "name": "rei_filter_on"
+    },
+    {
+      "name": "rei_filter_off"
+    },
+    {
+      "name": "rei_menu_on"
+    },
+    {
+      "name": "rei_menu_off"
+    },
+    {
+      "name": "con_filter_on"
+    },
+    {
+      "name": "con_filter_off"
+    },
+    {
+      "name": "con_menu_on"
+    },
+    {
+      "name": "con_menu_off"
+    },
+    {
+      "name": "car_filter_on"
+    },
+    {
+      "name": "car_filter_off"
+    },
+    {
+      "name": "car_menu_on"
+    },
+    {
+      "name": "car_menu_off"
+    },
+    {
+      "name": "sus_filter_on"
+    },
+    {
+      "name": "sus_filter_off"
+    },
+    {
+      "name": "sus_menu_on"
+    },
+    {
+      "name": "sus_menu_off"
+    },
+    {
+      "name": "esp_filter_on"
+    },
+    {
+      "name": "esp_filter_off"
+    },
+    {
+      "name": "esp_menu_on"
+    },
+    {
+      "name": "esp_menu_off"
+    },
+    {
+      "name": "ret_filter_on"
+    },
+    {
+      "name": "ret_filter_off"
+    },
+    {
+      "name": "ret_menu_on"
+    },
+    {
+      "name": "ret_menu_off"
+    },
+    {
+      "name": "raw_filter_on"
+    },
+    {
+      "name": "raw_filter_off"
+    },
+    {
+      "name": "raw_menu_on"
+    },
+    {
+      "name": "raw_menu_off"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+relationship dim_periodo_inscripcion
+	fromColumn: solicitudes_inscripcion.periodo
+	toColumn: dim_periodo.periodo
+
+relationship dim_periodo_calificacion
+	fromColumn: solicitudes_calificacion.periodo
+	toColumn: dim_periodo.periodo
+
+relationship dim_periodo_consolidado
+	fromColumn: solicitudes_consolidadas.periodo
+	toColumn: dim_periodo.periodo
+
+relationship dim_estado_inscripcion
+	fromColumn: solicitudes_inscripcion.estado_operacional
+	toColumn: dim_estado.estado_operacional
+
+relationship dim_estado_calificacion
+	fromColumn: solicitudes_calificacion.estado_operacional
+	toColumn: dim_estado.estado_operacional
+
+relationship dim_estado_consolidado
+	fromColumn: solicitudes_consolidadas.estado_operacional
+	toColumn: dim_estado.estado_operacional
+
+relationship dim_tipo_consolidado
+	fromColumn: solicitudes_consolidadas.tipo_solicitud
+	toColumn: dim_tipo_solicitud.tipo_solicitud
+
+relationship dim_periodo_workflow
+	fromColumn: solicitudes_workflow.periodo
+	toColumn: dim_periodo.periodo
+
+relationship dim_estado_workflow
+	fromColumn: solicitudes_workflow.estado_operacional
+	toColumn: dim_estado.estado_operacional
+
+relationship dim_tipo_workflow
+	fromColumn: solicitudes_workflow.categoria_solicitud
+	toColumn: dim_tipo_solicitud.tipo_solicitud

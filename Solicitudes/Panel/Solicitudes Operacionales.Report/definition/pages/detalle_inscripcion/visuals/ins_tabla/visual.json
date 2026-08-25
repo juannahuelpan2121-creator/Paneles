@@ -1,0 +1,1065 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "ins_tabla",
+  "position": {
+    "x": 24,
+    "y": 335,
+    "z": 2000,
+    "height": 1425,
+    "width": 1232,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "id"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.id",
+              "nativeQueryRef": "id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "pd_id"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.pd_id",
+              "nativeQueryRef": "pd_id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "name"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.name",
+              "nativeQueryRef": "name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "rut_estudiante"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.rut_estudiante",
+              "nativeQueryRef": "rut_estudiante"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nombre_estudiante"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nombre_estudiante",
+              "nativeQueryRef": "nombre_estudiante"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "c_carrera"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.c_carrera",
+              "nativeQueryRef": "c_carrera"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "estado_alumno"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.estado_alumno",
+              "nativeQueryRef": "estado_alumno"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "email_alumno"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.email_alumno",
+              "nativeQueryRef": "email_alumno"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nivel"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nivel",
+              "nativeQueryRef": "nivel"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "periodo_adm"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.periodo_adm",
+              "nativeQueryRef": "periodo_adm"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "retencion"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.retencion",
+              "nativeQueryRef": "retencion"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "sede"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.sede",
+              "nativeQueryRef": "sede"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "secuencia_plan"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.secuencia_plan",
+              "nativeQueryRef": "secuencia_plan"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "pga"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.pga",
+              "nativeQueryRef": "pga"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "asignaturas_aprobadas"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.asignaturas_aprobadas",
+              "nativeQueryRef": "asignaturas_aprobadas"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "fecha_solicitud"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.fecha_solicitud",
+              "nativeQueryRef": "fecha_solicitud"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "periodo"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.periodo",
+              "nativeQueryRef": "periodo"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "c_codigo_solicitud"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.c_codigo_solicitud",
+              "nativeQueryRef": "c_codigo_solicitud"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "comentario"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.comentario",
+              "nativeQueryRef": "comentario"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nrc1"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nrc1",
+              "nativeQueryRef": "nrc1"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "resp_nrc1"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.resp_nrc1",
+              "nativeQueryRef": "resp_nrc1"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nrc2"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nrc2",
+              "nativeQueryRef": "nrc2"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "resp_nrc2"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.resp_nrc2",
+              "nativeQueryRef": "resp_nrc2"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nrc3"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nrc3",
+              "nativeQueryRef": "nrc3"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "resp_nrc3"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.resp_nrc3",
+              "nativeQueryRef": "resp_nrc3"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nrc4"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nrc4",
+              "nativeQueryRef": "nrc4"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "resp_nrc4"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.resp_nrc4",
+              "nativeQueryRef": "resp_nrc4"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nrc5"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nrc5",
+              "nativeQueryRef": "nrc5"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "resp_nrc5"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.resp_nrc5",
+              "nativeQueryRef": "resp_nrc5"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nrc6"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nrc6",
+              "nativeQueryRef": "nrc6"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "resp_nrc6"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.resp_nrc6",
+              "nativeQueryRef": "resp_nrc6"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nrc7"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nrc7",
+              "nativeQueryRef": "nrc7"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "resp_nrc7"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.resp_nrc7",
+              "nativeQueryRef": "resp_nrc7"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nrc8"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nrc8",
+              "nativeQueryRef": "nrc8"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "resp_nrc8"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.resp_nrc8",
+              "nativeQueryRef": "resp_nrc8"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nrc9"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nrc9",
+              "nativeQueryRef": "nrc9"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "resp_nrc9"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.resp_nrc9",
+              "nativeQueryRef": "resp_nrc9"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nrc10"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nrc10",
+              "nativeQueryRef": "nrc10"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "resp_nrc10"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.resp_nrc10",
+              "nativeQueryRef": "resp_nrc10"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nrc11"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nrc11",
+              "nativeQueryRef": "nrc11"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "resp_nrc11"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.resp_nrc11",
+              "nativeQueryRef": "resp_nrc11"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nrc12"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nrc12",
+              "nativeQueryRef": "nrc12"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "resp_nrc12"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.resp_nrc12",
+              "nativeQueryRef": "resp_nrc12"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nrcs_solicitados"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nrcs_solicitados",
+              "nativeQueryRef": "nrcs_solicitados"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "nrcs_rechazado"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.nrcs_rechazado",
+              "nativeQueryRef": "nrcs_rechazado"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "mensaje"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.mensaje",
+              "nativeQueryRef": "mensaje"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "estado_actual"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.estado_actual",
+              "nativeQueryRef": "estado_actual"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "start_date"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.start_date",
+              "nativeQueryRef": "start_date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "stop_date"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.stop_date",
+              "nativeQueryRef": "stop_date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "ejecutandose"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.ejecutandose",
+              "nativeQueryRef": "ejecutandose"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "ultimo_estado"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.ultimo_estado",
+              "nativeQueryRef": "ultimo_estado"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "originating_user_id"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.originating_user_id",
+              "nativeQueryRef": "originating_user_id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "originating_event_id"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.originating_event_id",
+              "nativeQueryRef": "originating_event_id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "originating_process_id"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.originating_process_id",
+              "nativeQueryRef": "originating_process_id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "owner_role_id"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.owner_role_id",
+              "nativeQueryRef": "owner_role_id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "admin_role_id"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.admin_role_id",
+              "nativeQueryRef": "admin_role_id"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "requires_execution_plan"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.requires_execution_plan",
+              "nativeQueryRef": "requires_execution_plan"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "estado_operacional"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.estado_operacional",
+              "nativeQueryRef": "estado_operacional"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "start_datetime"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.start_datetime",
+              "nativeQueryRef": "start_datetime"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_inscripcion"
+                    }
+                  },
+                  "Property": "stop_datetime"
+                }
+              },
+              "queryRef": "solicitudes_inscripcion.stop_datetime",
+              "nativeQueryRef": "stop_datetime"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "solicitudes_inscripcion"
+                  }
+                },
+                "Property": "id"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "values": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            },
+            "fontColorPrimary": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#334155'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            },
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#EAF1FB'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#112B42'"
+                    }
+                  }
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "border": [
+        {
+          "properties": {
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#D9DEE2'"
+                    }
+                  }
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "6D"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Sábana histórica - Inscripción extraordinaria'"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#001E61'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

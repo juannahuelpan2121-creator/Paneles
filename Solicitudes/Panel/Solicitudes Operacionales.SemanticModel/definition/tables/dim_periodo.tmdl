@@ -1,0 +1,13 @@
+table dim_periodo
+	lineageTag: f70455bf-0925-4dfa-ab71-b7ba20a41e4b
+
+	column periodo
+		dataType: string
+		lineageTag: 12cb821c-84c2-44ff-bc17-888264979daa
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [periodo]
+
+	partition dim_periodo = calculated
+		mode: import
+		source = DISTINCT ( SELECTCOLUMNS ( solicitudes_workflow, "periodo", solicitudes_workflow[periodo] ) )

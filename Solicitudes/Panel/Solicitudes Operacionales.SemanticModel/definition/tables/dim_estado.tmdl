@@ -1,0 +1,13 @@
+table dim_estado
+	lineageTag: 27b0b310-549b-4b16-9866-c0ea01049a8b
+
+	column estado_operacional
+		dataType: string
+		lineageTag: 8d28a6c7-e118-4171-b20f-2a5cb9eb4d4d
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [estado_operacional]
+
+	partition dim_estado = calculated
+		mode: import
+		source = DISTINCT ( SELECTCOLUMNS ( solicitudes_workflow, "estado_operacional", solicitudes_workflow[estado_operacional] ) )

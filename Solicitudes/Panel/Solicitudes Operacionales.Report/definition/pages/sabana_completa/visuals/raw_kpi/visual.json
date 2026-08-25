@@ -1,0 +1,79 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "raw_kpi",
+  "position": {
+    "x": 24,
+    "height": 145,
+    "tabOrder": 100,
+    "z": 1000,
+    "y": 170,
+    "width": 1232
+  },
+  "visual": {
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualType": "htmlContent443BE3AD55E043BF878BED274D3A6855",
+    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "content": {
+          "projections": [
+            {
+              "nativeQueryRef": "HTML KPI Sábana",
+              "field": {
+                "Measure": {
+                  "Property": "HTML KPI Sábana",
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas Solicitudes"
+                    }
+                  }
+                }
+              },
+              "queryRef": "Medidas Solicitudes.HTML KPI Sábana"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
