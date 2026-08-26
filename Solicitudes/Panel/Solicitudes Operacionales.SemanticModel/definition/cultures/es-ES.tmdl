@@ -203,6 +203,16 @@ cultureInfo es-ES
 			          "sede": {
 			            "State": "Generated"
 			          }
+			        },
+			        {
+			          "Sede Homologada": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
 			        }
 			      ]
 			    },
@@ -1195,6 +1205,16 @@ cultureInfo es-ES
 			        {
 			          "sede": {
 			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "Sede Homologada": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
 			          }
 			        }
 			      ]
@@ -3715,6 +3735,16 @@ cultureInfo es-ES
 			        {
 			          "sede": {
 			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "Sede Homologada": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
 			          }
 			        }
 			      ]
@@ -7208,6 +7238,27 @@ cultureInfo es-ES
 			      "Terms": [
 			        {
 			          "Tipo de Clasificación": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "solicitudes_workflow.sede_workflow": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "solicitudes_workflow",
+			          "ConceptualProperty": "sede_workflow"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Sede Informada en Workflow": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",

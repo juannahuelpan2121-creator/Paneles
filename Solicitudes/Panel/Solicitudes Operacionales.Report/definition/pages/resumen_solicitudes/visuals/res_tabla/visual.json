@@ -10,26 +10,11 @@
     "tabOrder": 2100
   },
   "visual": {
-    "visualType": "tableEx",
+    "visualType": "pivotTable",
     "query": {
       "queryState": {
-        "Values": {
+        "Rows": {
           "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "periodo"
-                }
-              },
-              "queryRef": "solicitudes_workflow.periodo",
-              "nativeQueryRef": "periodo",
-              "displayName": "Período"
-            },
             {
               "field": {
                 "Column": {
@@ -42,8 +27,25 @@
                 }
               },
               "queryRef": "solicitudes_workflow.categoria_solicitud",
-              "nativeQueryRef": "categoria_solicitud",
-              "displayName": "Categoría de Solicitud"
+              "nativeQueryRef": "Tipo de solicitud",
+              "active": true,
+              "displayName": "Tipo de solicitud"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_workflow"
+                    }
+                  },
+                  "Property": "sede"
+                }
+              },
+              "queryRef": "solicitudes_workflow.sede",
+              "nativeQueryRef": "Sede",
+              "active": true,
+              "displayName": "Sede"
             },
             {
               "field": {
@@ -57,24 +59,14 @@
                 }
               },
               "queryRef": "solicitudes_workflow.estado_operacional",
-              "nativeQueryRef": "estado_operacional",
-              "displayName": "Estado Operacional"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "solicitudes_workflow"
-                    }
-                  },
-                  "Property": "estado_actual"
-                }
-              },
-              "queryRef": "solicitudes_workflow.estado_actual",
-              "nativeQueryRef": "estado_actual",
-              "displayName": "Estado Técnico"
-            },
+              "nativeQueryRef": "Estado",
+              "active": true,
+              "displayName": "Estado"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
             {
               "field": {
                 "Measure": {
@@ -87,44 +79,51 @@
                 }
               },
               "queryRef": "Medidas Solicitudes.Solicitudes Total",
-              "nativeQueryRef": "Solicitudes Total"
+              "nativeQueryRef": "Solicitudes",
+              "displayName": "Solicitudes"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas Solicitudes"
+                    }
+                  },
+                  "Property": "Duración Promedio Días"
+                }
+              },
+              "queryRef": "Medidas Solicitudes.Duración Promedio Días",
+              "nativeQueryRef": "Duración hábil promedio",
+              "displayName": "Duración hábil promedio"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas Solicitudes"
+                    }
+                  },
+                  "Property": "Solicitudes Sobre Promedio"
+                }
+              },
+              "queryRef": "Medidas Solicitudes.Solicitudes Sobre Promedio",
+              "nativeQueryRef": "Fuera del promedio",
+              "displayName": "Fuera del promedio"
             }
           ]
         }
       }
     },
     "objects": {
-      "values": [
-        {
-          "properties": {
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "9D"
-                }
-              }
-            },
-            "fontColorPrimary": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#334155'"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      ],
       "columnHeaders": [
         {
           "properties": {
-            "fontSize": {
+            "columnAdjustment": {
               "expr": {
                 "Literal": {
-                  "Value": "9D"
+                  "Value": "'growToFit'"
                 }
               }
             },
@@ -154,6 +153,107 @@
               "expr": {
                 "Literal": {
                   "Value": "true"
+                }
+              }
+            },
+            "autoExpand": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Center'"
+                }
+              }
+            },
+            "titleAlignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Left'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "grid": [
+        {
+          "properties": {
+            "gridHorizontalColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#E5E7EB'"
+                    }
+                  }
+                }
+              }
+            },
+            "gridHorizontalWeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
+            "rowPadding": {
+              "expr": {
+                "Literal": {
+                  "Value": "6D"
+                }
+              }
+            },
+            "gridHorizontal": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            },
+            "fontColorPrimary": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#334155'"
+                    }
+                  }
+                }
+              }
+            },
+            "backColorSecondary": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F7F8FA'"
+                    }
+                  }
                 }
               }
             }
@@ -237,7 +337,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Solicitudes por periodo, tipo y estado técnico'"
+                  "Value": "'Matriz operacional por tipo, sede y estado'"
                 }
               }
             },
@@ -246,7 +346,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#001E61'"
+                      "Value": "'#112B42'"
                     }
                   }
                 }
@@ -269,7 +369,59 @@
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI'"
+                  "Value": "'Arial'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Expande la jerarquía para revisar volumen, duración hábil y casos fuera del promedio.'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "titleWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#58616E'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Arial'"
                 }
               }
             }

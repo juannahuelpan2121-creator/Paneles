@@ -73,14 +73,6 @@ table solicitudes_workflow
 
 		annotation SummarizationSetBy = Automatic
 
-	column tipo_clasificacion
-		dataType: string
-		lineageTag: a9b5f65d-44ad-4527-b1f0-b04a59d4b16b
-		summarizeBy: none
-		sourceColumn: tipo_clasificacion
-
-		annotation SummarizationSetBy = Automatic
-
 	column periodo
 		dataType: string
 		lineageTag: 4555a079-f7f5-49ec-8388-a5c980051fd9
@@ -94,14 +86,6 @@ table solicitudes_workflow
 		lineageTag: 3839b96f-be48-4329-837c-9e856c272606
 		summarizeBy: none
 		sourceColumn: sede
-
-		annotation SummarizationSetBy = Automatic
-
-	column sede_workflow
-		dataType: string
-		lineageTag: 3037580e-4b90-4247-98e1-e7ad104c67cb
-		summarizeBy: none
-		sourceColumn: sede_workflow
 
 		annotation SummarizationSetBy = Automatic
 
@@ -169,14 +153,6 @@ table solicitudes_workflow
 
 		annotation SummarizationSetBy = Automatic
 
-	column cantidad_propiedades
-		dataType: int64
-		lineageTag: 5d40c952-ca68-417c-8ec8-07aaa7c00ed6
-		summarizeBy: none
-		sourceColumn: cantidad_propiedades
-
-		annotation SummarizationSetBy = Automatic
-
 	column descripcion_tipo_solicitud
 		dataType: string
 		lineageTag: 9a375c1c-763c-400c-9e83-1c924ae18622
@@ -241,14 +217,38 @@ table solicitudes_workflow
 
 		annotation SummarizationSetBy = Automatic
 
+	column cantidad_propiedades
+		dataType: int64
+		lineageTag: 5d40c952-ca68-417c-8ec8-07aaa7c00ed6
+		summarizeBy: none
+		sourceColumn: cantidad_propiedades
+
+		annotation SummarizationSetBy = Automatic
+
+	column tipo_clasificacion
+		dataType: string
+		lineageTag: a9b5f65d-44ad-4527-b1f0-b04a59d4b16b
+		summarizeBy: none
+		sourceColumn: tipo_clasificacion
+
+		annotation SummarizationSetBy = Automatic
+
+	column sede_workflow
+		dataType: string
+		lineageTag: 3037580e-4b90-4247-98e1-e7ad104c67cb
+		summarizeBy: none
+		sourceColumn: sede_workflow
+
+		annotation SummarizationSetBy = Automatic
+
 	partition solicitudes_workflow = m
 		mode: import
 		queryGroup: Datos
 		source =
 				let
-                    Origen = Odbc.Query("dsn=uss-athena-datalake-prod", query_workflow_solicitudes_todas)
-				in
-				    Origen
+				                    Origen = Odbc.Query("dsn=uss-athena-datalake-prod", query_workflow_solicitudes_todas)
+								in
+								    Origen
 
 	annotation PBI_NavigationStepName = Navegación
 
