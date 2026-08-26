@@ -1,8 +1,57 @@
 -- SOLICITUDES WORKFLOW: DATASET HISTORICO OPTIMIZADO
 -- Amazon Athena / Trino. Una fila por solicitud.
 -- Sin filtro fijo de periodo. Las propiedades se agregan sin importar su texto.
+-- La sede visible se homologa contra STVCAMP; sede_workflow conserva el valor original.
 
-WITH definiciones_base AS (
+WITH catalogo_campus AS (
+    SELECT
+        TRIM(stvcamp_code) AS codigo_campus,
+        TRIM(stvcamp_desc) AS descripcion_campus,
+        REGEXP_REPLACE(UPPER(TRIM(stvcamp_desc)), '[^A-Z0-9]+', '') AS descripcion_clave
+    FROM uss_datalake_stage.banner_oracle_saturn_stvcamp
+    WHERE NULLIF(TRIM(stvcamp_code), '') IS NOT NULL
+),
+sede_alias (alias_clave, codigo_campus) AS (
+    VALUES
+        ('CIUDADUNIVERSITARIA', 'CES'),
+        ('OSORNOPILAUCO', 'PLO'),
+        ('VALDIVIA', 'CVA'),
+        ('DAFABES', 'BES'),
+        ('DAFACES', 'CES')
+),
+campus_claves_candidatas AS (
+    SELECT codigo_campus AS sede_clave, codigo_campus, descripcion_campus, 1 AS prioridad
+    FROM catalogo_campus
+
+    UNION ALL
+
+    SELECT descripcion_clave AS sede_clave, codigo_campus, descripcion_campus, 2 AS prioridad
+    FROM catalogo_campus
+
+    UNION ALL
+
+    SELECT a.alias_clave AS sede_clave, c.codigo_campus, c.descripcion_campus, 3 AS prioridad
+    FROM sede_alias AS a
+    INNER JOIN catalogo_campus AS c
+        ON a.codigo_campus = c.codigo_campus
+),
+campus_claves AS (
+    SELECT sede_clave, codigo_campus, descripcion_campus
+    FROM (
+        SELECT
+            sede_clave,
+            codigo_campus,
+            descripcion_campus,
+            ROW_NUMBER() OVER (
+                PARTITION BY sede_clave
+                ORDER BY prioridad, codigo_campus
+            ) AS rn
+        FROM campus_claves_candidatas
+        WHERE NULLIF(sede_clave, '') IS NOT NULL
+    ) AS ranked
+    WHERE rn = 1
+),
+definiciones_base AS (
     SELECT
         id,
         name,
@@ -153,6 +202,46 @@ propiedades AS (
     ) AS ranked
     WHERE rn = 1
 ),
+sede_candidatas AS (
+    SELECT
+        p.id,
+        p.name AS nombre_propiedad_sede,
+        p.value AS sede_workflow,
+        REGEXP_REPLACE(UPPER(TRIM(p.value)), '[^A-Z0-9]+', '') AS sede_clave,
+        c.codigo_campus,
+        c.descripcion_campus
+    FROM propiedades AS p
+    LEFT JOIN campus_claves AS c
+        ON REGEXP_REPLACE(UPPER(TRIM(p.value)), '[^A-Z0-9]+', '') = c.sede_clave
+    WHERE REGEXP_LIKE(
+        LOWER(COALESCE(p.name, '')),
+        '(^|_)(sede|campus|cod_sede|nombre_sede)($|_)'
+    )
+),
+sede_resuelta AS (
+    SELECT
+        id,
+        sede_workflow,
+        codigo_campus,
+        descripcion_campus
+    FROM (
+        SELECT
+            id,
+            sede_workflow,
+            codigo_campus,
+            descripcion_campus,
+            ROW_NUMBER() OVER (
+                PARTITION BY id
+                ORDER BY
+                    CASE WHEN codigo_campus IS NOT NULL THEN 0 ELSE 1 END,
+                    CASE WHEN sede_clave = codigo_campus THEN 0 ELSE 1 END,
+                    nombre_propiedad_sede,
+                    sede_workflow
+            ) AS rn
+        FROM sede_candidatas
+    ) AS ranked
+    WHERE rn = 1
+),
 atributos AS (
     SELECT
         id,
@@ -162,12 +251,6 @@ atributos AS (
                 '(^|_)(periodo|periodo_adm|periodo_academico|periodo_consulta|term|term_code)($|_)'
             ) THEN REGEXP_EXTRACT(TRIM(value), '(20[0-9]{4})', 1) END
         ) AS periodo_detectado,
-        MAX(
-            CASE WHEN REGEXP_LIKE(
-                LOWER(COALESCE(name, '')),
-                '(^|_)(sede|campus|cod_sede|nombre_sede)($|_)'
-            ) THEN value END
-        ) AS sede_detectada,
         MAX(
             CASE WHEN REGEXP_LIKE(
                 LOWER(COALESCE(name, '')),
@@ -184,6 +267,16 @@ atributos AS (
         MAX(CAST(dt AS VARCHAR)) AS particion_propiedad
     FROM propiedades
     GROUP BY id
+),
+atributos_homologados AS (
+    SELECT
+        a.*,
+        s.sede_workflow,
+        s.codigo_campus,
+        s.descripcion_campus
+    FROM atributos AS a
+    LEFT JOIN sede_resuelta AS s
+        ON a.id = s.id
 )
 SELECT
     w.id,
@@ -197,7 +290,11 @@ SELECT
     w.categoria_solicitud,
     w.tipo_clasificacion,
     COALESCE(a.periodo_detectado, 'Sin periodo') AS periodo,
-    COALESCE(a.sede_detectada, 'Sin sede') AS sede,
+    COALESCE(
+        CONCAT(a.codigo_campus, ' - ', a.descripcion_campus),
+        'Sin sede homologada'
+    ) AS sede,
+    COALESCE(a.sede_workflow, 'Sin sede informada') AS sede_workflow,
     COALESCE(a.nivel_detectado, 'Sin nivel') AS nivel,
     a.rut_estudiante_detectado AS rut_estudiante,
     w.ultima_actividad,
@@ -212,5 +309,5 @@ SELECT
     w.particion_workflow,
     a.particion_propiedad
 FROM workflows AS w
-LEFT JOIN atributos AS a
+LEFT JOIN atributos_homologados AS a
     ON w.id = a.id;

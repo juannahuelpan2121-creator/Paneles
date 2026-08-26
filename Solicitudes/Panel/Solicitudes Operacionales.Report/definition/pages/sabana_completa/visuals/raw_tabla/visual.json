@@ -163,7 +163,22 @@
               },
               "queryRef": "solicitudes_workflow.sede",
               "nativeQueryRef": "sede",
-              "displayName": "Sede"
+              "displayName": "Sede Homologada"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_workflow"
+                    }
+                  },
+                  "Property": "sede_workflow"
+                }
+              },
+              "queryRef": "solicitudes_workflow.sede_workflow",
+              "nativeQueryRef": "sede_workflow",
+              "displayName": "Sede Informada en Workflow"
             },
             {
               "field": {

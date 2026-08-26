@@ -31,6 +31,9 @@ modo lectura como respaldo, pero ya no aparece en el menú de navegación.
 - Inscripción especial y extraordinaria comparten una sola categoría analítica;
   `tipo_clasificacion` conserva ambas opciones para el filtro funcional.
 - Sede, nivel y RUT se detectan desde las propiedades disponibles en cada formulario.
+- La sede del filtro se homologa contra `banner_oracle_saturn_stvcamp` y se
+  presenta como `código - descripción`; `sede_workflow` conserva el texto
+  original para la sábana descargable.
 
 ## Modelo optimizado
 

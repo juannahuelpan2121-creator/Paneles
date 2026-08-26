@@ -50,6 +50,7 @@ GENERIC_COLUMNS: list[tuple[str, str]] = [
     ("tipo_clasificacion", "string"),
     ("periodo", "string"),
     ("sede", "string"),
+    ("sede_workflow", "string"),
     ("nivel", "string"),
     ("rut_estudiante", "string"),
     ("ultima_actividad", "string"),
@@ -80,7 +81,8 @@ FRIENDLY_HEADERS = {
     "categoria_solicitud": "Categoría de Solicitud",
     "tipo_clasificacion": "Tipo de Clasificación",
     "periodo": "Período",
-    "sede": "Sede",
+    "sede": "Sede Homologada",
+    "sede_workflow": "Sede Informada en Workflow",
     "nivel": "Nivel Académico",
     "rut_estudiante": "RUT Estudiante",
     "ultima_actividad": "Última Actividad",
@@ -512,7 +514,7 @@ RETURN
 "<div class='wrap'><div class='card'><div class='title'>Solicitudes</div><div class='desc'>Workflows únicos según filtros.</div><div class='value'>" & FORMAT(total,"#,##0") & "</div></div><div class='card'><div class='title'>Finalizadas</div><div class='desc'>Procesos con término registrado.</div><div class='value'>" & FORMAT(fin,"#,##0") & "</div></div><div class='card'><div class='title'>En curso</div><div class='desc'>Procesos actualmente activos.</div><div class='value'>" & FORMAT(curso,"#,##0") & "</div></div><div class='card'><div class='title'>Tasa de finalización</div><div class='desc'>Finalizadas respecto del total.</div><div class='value'>" & FORMAT(tasa,"0.0%") & "</div></div></div>"'''
 
 KPI_RAW = '''VAR v_HTML =
-"<style>html,body{margin:0;padding:0;background:transparent;font-family:Arial,Segoe UI,sans-serif}.box{height:100%;box-sizing:border-box;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:18px 22px;color:#112B42;box-shadow:0 3px 10px rgba(17,43,66,.06)}.t{font-size:15px;font-weight:700}.d{margin-top:8px;font-size:11px;line-height:16px;color:#58616E}.tag{display:inline-block;margin-top:9px;padding:5px 10px;border-radius:999px;background:#EAF1FB;font-size:10px;font-weight:700}</style><div class='box'><div class='t'>Contenido de la sábana de solicitudes</div><div class='d'>Cada fila corresponde a una solicitud académica. La tabla incluye su identificador, tipo, período, sede, nivel académico, RUT del estudiante, estado y fechas de inicio y cierre. Usa los filtros para acotar la información y el menú <b>…</b> de la tabla para exportarla.</div><span class='tag'>Una fila por solicitud</span></div>"
+"<style>html,body{margin:0;padding:0;background:transparent;font-family:Arial,Segoe UI,sans-serif}.box{height:100%;box-sizing:border-box;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:18px 22px;color:#112B42;box-shadow:0 3px 10px rgba(17,43,66,.06)}.t{font-size:15px;font-weight:700}.d{margin-top:8px;font-size:11px;line-height:16px;color:#58616E}.tag{display:inline-block;margin-top:9px;padding:5px 10px;border-radius:999px;background:#EAF1FB;font-size:10px;font-weight:700}</style><div class='box'><div class='t'>Contenido de la sábana de solicitudes</div><div class='d'>Cada fila corresponde a una solicitud académica. La tabla incluye su identificador, tipo, período, sede homologada, sede informada originalmente en Workflow, nivel académico, RUT del estudiante, estado y fechas de inicio y cierre. Usa los filtros para acotar la información y el menú <b>…</b> de la tabla para exportarla.</div><span class='tag'>Una fila por solicitud</span></div>"
 RETURN v_HTML'''
 
 
@@ -800,6 +802,26 @@ def unify_inscription_experience() -> None:
         "tipo_clasificacion",
         after_prop="categoria_solicitud",
     )
+
+
+def sort_normalized_sede_slicers() -> None:
+    """Ordena alfabéticamente los filtros que consumen la sede homologada."""
+    for visual_path in PAGES.rglob("visual.json"):
+        payload = read_json(visual_path)
+        visual = payload.get("visual", {})
+        if visual.get("visualType") != "slicer":
+            continue
+        projections = (
+            visual.get("query", {})
+            .get("queryState", {})
+            .get("Values", {})
+            .get("projections", [])
+        )
+        if not any(item.get("queryRef") == "solicitudes_workflow.sede" for item in projections):
+            continue
+        for sort_item in visual.get("query", {}).get("sortDefinition", {}).get("sort", []):
+            sort_item["direction"] = "Ascending"
+        write_json(visual_path, payload)
 
 
 def set_title(visual, title: str) -> None:
@@ -1260,6 +1282,7 @@ def create_raw_page() -> list[dict]:
         ("solicitudes_workflow", "estado_actual", "Column"),
         ("solicitudes_workflow", "periodo", "Column"),
         ("solicitudes_workflow", "sede", "Column"),
+        ("solicitudes_workflow", "sede_workflow", "Column"),
         ("solicitudes_workflow", "nivel", "Column"),
         ("solicitudes_workflow", "rut_estudiante", "Column"),
         ("solicitudes_workflow", "fecha_inicio", "Column"),
@@ -1358,6 +1381,9 @@ modo lectura como respaldo, pero ya no aparece en el menú de navegación.
 - Inscripción especial y extraordinaria comparten una sola categoría analítica;
   `tipo_clasificacion` conserva ambas opciones para el filtro funcional.
 - Sede, nivel y RUT se detectan desde las propiedades disponibles en cada formulario.
+- La sede del filtro se homologa contra `banner_oracle_saturn_stvcamp` y se
+  presenta como `código - descripción`; `sede_workflow` conserva el texto
+  original para la sábana descargable.
 
 ## Modelo optimizado
 
@@ -1394,6 +1420,7 @@ def main() -> None:
     update_pages_and_bookmarks()
     align_moduss_interface()
     unify_inscription_experience()
+    sort_normalized_sede_slicers()
     apply_friendly_table_headers()
     update_readme()
     print(f"Proyecto actualizado: {TARGET}")

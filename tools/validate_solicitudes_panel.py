@@ -243,7 +243,7 @@ for page, prefix in page_prefix.items():
 # por tipología y una sábana operacional de exportación.
 workflow_required_columns = {
     "id", "pd_id", "estado_actual", "estado_operacional", "start_date", "stop_date",
-    "tipo_solicitud", "categoria_solicitud", "tipo_clasificacion", "periodo", "sede", "nivel",
+    "tipo_solicitud", "categoria_solicitud", "tipo_clasificacion", "periodo", "sede", "sede_workflow", "nivel",
     "rut_estudiante", "cantidad_propiedades", "fecha_inicio", "fecha_cierre",
 }
 missing_workflow_columns = workflow_required_columns - tables.get("solicitudes_workflow", set())
@@ -340,6 +340,8 @@ for page, prefix in expected_workflow_pages.items():
 raw_table = report / "pages" / "sabana_completa" / "visuals" / "raw_tabla" / "visual.json"
 if not raw_table.exists():
     errors.append("Falta la tabla de la sábana completa")
+elif "solicitudes_workflow.sede_workflow" not in raw_table.read_text(encoding="utf-8"):
+    errors.append("La sábana no conserva la sede original informada por Workflow")
 download_button = report / "pages" / "resumen_solicitudes" / "visuals" / "res_descargar" / "visual.json"
 if not download_button.exists():
     errors.append("Falta el botón de acceso a la sábana completa")
@@ -376,6 +378,18 @@ for page in page_meta["pageOrder"]:
             position = payload.get("position", {})
             if (position.get("x"), position.get("width"), position.get("height")) != (944, 312, 80):
                 errors.append(f"{visual_path}: el segmentador debe medir 312 x 80 y comenzar en x=944")
+            projections = (
+                payload.get("visual", {}).get("query", {}).get("queryState", {})
+                .get("Values", {}).get("projections", [])
+            )
+            if any(item.get("queryRef") == "solicitudes_workflow.sede" for item in projections):
+                directions = {
+                    item.get("direction")
+                    for item in payload.get("visual", {}).get("query", {})
+                    .get("sortDefinition", {}).get("sort", [])
+                }
+                if directions != {"Ascending"}:
+                    errors.append(f"{visual_path}: el filtro de sede debe ordenarse ascendentemente")
 
 generic_sql = root / "Queries" / "workflow_solicitudes_todas_historico.sql"
 if not generic_sql.exists():
@@ -394,9 +408,14 @@ else:
         "WHEN ID = CAST(19994978 AS BIGINT) THEN 'INSCRIPCIÓN ESPECIAL'",
         "THEN 'INSCRIPCIÓN EXTRAORDINARIA'",
         "END AS TIPO_CLASIFICACION",
+        "BANNER_ORACLE_SATURN_STVCAMP",
+        "SEDE_RESUELTA AS",
+        "CASE WHEN CODIGO_CAMPUS IS NOT NULL THEN 0 ELSE 1 END",
+        "AS SEDE_WORKFLOW",
+        "CONCAT(A.CODIGO_CAMPUS, ' - ', A.DESCRIPCION_CAMPUS)",
         "WHERE CATEGORIA_SOLICITUD IS NOT NULL",
         "COUNT(*) AS CANTIDAD_PROPIEDADES",
-        "LEFT JOIN ATRIBUTOS AS A",
+        "LEFT JOIN ATRIBUTOS_HOMOLOGADOS AS A",
     ):
         if required_fragment not in sql_text:
             errors.append(

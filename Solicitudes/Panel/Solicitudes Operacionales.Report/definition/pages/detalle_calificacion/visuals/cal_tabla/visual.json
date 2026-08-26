@@ -333,7 +333,7 @@
                 }
               },
               "queryRef": "solicitudes_calificacion.sede",
-              "displayName": "Sede"
+              "displayName": "Sede Homologada"
             },
             {
               "nativeQueryRef": "fecha_solicitud",

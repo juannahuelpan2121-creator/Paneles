@@ -193,7 +193,7 @@
               },
               "queryRef": "solicitudes_inscripcion.sede",
               "nativeQueryRef": "sede",
-              "displayName": "Sede"
+              "displayName": "Sede Homologada"
             },
             {
               "field": {

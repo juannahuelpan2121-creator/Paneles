@@ -359,16 +359,6 @@ cultureInfo es-ES
 			          }
 			        },
 			        {
-			          "Fecha de Termino": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        },
-			        {
 			          "Fecha de Cierre": {
 			            "State": "Suggested",
 			            "Source": {
@@ -7203,6 +7193,27 @@ cultureInfo es-ES
 			            "Type": "Noun",
 			            "State": "Generated",
 			            "Weight": 0.99
+			          }
+			        }
+			      ]
+			    },
+			    "solicitudes_workflow.tipo_clasificacion": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "solicitudes_workflow",
+			          "ConceptualProperty": "tipo_clasificacion"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Tipo de Clasificación": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
 			          }
 			        }
 			      ]

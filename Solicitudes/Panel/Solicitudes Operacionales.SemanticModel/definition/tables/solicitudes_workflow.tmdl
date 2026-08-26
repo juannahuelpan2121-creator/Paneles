@@ -97,6 +97,14 @@ table solicitudes_workflow
 
 		annotation SummarizationSetBy = Automatic
 
+	column sede_workflow
+		dataType: string
+		lineageTag: 3037580e-4b90-4247-98e1-e7ad104c67cb
+		summarizeBy: none
+		sourceColumn: sede_workflow
+
+		annotation SummarizationSetBy = Automatic
+
 	column nivel
 		dataType: string
 		lineageTag: 2cc95fac-c394-4068-b508-7dc83ed3c876

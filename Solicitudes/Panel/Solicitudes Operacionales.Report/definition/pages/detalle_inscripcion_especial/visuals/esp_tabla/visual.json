@@ -133,7 +133,7 @@
               },
               "queryRef": "solicitudes_workflow.sede",
               "nativeQueryRef": "sede",
-              "displayName": "Sede"
+              "displayName": "Sede Homologada"
             },
             {
               "field": {
