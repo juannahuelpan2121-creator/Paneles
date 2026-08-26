@@ -507,3 +507,4 @@ table solicitudes_inscripcion
 	annotation PBI_NavigationStepName = Navegación
 
 	annotation PBI_ResultType = Table
+

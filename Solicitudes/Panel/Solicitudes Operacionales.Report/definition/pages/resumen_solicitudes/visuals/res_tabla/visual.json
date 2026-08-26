@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "res_tabla",
   "position": {
     "x": 24,
-    "y": 455,
+    "y": 498,
     "z": 2100,
     "height": 360,
-    "width": 720,
+    "width": 600,
     "tabOrder": 2100
   },
   "visual": {

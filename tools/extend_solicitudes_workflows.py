@@ -47,6 +47,7 @@ GENERIC_COLUMNS: list[tuple[str, str]] = [
     ("stop_date", "int64"),
     ("tipo_solicitud", "string"),
     ("categoria_solicitud", "string"),
+    ("tipo_clasificacion", "string"),
     ("periodo", "string"),
     ("sede", "string"),
     ("nivel", "string"),
@@ -77,6 +78,7 @@ FRIENDLY_HEADERS = {
     "fecha_cierre": "Fecha de Cierre",
     "tipo_solicitud": "Tipo de Solicitud",
     "categoria_solicitud": "Categoría de Solicitud",
+    "tipo_clasificacion": "Tipo de Clasificación",
     "periodo": "Período",
     "sede": "Sede",
     "nivel": "Nivel Académico",
@@ -463,8 +465,17 @@ def remove_measure(text: str, name: str) -> str:
     return pattern.sub("", text)
 
 
-def header_dax(title: str, subtitle: str, raw: bool = False) -> str:
+def header_dax(
+    title: str,
+    subtitle: str,
+    raw: bool = False,
+    classification: bool = False,
+) -> str:
     type_chip = "" if raw else "<span class='chip' style='background:" + '" & cTipo & "' + "'>Tipo: <b>" + '" & vTipo & "' + "</b></span>"
+    classification_vars = "" if not classification else '''
+VAR vClasificacion = IF ( ISFILTERED ( solicitudes_workflow[tipo_clasificacion] ), CONCATENATEX ( VALUES ( solicitudes_workflow[tipo_clasificacion] ), solicitudes_workflow[tipo_clasificacion], ", " ), "Todos" )
+VAR cClasificacion = IF ( ISFILTERED ( solicitudes_workflow[tipo_clasificacion] ), "#F3E7C4", "#EAF1FB" )'''
+    classification_chip = "" if not classification else "<span class='chip' style='background:" + '" & cClasificacion & "' + "'>Clasificación: <b>" + '" & vClasificacion & "' + "</b></span>"
     return f'''VAR vPeriodo = IF ( ISFILTERED ( solicitudes_workflow[periodo] ), CONCATENATEX ( VALUES ( solicitudes_workflow[periodo] ), solicitudes_workflow[periodo], ", " ), "Todos" )
 VAR vEstado = IF ( ISFILTERED ( solicitudes_workflow[estado_operacional] ), CONCATENATEX ( VALUES ( solicitudes_workflow[estado_operacional] ), solicitudes_workflow[estado_operacional], ", " ), "Todos" )
 VAR vTipo = IF ( ISFILTERED ( solicitudes_workflow[categoria_solicitud] ), CONCATENATEX ( VALUES ( solicitudes_workflow[categoria_solicitud] ), solicitudes_workflow[categoria_solicitud], ", " ), "Todos" )
@@ -474,11 +485,11 @@ VAR cPeriodo = IF ( ISFILTERED ( solicitudes_workflow[periodo] ), "#F3E7C4", "#E
 VAR cEstado = IF ( ISFILTERED ( solicitudes_workflow[estado_operacional] ), "#F3E7C4", "#EAF1FB" )
 VAR cTipo = IF ( ISFILTERED ( solicitudes_workflow[categoria_solicitud] ), "#F3E7C4", "#EAF1FB" )
 VAR cNivel = IF ( ISFILTERED ( solicitudes_workflow[nivel] ), "#F3E7C4", "#EAF1FB" )
-VAR cSede = IF ( ISFILTERED ( solicitudes_workflow[sede] ), "#F3E7C4", "#EAF1FB" )
+VAR cSede = IF ( ISFILTERED ( solicitudes_workflow[sede] ), "#F3E7C4", "#EAF1FB" ){classification_vars}
 RETURN
 "<style>html,body{{margin:0;padding:0;background:transparent;font-family:Arial,Segoe UI,sans-serif;overflow:hidden}}.hdr{{height:140px;box-sizing:border-box;background:#fff;border:1px solid #E1E6ED;border-radius:10px;box-shadow:0 4px 12px rgba(17,43,66,.08);position:relative;color:#112B42;overflow:hidden}}.divider{{position:absolute;left:230px;top:20px;width:2px;height:64px;background:#C6B27F}}.title{{position:absolute;left:255px;top:17px;font-size:23px;font-weight:700;display:flex;align-items:center;gap:7px}}.subtitle{{position:absolute;left:255px;top:51px;font-size:12px;color:#58616E}}.area{{position:absolute;left:255px;top:72px;font-size:10px;font-weight:600;color:#8A7440}}.chips{{position:absolute;left:18px;bottom:13px;display:flex;gap:7px;align-items:center;font-size:10px;color:#475569;max-width:1080px;white-space:nowrap;overflow:hidden}}.chip{{padding:4px 9px;border-radius:999px;color:#112B42}}.info{{position:static;display:block;font-size:11px}}.info>summary{{display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#C6B27F;color:#fff;list-style:none;cursor:pointer}}.info>summary::-webkit-details-marker{{display:none}}.info>summary::marker{{content:''}}.info[open]>summary{{position:fixed;left:936px;top:10px;z-index:10001;background:#F4F0E3;color:#112B42;font-size:0}}.info[open]>summary::after{{content:'×';font-size:14px;font-weight:700}}.tip{{display:none;position:fixed;left:270px;top:6px;width:700px;height:126px;z-index:9999;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:8px;box-shadow:0 6px 18px rgba(17,43,66,.16);padding:12px 16px 20px;box-sizing:border-box}}.info[open]>.tip{{display:block}}.tipgrid{{display:grid;grid-template-columns:1fr 1fr 1fr;height:86px}}.tipgrid>div{{padding:2px 15px;border-right:1px solid #E1E6ED}}.tipgrid>div:first-child{{padding-left:8px}}.tipgrid>div:last-child{{border-right:0}}.tip b{{display:block;color:#8A7440;font-size:10px;margin-bottom:6px}}.tip span{{display:block;color:#334155;font-size:9px;line-height:12px}}.source{{position:absolute;left:24px;right:24px;bottom:5px;padding-top:4px;border-top:1px solid #E1E6ED;color:#64748B;font-size:8px}}</style>" &
 "<div class='hdr'><div class='divider'></div><div class='title'><span>{title}</span><details class='info'><summary title='Ver metodología'>i</summary><div class='tip'><div class='tipgrid'><div><b>Objetivo</b><span>Monitorear solicitudes académicas y su avance operacional a lo largo del tiempo.</span></div><div><b>Descriptor</b><span>Cada solicitud corresponde a un identificador único. El período se extrae como código académico de seis dígitos.</span></div><div><b>Fórmula de cálculo</b><span>Total: solicitudes únicas. La tasa compara finalizadas con el total. La duración promedio considera solo lunes a viernes.</span></div></div><div class='source'>Fuente: Banner Workflow, Data Lake USS. Histórico completo sin filtro fijo de período.</div></div></details></div><div class='subtitle'>{subtitle}</div><div class='area'>Dirección General de Control de Gestión y Análisis Institucional</div>" &
-"<div class='chips'><span>Filtros aplicados:</span><span class='chip' style='background:" & cPeriodo & "'>Periodo: <b>" & vPeriodo & "</b></span><span class='chip' style='background:" & cEstado & "'>Estado: <b>" & vEstado & "</b></span>{type_chip}<span class='chip' style='background:" & cNivel & "'>Nivel: <b>" & vNivel & "</b></span><span class='chip' style='background:" & cSede & "'>Sede: <b>" & vSede & "</b></span></div></div>"'''
+"<div class='chips'><span>Filtros aplicados:</span><span class='chip' style='background:" & cPeriodo & "'>Periodo: <b>" & vPeriodo & "</b></span><span class='chip' style='background:" & cEstado & "'>Estado: <b>" & vEstado & "</b></span>{type_chip}{classification_chip}<span class='chip' style='background:" & cNivel & "'>Nivel: <b>" & vNivel & "</b></span><span class='chip' style='background:" & cSede & "'>Sede: <b>" & vSede & "</b></span></div></div>"'''
 
 
 KPI_SUMMARY = '''VAR total = [Solicitudes Total]
@@ -486,9 +497,11 @@ VAR fin = [Solicitudes Finalizadas]
 VAR curso = [Solicitudes En Curso]
 VAR tasa = [% Solicitudes Finalizadas]
 VAR dias = [Duración Promedio Días]
+VAR sobrePromedio = [Solicitudes Sobre Promedio]
+VAR tasaSobrePromedio = DIVIDE ( sobrePromedio, fin )
 RETURN
-"<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;background:transparent;font-family:Arial,Segoe UI,sans-serif}.wrap{box-sizing:border-box;height:calc(100% - 2px);display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(2,minmax(0,1fr));gap:12px}.card{box-sizing:border-box;height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:14px 18px;box-shadow:0 3px 10px rgba(17,43,66,.06)}.top{grid-column:span 2}.bottom{grid-column:span 3}.head{flex:0 0 44px}.title{font-size:13px;font-weight:700;color:#112B42}.desc{margin-top:3px;font-size:10px;color:#58616E}.value{flex:1;display:flex;align-items:center;font-size:29px;font-weight:700;color:#112B42}</style>" &
-"<div class='wrap'><div class='card top'><div class='head'><div class='title'>Solicitudes totales</div><div class='desc'>Solicitudes únicas registradas.</div></div><div class='value'>" & FORMAT(total,"#,##0") & "</div></div><div class='card top'><div class='head'><div class='title'>Finalizadas</div><div class='desc'>Procesos con término registrado.</div></div><div class='value'>" & FORMAT(fin,"#,##0") & "</div></div><div class='card top'><div class='head'><div class='title'>En curso</div><div class='desc'>Procesos actualmente activos.</div></div><div class='value'>" & FORMAT(curso,"#,##0") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Tasa de finalización</div><div class='desc'>Finalizadas respecto del total.</div></div><div class='value'>" & FORMAT(tasa,"0.0%") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Duración promedio</div><div class='desc'>Días hábiles entre inicio y cierre.</div></div><div class='value'>" & IF(ISBLANK(dias),"—",FORMAT(dias,"0.0") & " días hábiles") & "</div></div></div>"'''
+"<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;background:transparent;font-family:Arial,Segoe UI,sans-serif}.wrap{box-sizing:border-box;height:calc(100% - 2px);display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(2,minmax(0,1fr));gap:12px}.card{box-sizing:border-box;height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:14px 18px;box-shadow:0 3px 10px rgba(17,43,66,.06)}.top,.bottom{grid-column:span 2}.head{flex:0 0 44px}.title{font-size:13px;font-weight:700;color:#112B42}.desc{margin-top:3px;font-size:10px;line-height:13px;color:#58616E}.value{flex:1;display:flex;align-items:center;font-size:29px;font-weight:700;color:#112B42}</style>" &
+"<div class='wrap'><div class='card top'><div class='head'><div class='title'>Solicitudes totales</div><div class='desc'>Solicitudes únicas registradas.</div></div><div class='value'>" & FORMAT(total,"#,##0") & "</div></div><div class='card top'><div class='head'><div class='title'>Finalizadas</div><div class='desc'>Procesos con término registrado.</div></div><div class='value'>" & FORMAT(fin,"#,##0") & "</div></div><div class='card top'><div class='head'><div class='title'>En curso</div><div class='desc'>Procesos actualmente activos.</div></div><div class='value'>" & FORMAT(curso,"#,##0") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Tasa de finalización</div><div class='desc'>Finalizadas respecto del total.</div></div><div class='value'>" & FORMAT(tasa,"0.0%") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Duración promedio</div><div class='desc'>Días hábiles entre inicio y cierre.</div></div><div class='value'>" & IF(ISBLANK(dias),"—",FORMAT(dias,"0.0") & " días hábiles") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Fuera del promedio</div><div class='desc'>Finalizadas que superan " & IF(ISBLANK(dias),"el promedio",FORMAT(dias,"0.0") & " días hábiles") & " (" & FORMAT(tasaSobrePromedio,"0.0%") & ").</div></div><div class='value'>" & FORMAT(sobrePromedio,"#,##0") & "</div></div></div>"'''
 
 KPI_DETAIL = '''VAR total = [Solicitudes Total]
 VAR fin = [Solicitudes Finalizadas]
@@ -544,6 +557,48 @@ def update_measures() -> None:
 )''',
             "0.0",
         ),
+        (
+            "Solicitudes Sobre Promedio",
+            '''VAR promedio = [Duración Promedio Días]
+VAR solicitudes =
+    ADDCOLUMNS (
+        SUMMARIZE (
+            solicitudes_workflow,
+            solicitudes_workflow[id],
+            "Inicio", MAX ( solicitudes_workflow[fecha_inicio] ),
+            "Cierre", MAX ( solicitudes_workflow[fecha_cierre] )
+        ),
+        "DiasHabiles",
+            VAR inicio = [Inicio]
+            VAR cierre = [Cierre]
+            VAR dias_calendario = DATEDIFF ( inicio, cierre, DAY )
+            RETURN
+                IF (
+                    NOT ISBLANK ( inicio ) && NOT ISBLANK ( cierre ) && cierre >= inicio,
+                    IF (
+                        dias_calendario = 0,
+                        0,
+                        SUMX (
+                            FILTER (
+                                GENERATESERIES ( 1, dias_calendario, 1 ),
+                                WEEKDAY ( inicio + [Value], 2 ) <= 5
+                            ),
+                            1
+                        )
+                    )
+                )
+    )
+RETURN
+    COUNTROWS (
+        FILTER (
+            solicitudes,
+            NOT ISBLANK ( [DiasHabiles] )
+                && NOT ISBLANK ( promedio )
+                && [DiasHabiles] > promedio
+        )
+    )''',
+            "#,0",
+        ),
         ("Encabezado Resumen Workflow", header_dax("Solicitudes académicas", "Resumen operacional consolidado de workflows académicos."), None),
         ("HTML KPI Resumen Workflow", KPI_SUMMARY, None),
         ("Encabezado Resumen", header_dax("Solicitudes académicas", "Resumen operacional consolidado de workflows académicos."), None),
@@ -553,7 +608,17 @@ def update_measures() -> None:
         ("HTML KPI Sábana", KPI_RAW, None),
     ]
     for item in NEW_TYPES:
-        measures.append((item["header"], header_dax(item["display"], item["subtitle"]), None))
+        measures.append(
+            (
+                item["header"],
+                header_dax(
+                    item["display"],
+                    item["subtitle"],
+                    classification=item["category"] == "Inscripción especial",
+                ),
+                None,
+            )
+        )
     for name, expression, fmt in measures:
         text = upsert_measure(text, name, expression, fmt)
     write_text(path, text)
@@ -642,6 +707,99 @@ def apply_friendly_table_headers() -> None:
                     changed = True
         if changed:
             write_json(visual_path, payload)
+
+
+def add_table_column(
+    visual_path: Path,
+    prop: str,
+    after_prop: str | None = None,
+) -> None:
+    """Agrega una columna visible sin reconstruir el visual ni su formato."""
+    payload = read_json(visual_path)
+    projections = (
+        payload.get("visual", {})
+        .get("query", {})
+        .get("queryState", {})
+        .get("Values", {})
+        .get("projections", [])
+    )
+    if any(item.get("queryRef") == f"solicitudes_workflow.{prop}" for item in projections):
+        return
+    new_projection = projection("solicitudes_workflow", prop)
+    insert_at = len(projections)
+    if after_prop:
+        for index, item in enumerate(projections):
+            if item.get("queryRef") == f"solicitudes_workflow.{after_prop}":
+                insert_at = index + 1
+                break
+    projections.insert(insert_at, new_projection)
+    write_json(visual_path, payload)
+
+
+def unify_inscription_experience() -> None:
+    """Une ambas inscripciones preservando el diseño actual del usuario."""
+    unified_page = PAGES / "detalle_inscripcion_especial"
+    old_page = PAGES / "detalle_inscripcion"
+
+    # La página anterior se conserva como respaldo editable, pero desaparece
+    # de la navegación de lectura para evitar dos vistas del mismo proceso.
+    old_payload = read_json(old_page / "page.json")
+    old_payload["visibility"] = "HiddenInViewMode"
+    write_json(old_page / "page.json", old_payload)
+
+    pages_path = PAGES / "pages.json"
+    pages_payload = read_json(pages_path)
+    current_order = pages_payload.get("pageOrder", [])
+    remainder = [
+        page
+        for page in current_order
+        if page not in {"resumen_solicitudes", "detalle_inscripcion_especial", "detalle_inscripcion"}
+    ]
+    pages_payload["pageOrder"] = [
+        "resumen_solicitudes",
+        "detalle_inscripcion_especial",
+        *remainder[:-1],
+        "detalle_inscripcion",
+        *remainder[-1:],
+    ]
+    write_json(pages_path, pages_payload)
+
+    visuals = unified_page / "visuals"
+    level_path = visuals / "esp_nivel" / "visual.json"
+    level_visual = read_json(level_path)
+    level_visual["position"]["y"] = 366
+    write_json(level_path, level_visual)
+
+    sede_path = visuals / "esp_sede" / "visual.json"
+    sede_visual = read_json(sede_path)
+    sede_visual["position"]["y"] = 458
+    write_json(sede_path, sede_visual)
+
+    classification_visual = recursive_replace(
+        copy.deepcopy(level_visual),
+        {
+            "esp_nivel": "esp_tipo_clasificacion",
+            "nivel": "tipo_clasificacion",
+            "Nivel académico": "Tipo de clasificación",
+        },
+    )
+    classification_visual["name"] = "esp_tipo_clasificacion"
+    classification_visual["position"].update({"y": 274, "z": 4500, "tabOrder": 4500})
+    write_json(
+        visuals / "esp_tipo_clasificacion" / "visual.json",
+        classification_visual,
+    )
+
+    add_table_column(
+        visuals / "esp_tabla" / "visual.json",
+        "tipo_clasificacion",
+        after_prop="id",
+    )
+    add_table_column(
+        PAGES / "sabana_completa" / "visuals" / "raw_tabla" / "visual.json",
+        "tipo_clasificacion",
+        after_prop="categoria_solicitud",
+    )
 
 
 def set_title(visual, title: str) -> None:
@@ -1097,6 +1255,7 @@ def create_raw_page() -> list[dict]:
         ("solicitudes_workflow", "cabecera", "Column"),
         ("solicitudes_workflow", "tipo_solicitud", "Column"),
         ("solicitudes_workflow", "categoria_solicitud", "Column"),
+        ("solicitudes_workflow", "tipo_clasificacion", "Column"),
         ("solicitudes_workflow", "estado_operacional", "Column"),
         ("solicitudes_workflow", "estado_actual", "Column"),
         ("solicitudes_workflow", "periodo", "Column"),
@@ -1173,15 +1332,17 @@ Proyecto Power BI con interfaz MODUSS estratégica y datos de Banner Workflow en
 ## Páginas
 
 1. Resumen operacional.
-2. Inscripción extraordinaria (lógica aprobada).
+2. Inscripción especial, con clasificación Especial/Extraordinaria.
 3. Cambio de calificación (lógica aprobada).
 4. Reincorporación.
 5. Continuidad de estudios.
 6. Cambio de carrera/sede.
 7. Suspensión.
-8. Inscripción especial.
-9. Retiro.
-10. Sábana completa para exportación.
+8. Retiro.
+9. Sábana completa para exportación.
+
+La página técnica anterior de inscripción extraordinaria se mantiene oculta en
+modo lectura como respaldo, pero ya no aparece en el menú de navegación.
 
 ## Criterios
 
@@ -1192,6 +1353,10 @@ Proyecto Power BI con interfaz MODUSS estratégica y datos de Banner Workflow en
 - `FINALIZADA`, `EN CURSO`, `CANCELADA` y `OTRO` se determinan a partir del estado y ejecución del workflow.
 - El período se normaliza extrayendo un código académico de seis dígitos desde las propiedades del formulario.
 - La duración promedio excluye sábados y domingos.
+- `Solicitudes Sobre Promedio` cuenta procesos finalizados cuya duración en días
+  hábiles supera el promedio del contexto de filtros vigente.
+- Inscripción especial y extraordinaria comparten una sola categoría analítica;
+  `tipo_clasificacion` conserva ambas opciones para el filtro funcional.
 - Sede, nivel y RUT se detectan desde las propiedades disponibles en cada formulario.
 
 ## Modelo optimizado
@@ -1228,6 +1393,7 @@ def main() -> None:
     update_measures()
     update_pages_and_bookmarks()
     align_moduss_interface()
+    unify_inscription_experience()
     apply_friendly_table_headers()
     update_readme()
     print(f"Proyecto actualizado: {TARGET}")

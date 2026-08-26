@@ -38,6 +38,21 @@
                       "Entity": "solicitudes_workflow"
                     }
                   },
+                  "Property": "tipo_clasificacion"
+                }
+              },
+              "queryRef": "solicitudes_workflow.tipo_clasificacion",
+              "nativeQueryRef": "tipo_clasificacion",
+              "displayName": "Tipo de Clasificación"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_workflow"
+                    }
+                  },
                   "Property": "periodo"
                 }
               },

@@ -73,6 +73,14 @@ table solicitudes_workflow
 
 		annotation SummarizationSetBy = Automatic
 
+	column tipo_clasificacion
+		dataType: string
+		lineageTag: a9b5f65d-44ad-4527-b1f0-b04a59d4b16b
+		summarizeBy: none
+		sourceColumn: tipo_clasificacion
+
+		annotation SummarizationSetBy = Automatic
+
 	column periodo
 		dataType: string
 		lineageTag: 4555a079-f7f5-49ec-8388-a5c980051fd9

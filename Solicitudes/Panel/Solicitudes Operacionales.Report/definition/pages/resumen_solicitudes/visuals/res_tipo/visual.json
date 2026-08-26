@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "res_tipo",
   "position": {
-    "x": 764,
-    "y": 455,
+    "x": 644,
+    "y": 498,
     "z": 2000,
     "height": 360,
-    "width": 492,
+    "width": 612,
     "tabOrder": 2000
   },
   "visual": {
@@ -28,6 +28,7 @@
               },
               "queryRef": "solicitudes_workflow.categoria_solicitud",
               "nativeQueryRef": "categoria_solicitud",
+              "active": true,
               "displayName": "Categoría de Solicitud"
             }
           ]

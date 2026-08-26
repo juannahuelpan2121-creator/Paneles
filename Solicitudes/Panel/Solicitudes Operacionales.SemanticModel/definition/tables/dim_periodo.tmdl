@@ -11,3 +11,4 @@ table dim_periodo
 	partition dim_periodo = calculated
 		mode: import
 		source = DISTINCT ( SELECTCOLUMNS ( solicitudes_workflow, "periodo", solicitudes_workflow[periodo] ) )
+

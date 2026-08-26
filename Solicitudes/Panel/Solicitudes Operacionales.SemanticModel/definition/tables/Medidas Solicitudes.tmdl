@@ -134,9 +134,11 @@ table 'Medidas Solicitudes'
 		VAR curso = [Solicitudes En Curso]
 		VAR tasa = [% Solicitudes Finalizadas]
 		VAR dias = [Duración Promedio Días]
+		VAR sobrePromedio = [Solicitudes Sobre Promedio]
+		VAR tasaSobrePromedio = DIVIDE ( sobrePromedio, fin )
 		RETURN
-		"<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;background:transparent;font-family:Arial,Segoe UI,sans-serif}.wrap{box-sizing:border-box;height:calc(100% - 2px);display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(2,minmax(0,1fr));gap:12px}.card{box-sizing:border-box;height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:14px 18px;box-shadow:0 3px 10px rgba(17,43,66,.06)}.top{grid-column:span 2}.bottom{grid-column:span 3}.head{flex:0 0 44px}.title{font-size:13px;font-weight:700;color:#112B42}.desc{margin-top:3px;font-size:10px;color:#58616E}.value{flex:1;display:flex;align-items:center;font-size:29px;font-weight:700;color:#112B42}</style>" &
-		"<div class='wrap'><div class='card top'><div class='head'><div class='title'>Solicitudes totales</div><div class='desc'>Solicitudes únicas registradas.</div></div><div class='value'>" & FORMAT(total,"#,##0") & "</div></div><div class='card top'><div class='head'><div class='title'>Finalizadas</div><div class='desc'>Procesos con término registrado.</div></div><div class='value'>" & FORMAT(fin,"#,##0") & "</div></div><div class='card top'><div class='head'><div class='title'>En curso</div><div class='desc'>Procesos actualmente activos.</div></div><div class='value'>" & FORMAT(curso,"#,##0") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Tasa de finalización</div><div class='desc'>Finalizadas respecto del total.</div></div><div class='value'>" & FORMAT(tasa,"0.0%") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Duración promedio</div><div class='desc'>Días hábiles entre inicio y cierre.</div></div><div class='value'>" & IF(ISBLANK(dias),"—",FORMAT(dias,"0.0") & " días hábiles") & "</div></div></div>"
+		"<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;background:transparent;font-family:Arial,Segoe UI,sans-serif}.wrap{box-sizing:border-box;height:calc(100% - 2px);display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(2,minmax(0,1fr));gap:12px}.card{box-sizing:border-box;height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:14px 18px;box-shadow:0 3px 10px rgba(17,43,66,.06)}.top,.bottom{grid-column:span 2}.head{flex:0 0 44px}.title{font-size:13px;font-weight:700;color:#112B42}.desc{margin-top:3px;font-size:10px;line-height:13px;color:#58616E}.value{flex:1;display:flex;align-items:center;font-size:29px;font-weight:700;color:#112B42}</style>" &
+		"<div class='wrap'><div class='card top'><div class='head'><div class='title'>Solicitudes totales</div><div class='desc'>Solicitudes únicas registradas.</div></div><div class='value'>" & FORMAT(total,"#,##0") & "</div></div><div class='card top'><div class='head'><div class='title'>Finalizadas</div><div class='desc'>Procesos con término registrado.</div></div><div class='value'>" & FORMAT(fin,"#,##0") & "</div></div><div class='card top'><div class='head'><div class='title'>En curso</div><div class='desc'>Procesos actualmente activos.</div></div><div class='value'>" & FORMAT(curso,"#,##0") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Tasa de finalización</div><div class='desc'>Finalizadas respecto del total.</div></div><div class='value'>" & FORMAT(tasa,"0.0%") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Duración promedio</div><div class='desc'>Días hábiles entre inicio y cierre.</div></div><div class='value'>" & IF(ISBLANK(dias),"—",FORMAT(dias,"0.0") & " días hábiles") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Fuera del promedio</div><div class='desc'>Finalizadas que superan " & IF(ISBLANK(dias),"el promedio",FORMAT(dias,"0.0") & " días hábiles") & " (" & FORMAT(tasaSobrePromedio,"0.0%") & ").</div></div><div class='value'>" & FORMAT(sobrePromedio,"#,##0") & "</div></div></div>"
 		```
 		lineageTag: 8ea8d40e-7cc5-495a-a45a-1631586e97de
 	measure 'HTML KPI Inscripción' = ```
@@ -214,9 +216,11 @@ table 'Medidas Solicitudes'
 		VAR curso = [Solicitudes En Curso]
 		VAR tasa = [% Solicitudes Finalizadas]
 		VAR dias = [Duración Promedio Días]
+		VAR sobrePromedio = [Solicitudes Sobre Promedio]
+		VAR tasaSobrePromedio = DIVIDE ( sobrePromedio, fin )
 		RETURN
-		"<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;background:transparent;font-family:Arial,Segoe UI,sans-serif}.wrap{box-sizing:border-box;height:calc(100% - 2px);display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(2,minmax(0,1fr));gap:12px}.card{box-sizing:border-box;height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:14px 18px;box-shadow:0 3px 10px rgba(17,43,66,.06)}.top{grid-column:span 2}.bottom{grid-column:span 3}.head{flex:0 0 44px}.title{font-size:13px;font-weight:700;color:#112B42}.desc{margin-top:3px;font-size:10px;color:#58616E}.value{flex:1;display:flex;align-items:center;font-size:29px;font-weight:700;color:#112B42}</style>" &
-		"<div class='wrap'><div class='card top'><div class='head'><div class='title'>Solicitudes totales</div><div class='desc'>Solicitudes únicas registradas.</div></div><div class='value'>" & FORMAT(total,"#,##0") & "</div></div><div class='card top'><div class='head'><div class='title'>Finalizadas</div><div class='desc'>Procesos con término registrado.</div></div><div class='value'>" & FORMAT(fin,"#,##0") & "</div></div><div class='card top'><div class='head'><div class='title'>En curso</div><div class='desc'>Procesos actualmente activos.</div></div><div class='value'>" & FORMAT(curso,"#,##0") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Tasa de finalización</div><div class='desc'>Finalizadas respecto del total.</div></div><div class='value'>" & FORMAT(tasa,"0.0%") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Duración promedio</div><div class='desc'>Días hábiles entre inicio y cierre.</div></div><div class='value'>" & IF(ISBLANK(dias),"—",FORMAT(dias,"0.0") & " días hábiles") & "</div></div></div>"
+		"<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;background:transparent;font-family:Arial,Segoe UI,sans-serif}.wrap{box-sizing:border-box;height:calc(100% - 2px);display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(2,minmax(0,1fr));gap:12px}.card{box-sizing:border-box;height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:9px;padding:14px 18px;box-shadow:0 3px 10px rgba(17,43,66,.06)}.top,.bottom{grid-column:span 2}.head{flex:0 0 44px}.title{font-size:13px;font-weight:700;color:#112B42}.desc{margin-top:3px;font-size:10px;line-height:13px;color:#58616E}.value{flex:1;display:flex;align-items:center;font-size:29px;font-weight:700;color:#112B42}</style>" &
+		"<div class='wrap'><div class='card top'><div class='head'><div class='title'>Solicitudes totales</div><div class='desc'>Solicitudes únicas registradas.</div></div><div class='value'>" & FORMAT(total,"#,##0") & "</div></div><div class='card top'><div class='head'><div class='title'>Finalizadas</div><div class='desc'>Procesos con término registrado.</div></div><div class='value'>" & FORMAT(fin,"#,##0") & "</div></div><div class='card top'><div class='head'><div class='title'>En curso</div><div class='desc'>Procesos actualmente activos.</div></div><div class='value'>" & FORMAT(curso,"#,##0") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Tasa de finalización</div><div class='desc'>Finalizadas respecto del total.</div></div><div class='value'>" & FORMAT(tasa,"0.0%") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Duración promedio</div><div class='desc'>Días hábiles entre inicio y cierre.</div></div><div class='value'>" & IF(ISBLANK(dias),"—",FORMAT(dias,"0.0") & " días hábiles") & "</div></div><div class='card bottom'><div class='head'><div class='title'>Fuera del promedio</div><div class='desc'>Finalizadas que superan " & IF(ISBLANK(dias),"el promedio",FORMAT(dias,"0.0") & " días hábiles") & " (" & FORMAT(tasaSobrePromedio,"0.0%") & ").</div></div><div class='value'>" & FORMAT(sobrePromedio,"#,##0") & "</div></div></div>"
 		```
 		lineageTag: 35c102ee-f66a-474e-9185-4913b9da2600
 	measure 'HTML KPI Detalle Workflow' = ```
@@ -331,10 +335,12 @@ table 'Medidas Solicitudes'
 		VAR cTipo = IF ( ISFILTERED ( solicitudes_workflow[categoria_solicitud] ), "#F3E7C4", "#EAF1FB" )
 		VAR cNivel = IF ( ISFILTERED ( solicitudes_workflow[nivel] ), "#F3E7C4", "#EAF1FB" )
 		VAR cSede = IF ( ISFILTERED ( solicitudes_workflow[sede] ), "#F3E7C4", "#EAF1FB" )
+		VAR vClasificacion = IF ( ISFILTERED ( solicitudes_workflow[tipo_clasificacion] ), CONCATENATEX ( VALUES ( solicitudes_workflow[tipo_clasificacion] ), solicitudes_workflow[tipo_clasificacion], ", " ), "Todos" )
+		VAR cClasificacion = IF ( ISFILTERED ( solicitudes_workflow[tipo_clasificacion] ), "#F3E7C4", "#EAF1FB" )
 		RETURN
 		"<style>html,body{margin:0;padding:0;background:transparent;font-family:Arial,Segoe UI,sans-serif;overflow:hidden}.hdr{height:140px;box-sizing:border-box;background:#fff;border:1px solid #E1E6ED;border-radius:10px;box-shadow:0 4px 12px rgba(17,43,66,.08);position:relative;color:#112B42;overflow:hidden}.divider{position:absolute;left:230px;top:20px;width:2px;height:64px;background:#C6B27F}.title{position:absolute;left:255px;top:17px;font-size:23px;font-weight:700;display:flex;align-items:center;gap:7px}.subtitle{position:absolute;left:255px;top:51px;font-size:12px;color:#58616E}.area{position:absolute;left:255px;top:72px;font-size:10px;font-weight:600;color:#8A7440}.chips{position:absolute;left:18px;bottom:13px;display:flex;gap:7px;align-items:center;font-size:10px;color:#475569;max-width:1080px;white-space:nowrap;overflow:hidden}.chip{padding:4px 9px;border-radius:999px;color:#112B42}.info{position:static;display:block;font-size:11px}.info>summary{display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#C6B27F;color:#fff;list-style:none;cursor:pointer}.info>summary::-webkit-details-marker{display:none}.info>summary::marker{content:''}.info[open]>summary{position:fixed;left:936px;top:10px;z-index:10001;background:#F4F0E3;color:#112B42;font-size:0}.info[open]>summary::after{content:'×';font-size:14px;font-weight:700}.tip{display:none;position:fixed;left:270px;top:6px;width:700px;height:126px;z-index:9999;background:#fff;border:1px solid #D9DEE7;border-left:4px solid #C6B27F;border-radius:8px;box-shadow:0 6px 18px rgba(17,43,66,.16);padding:12px 16px 20px;box-sizing:border-box}.info[open]>.tip{display:block}.tipgrid{display:grid;grid-template-columns:1fr 1fr 1fr;height:86px}.tipgrid>div{padding:2px 15px;border-right:1px solid #E1E6ED}.tipgrid>div:first-child{padding-left:8px}.tipgrid>div:last-child{border-right:0}.tip b{display:block;color:#8A7440;font-size:10px;margin-bottom:6px}.tip span{display:block;color:#334155;font-size:9px;line-height:12px}.source{position:absolute;left:24px;right:24px;bottom:5px;padding-top:4px;border-top:1px solid #E1E6ED;color:#64748B;font-size:8px}</style>" &
 		"<div class='hdr'><div class='divider'></div><div class='title'><span>Inscripción especial</span><details class='info'><summary title='Ver metodología'>i</summary><div class='tip'><div class='tipgrid'><div><b>Objetivo</b><span>Monitorear solicitudes académicas y su avance operacional a lo largo del tiempo.</span></div><div><b>Descriptor</b><span>Cada solicitud corresponde a un identificador único. El período se extrae como código académico de seis dígitos.</span></div><div><b>Fórmula de cálculo</b><span>Total: solicitudes únicas. La tasa compara finalizadas con el total. La duración promedio considera solo lunes a viernes.</span></div></div><div class='source'>Fuente: Banner Workflow, Data Lake USS. Histórico completo sin filtro fijo de período.</div></div></details></div><div class='subtitle'>Seguimiento de solicitudes de inscripción especial.</div><div class='area'>Dirección General de Control de Gestión y Análisis Institucional</div>" &
-		"<div class='chips'><span>Filtros aplicados:</span><span class='chip' style='background:" & cPeriodo & "'>Periodo: <b>" & vPeriodo & "</b></span><span class='chip' style='background:" & cEstado & "'>Estado: <b>" & vEstado & "</b></span><span class='chip' style='background:" & cTipo & "'>Tipo: <b>" & vTipo & "</b></span><span class='chip' style='background:" & cNivel & "'>Nivel: <b>" & vNivel & "</b></span><span class='chip' style='background:" & cSede & "'>Sede: <b>" & vSede & "</b></span></div></div>"
+		"<div class='chips'><span>Filtros aplicados:</span><span class='chip' style='background:" & cPeriodo & "'>Periodo: <b>" & vPeriodo & "</b></span><span class='chip' style='background:" & cEstado & "'>Estado: <b>" & vEstado & "</b></span><span class='chip' style='background:" & cTipo & "'>Tipo: <b>" & vTipo & "</b></span><span class='chip' style='background:" & cClasificacion & "'>Clasificación: <b>" & vClasificacion & "</b></span><span class='chip' style='background:" & cNivel & "'>Nivel: <b>" & vNivel & "</b></span><span class='chip' style='background:" & cSede & "'>Sede: <b>" & vSede & "</b></span></div></div>"
 		```
 		lineageTag: 5d756576-d9b6-43b4-8a81-310f60e3d5eb
 	measure 'Encabezado Retiro' = ```
@@ -354,6 +360,48 @@ table 'Medidas Solicitudes'
 		"<div class='chips'><span>Filtros aplicados:</span><span class='chip' style='background:" & cPeriodo & "'>Periodo: <b>" & vPeriodo & "</b></span><span class='chip' style='background:" & cEstado & "'>Estado: <b>" & vEstado & "</b></span><span class='chip' style='background:" & cTipo & "'>Tipo: <b>" & vTipo & "</b></span><span class='chip' style='background:" & cNivel & "'>Nivel: <b>" & vNivel & "</b></span><span class='chip' style='background:" & cSede & "'>Sede: <b>" & vSede & "</b></span></div></div>"
 		```
 		lineageTag: e2b0598f-ab99-4dba-a5ae-5a157695292c
+	measure 'Solicitudes Sobre Promedio' = ```
+		VAR promedio = [Duración Promedio Días]
+		VAR solicitudes =
+		    ADDCOLUMNS (
+		        SUMMARIZE (
+		            solicitudes_workflow,
+		            solicitudes_workflow[id],
+		            "Inicio", MAX ( solicitudes_workflow[fecha_inicio] ),
+		            "Cierre", MAX ( solicitudes_workflow[fecha_cierre] )
+		        ),
+		        "DiasHabiles",
+		            VAR inicio = [Inicio]
+		            VAR cierre = [Cierre]
+		            VAR dias_calendario = DATEDIFF ( inicio, cierre, DAY )
+		            RETURN
+		                IF (
+		                    NOT ISBLANK ( inicio ) && NOT ISBLANK ( cierre ) && cierre >= inicio,
+		                    IF (
+		                        dias_calendario = 0,
+		                        0,
+		                        SUMX (
+		                            FILTER (
+		                                GENERATESERIES ( 1, dias_calendario, 1 ),
+		                                WEEKDAY ( inicio + [Value], 2 ) <= 5
+		                            ),
+		                            1
+		                        )
+		                    )
+		                )
+		    )
+		RETURN
+		    COUNTROWS (
+		        FILTER (
+		            solicitudes,
+		            NOT ISBLANK ( [DiasHabiles] )
+		                && NOT ISBLANK ( promedio )
+		                && [DiasHabiles] > promedio
+		        )
+		    )
+		```
+		formatString: #,0
+		lineageTag: 20ec2843-65b5-4b7b-9dcd-651c873c49cd
 	column Marcador
 		lineageTag: 3df4006c-cee4-4227-8953-30770f3534b6
 		isNameInferred
@@ -362,3 +410,4 @@ table 'Medidas Solicitudes'
 	partition 'Medidas Solicitudes' = calculated
 		mode: import
 		source = DATATABLE ( "Marcador", STRING, { { "Medidas" } } )
+

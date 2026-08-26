@@ -1,9 +1,9 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "res_periodo_chart",
   "position": {
     "x": 644,
-    "y": 835,
+    "y": 878,
     "z": 2000,
     "height": 370,
     "width": 612,
@@ -28,6 +28,7 @@
               },
               "queryRef": "solicitudes_workflow.periodo",
               "nativeQueryRef": "periodo",
+              "active": true,
               "displayName": "Período"
             }
           ]

@@ -3,7 +3,7 @@
   "name": "resumen_solicitudes",
   "displayName": "Resumen operacional",
   "displayOption": "ActualSize",
-  "height": 1800,
+  "height": 1850,
   "width": 1280,
   "objects": {
     "background": [

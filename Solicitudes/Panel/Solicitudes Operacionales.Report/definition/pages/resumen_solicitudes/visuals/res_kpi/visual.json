@@ -1,11 +1,11 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "res_kpi",
   "position": {
     "x": 24,
-    "y": 170,
+    "y": 180,
     "z": 1000,
-    "height": 245,
+    "height": 271,
     "width": 1232,
     "tabOrder": 1000
   },

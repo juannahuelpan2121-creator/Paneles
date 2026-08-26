@@ -1,9 +1,9 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "res_preview",
   "position": {
     "x": 24,
-    "y": 1235,
+    "y": 1278,
     "z": 2100,
     "height": 525,
     "width": 1232,
@@ -98,6 +98,21 @@
                       "Entity": "solicitudes_workflow"
                     }
                   },
+                  "Property": "fecha_cierre"
+                }
+              },
+              "queryRef": "solicitudes_workflow.fecha_cierre",
+              "nativeQueryRef": "Fecha de Termino",
+              "displayName": "Fecha de Cierre"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_workflow"
+                    }
+                  },
                   "Property": "sede"
                 }
               },
@@ -119,9 +134,41 @@
               "queryRef": "solicitudes_workflow.nivel",
               "nativeQueryRef": "nivel",
               "displayName": "Nivel Académico"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "solicitudes_workflow"
+                    }
+                  },
+                  "Property": "estado_actual"
+                }
+              },
+              "queryRef": "solicitudes_workflow.estado_actual",
+              "nativeQueryRef": "Estado Técnico",
+              "displayName": "Estado Técnico"
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "solicitudes_workflow"
+                  }
+                },
+                "Property": "periodo"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
       }
     },
     "objects": {
@@ -188,6 +235,78 @@
                 }
               }
             }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "158D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "solicitudes_workflow.categoria_solicitud"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "141D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "solicitudes_workflow.estado_operacional"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "159D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "solicitudes_workflow.fecha_inicio"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "208D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "solicitudes_workflow.sede"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "125D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "solicitudes_workflow.nivel"
           }
         }
       ]

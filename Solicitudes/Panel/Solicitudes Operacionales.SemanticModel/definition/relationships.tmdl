@@ -21,3 +21,4 @@ relationship dim_periodo_workflow
 relationship dim_estado_workflow
 	fromColumn: solicitudes_workflow.estado_operacional
 	toColumn: dim_estado.estado_operacional
+

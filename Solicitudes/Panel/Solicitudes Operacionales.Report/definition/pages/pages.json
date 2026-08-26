@@ -2,14 +2,14 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.1.0/schema.json",
   "pageOrder": [
     "resumen_solicitudes",
-    "detalle_inscripcion",
+    "detalle_inscripcion_especial",
     "detalle_calificacion",
     "detalle_reincorporacion",
     "detalle_continuidad",
     "detalle_cambio_carrera",
     "detalle_suspension",
-    "detalle_inscripcion_especial",
     "detalle_retiro",
+    "detalle_inscripcion",
     "sabana_completa"
   ],
   "activePageName": "resumen_solicitudes"

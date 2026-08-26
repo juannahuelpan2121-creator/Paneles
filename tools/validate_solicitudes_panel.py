@@ -243,7 +243,7 @@ for page, prefix in page_prefix.items():
 # por tipología y una sábana operacional de exportación.
 workflow_required_columns = {
     "id", "pd_id", "estado_actual", "estado_operacional", "start_date", "stop_date",
-    "tipo_solicitud", "categoria_solicitud", "periodo", "sede", "nivel",
+    "tipo_solicitud", "categoria_solicitud", "tipo_clasificacion", "periodo", "sede", "nivel",
     "rut_estudiante", "cantidad_propiedades", "fecha_inicio", "fecha_cierre",
 }
 missing_workflow_columns = workflow_required_columns - tables.get("solicitudes_workflow", set())
@@ -257,6 +257,7 @@ if "DISTINCTCOUNT ( solicitudes_workflow[id] )" not in measure_text:
     errors.append("Solicitudes Total debe contar DISTINCT id en el dataset operacional")
 for required_measure in (
     "Duración Promedio Días",
+    "Solicitudes Sobre Promedio",
     "Encabezado Resumen Workflow",
     "HTML KPI Resumen Workflow",
     "HTML KPI Detalle Workflow",
@@ -289,6 +290,32 @@ if not summary_html_match or "Canceladas" in summary_html_match.group(1):
     errors.append("El resumen todavía contiene la tarjeta de solicitudes canceladas")
 if "GENERATESERIES ( 1, dias_calendario, 1 )" not in measure_text or "WEEKDAY ( inicio + [Value], 2 ) <= 5" not in measure_text:
     errors.append("Duración Promedio Días no excluye sábados y domingos")
+if "[DiasHabiles] > promedio" not in measure_text:
+    errors.append("Solicitudes Sobre Promedio no compara cada solicitud con el promedio filtrado")
+
+old_inscription_page = report / "pages" / "detalle_inscripcion" / "page.json"
+if old_inscription_page.exists():
+    old_page_payload = json.loads(old_inscription_page.read_text(encoding="utf-8"))
+    if old_page_payload.get("visibility") != "HiddenInViewMode":
+        errors.append("La página anterior de inscripción extraordinaria debe permanecer oculta en modo lectura")
+if page_meta.get("pageOrder", [])[:2] != ["resumen_solicitudes", "detalle_inscripcion_especial"]:
+    errors.append("Inscripción especial unificada debe ser la segunda página del panel")
+
+classification_slicer = (
+    report / "pages" / "detalle_inscripcion_especial" / "visuals"
+    / "esp_tipo_clasificacion" / "visual.json"
+)
+if not classification_slicer.exists():
+    errors.append("Falta el filtro desplegable Tipo de clasificación en Inscripción especial")
+else:
+    classification_payload = json.loads(classification_slicer.read_text(encoding="utf-8"))
+    classification_text = json.dumps(classification_payload, ensure_ascii=False)
+    if "solicitudes_workflow.tipo_clasificacion" not in classification_text:
+        errors.append("El filtro Tipo de clasificación no usa solicitudes_workflow[tipo_clasificacion]")
+    if "Tipo de clasificación" not in classification_text:
+        errors.append("El filtro unificado no muestra el título Tipo de clasificación")
+    if classification_payload.get("parentGroupName") != "esp_filter_group":
+        errors.append("El filtro Tipo de clasificación no pertenece al panel de filtros MODUSS")
 
 expected_workflow_pages = {
     "detalle_reincorporacion": "rei",
@@ -319,8 +346,8 @@ if not download_button.exists():
 
 for page in page_meta["pageOrder"]:
     page_payload = json.loads((report / "pages" / page / "page.json").read_text(encoding="utf-8"))
-    if page_payload.get("width") != 1280 or page_payload.get("height") != 1800:
-        errors.append(f"{page}: el lienzo debe ser 1280 x 1800")
+    if page_payload.get("width") != 1280 or page_payload.get("height", 0) < 1800:
+        errors.append(f"{page}: el lienzo debe mantener 1280 px de ancho y al menos 1800 px de alto")
     if page_payload.get("displayOption") != "ActualSize":
         errors.append(f"{page}: debe usar ActualSize como el ejemplo estratégico")
     page_color = (
@@ -364,7 +391,9 @@ else:
         "'[_-]+'",
         "'CAMBIO( DE)? CARRERA( SEDE)?'",
         "THEN 'CAMBIO DE CARRERA/SEDE'",
-        "WHEN ID = CAST(19994978 AS BIGINT) THEN 'INSCRIPCIÓN EXTRAORDINARIA'",
+        "WHEN ID = CAST(19994978 AS BIGINT) THEN 'INSCRIPCIÓN ESPECIAL'",
+        "THEN 'INSCRIPCIÓN EXTRAORDINARIA'",
+        "END AS TIPO_CLASIFICACION",
         "WHERE CATEGORIA_SOLICITUD IS NOT NULL",
         "COUNT(*) AS CANTIDAD_PROPIEDADES",
         "LEFT JOIN ATRIBUTOS AS A",

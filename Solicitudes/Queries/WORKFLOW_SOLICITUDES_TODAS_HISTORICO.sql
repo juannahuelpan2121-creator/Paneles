@@ -29,7 +29,7 @@ definiciones_clasificadas AS (
         description,
         version,
         CASE
-            WHEN id = CAST(19994978 AS BIGINT) THEN 'Inscripción extraordinaria'
+            WHEN id = CAST(19994978 AS BIGINT) THEN 'Inscripción especial'
             WHEN LOWER(COALESCE(name, '')) LIKE '%reincorpor%' THEN 'Reincorporación'
             WHEN LOWER(COALESCE(name, '')) LIKE '%cambio de nota%'
               OR LOWER(COALESCE(name, '')) LIKE '%calific%' THEN 'Cambio de calificación'
@@ -48,13 +48,24 @@ definiciones_clasificadas AS (
             WHEN REGEXP_LIKE(
                 REGEXP_REPLACE(LOWER(COALESCE(name, '')), '[_-]+', ' '),
                 '(inscripci[oó]n|matr[ií]cula).*extraordin'
-            ) THEN 'Inscripción extraordinaria'
+            ) THEN 'Inscripción especial'
             ELSE NULL
         END AS categoria_solicitud
     FROM definiciones_base
 ),
 definiciones AS (
-    SELECT *
+    SELECT
+        *,
+        CASE
+            WHEN id = CAST(19994978 AS BIGINT) THEN 'Inscripción Extraordinaria'
+            WHEN categoria_solicitud = 'Inscripción especial'
+             AND REGEXP_LIKE(
+                REGEXP_REPLACE(LOWER(COALESCE(name, '')), '[_-]+', ' '),
+                '(inscripci[oó]n|matr[ií]cula).*extraordin'
+            ) THEN 'Inscripción Extraordinaria'
+            WHEN categoria_solicitud = 'Inscripción especial' THEN 'Inscripción Especial'
+            ELSE categoria_solicitud
+        END AS tipo_clasificacion
     FROM definiciones_clasificadas
     WHERE categoria_solicitud IS NOT NULL
 ),
@@ -69,6 +80,7 @@ workflows AS (
         stop_date,
         tipo_solicitud,
         categoria_solicitud,
+        tipo_clasificacion,
         ultima_actividad,
         origen,
         indicador_en_ejecucion,
@@ -95,6 +107,7 @@ workflows AS (
             w.stop_date,
             d.name AS tipo_solicitud,
             d.categoria_solicitud,
+            d.tipo_clasificacion,
             w.last_state AS ultima_actividad,
             w.origin AS origen,
             w.running AS indicador_en_ejecucion,
@@ -182,6 +195,7 @@ SELECT
     w.stop_date,
     w.tipo_solicitud,
     w.categoria_solicitud,
+    w.tipo_clasificacion,
     COALESCE(a.periodo_detectado, 'Sin periodo') AS periodo,
     COALESCE(a.sede_detectada, 'Sin sede') AS sede,
     COALESCE(a.nivel_detectado, 'Sin nivel') AS nivel,

@@ -11,3 +11,4 @@ table dim_estado
 	partition dim_estado = calculated
 		mode: import
 		source = DISTINCT ( SELECTCOLUMNS ( solicitudes_workflow, "estado_operacional", solicitudes_workflow[estado_operacional] ) )
+

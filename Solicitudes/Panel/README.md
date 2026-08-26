@@ -5,15 +5,17 @@ Proyecto Power BI con interfaz MODUSS estratégica y datos de Banner Workflow en
 ## Páginas
 
 1. Resumen operacional.
-2. Inscripción extraordinaria (lógica aprobada).
+2. Inscripción especial, con clasificación Especial/Extraordinaria.
 3. Cambio de calificación (lógica aprobada).
 4. Reincorporación.
 5. Continuidad de estudios.
 6. Cambio de carrera/sede.
 7. Suspensión.
-8. Inscripción especial.
-9. Retiro.
-10. Sábana completa para exportación.
+8. Retiro.
+9. Sábana completa para exportación.
+
+La página técnica anterior de inscripción extraordinaria se mantiene oculta en
+modo lectura como respaldo, pero ya no aparece en el menú de navegación.
 
 ## Criterios
 
@@ -24,6 +26,10 @@ Proyecto Power BI con interfaz MODUSS estratégica y datos de Banner Workflow en
 - `FINALIZADA`, `EN CURSO`, `CANCELADA` y `OTRO` se determinan a partir del estado y ejecución del workflow.
 - El período se normaliza extrayendo un código académico de seis dígitos desde las propiedades del formulario.
 - La duración promedio excluye sábados y domingos.
+- `Solicitudes Sobre Promedio` cuenta procesos finalizados cuya duración en días
+  hábiles supera el promedio del contexto de filtros vigente.
+- Inscripción especial y extraordinaria comparten una sola categoría analítica;
+  `tipo_clasificacion` conserva ambas opciones para el filtro funcional.
 - Sede, nivel y RUT se detectan desde las propiedades disponibles en cada formulario.
 
 ## Modelo optimizado
