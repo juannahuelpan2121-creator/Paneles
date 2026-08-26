@@ -90,12 +90,12 @@
                       "Entity": "Medidas Solicitudes"
                     }
                   },
-                  "Property": "Duración Promedio Días"
+                  "Property": "Solicitudes Finalizadas"
                 }
               },
-              "queryRef": "Medidas Solicitudes.Duración Promedio Días",
-              "nativeQueryRef": "Duración hábil promedio",
-              "displayName": "Duración hábil promedio"
+              "queryRef": "Medidas Solicitudes.Solicitudes Finalizadas",
+              "nativeQueryRef": "Finalizadas",
+              "displayName": "Finalizadas"
             },
             {
               "field": {
@@ -105,12 +105,12 @@
                       "Entity": "Medidas Solicitudes"
                     }
                   },
-                  "Property": "Solicitudes Sobre Promedio"
+                  "Property": "Solicitudes En Curso"
                 }
               },
-              "queryRef": "Medidas Solicitudes.Solicitudes Sobre Promedio",
-              "nativeQueryRef": "Fuera del promedio",
-              "displayName": "Fuera del promedio"
+              "queryRef": "Medidas Solicitudes.Solicitudes En Curso",
+              "nativeQueryRef": "En curso",
+              "displayName": "En curso"
             }
           ]
         }
@@ -382,7 +382,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Expande la jerarquía para revisar volumen, duración hábil y casos fuera del promedio.'"
+                  "Value": "'Expande la jerarquía para revisar el volumen de solicitudes finalizadas y en curso.'"
                 }
               }
             },

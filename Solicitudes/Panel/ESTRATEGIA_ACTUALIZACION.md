@@ -47,12 +47,12 @@ cuando exista una ubicación institucional estable, autenticada y aprobada.
 
 ## Mejoras incorporadas
 
-- Filtros de rango para fecha de ingreso y fecha de cierre en Resumen operacional
-  y Sábana completa.
+- Filtros de rango para fecha de ingreso y fecha de cierre en todas las páginas.
 - Los nuevos filtros conservan la interfaz neutra del kit, sin colores agregados.
 - Matriz operacional jerárquica por tipo de solicitud, sede y estado.
-- Indicadores de volumen, duración hábil promedio y solicitudes fuera del
-  promedio dentro de la matriz.
+- Indicadores de volumen total, finalizadas y en curso dentro de la matriz. Las
+  medidas de duración hábil y fuera del promedio permanecen en las tarjetas para
+  evitar evaluarlas repetidamente en cada nivel de la jerarquía.
 - Los encabezados muestran los rangos de fecha únicamente cuando están filtrados.
 - Tema institucional conservado exactamente según
   `01_Ejemplo_Estrategico_MODUSS`.

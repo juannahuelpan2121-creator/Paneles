@@ -33,6 +33,7 @@ def add_date_slicer(
     page_dir: Path,
     template_name: str,
     visual_name: str,
+    entity: str,
     column: str,
     title: str,
     y: int,
@@ -45,9 +46,9 @@ def add_date_slicer(
     visual["position"]["tabOrder"] = 4000 + y
 
     projection = visual["visual"]["query"]["queryState"]["Values"]["projections"][0]
-    projection["field"]["Column"]["Expression"]["SourceRef"]["Entity"] = "solicitudes_workflow"
+    projection["field"]["Column"]["Expression"]["SourceRef"]["Entity"] = entity
     projection["field"]["Column"]["Property"] = column
-    projection["queryRef"] = f"solicitudes_workflow.{column}"
+    projection["queryRef"] = f"{entity}.{column}"
     projection["nativeQueryRef"] = title
     projection["displayName"] = title
     projection["active"] = True
@@ -110,8 +111,8 @@ def upgrade_matrix(path: Path) -> None:
             "Values": {
                 "projections": [
                     measure_projection("Solicitudes Total", "Solicitudes"),
-                    measure_projection("Duración Promedio Días", "Duración hábil promedio"),
-                    measure_projection("Solicitudes Sobre Promedio", "Fuera del promedio"),
+                    measure_projection("Solicitudes Finalizadas", "Finalizadas"),
+                    measure_projection("Solicitudes En Curso", "En curso"),
                 ]
             },
         }
@@ -163,7 +164,7 @@ def upgrade_matrix(path: Path) -> None:
     container["subTitle"] = [
         {
             "properties": {
-                "text": literal("'Expande la jerarquía para revisar volumen, duración hábil y casos fuera del promedio.'"),
+                "text": literal("'Expande la jerarquía para revisar el volumen de solicitudes finalizadas y en curso.'"),
                 "show": literal("true"),
                 "titleWrap": literal("true"),
                 "fontColor": {"solid": {"color": literal("'#58616E'")}},
@@ -242,10 +243,43 @@ def main() -> None:
     resumen = definition / "pages" / "resumen_solicitudes"
     sabana = definition / "pages" / "sabana_completa"
 
-    add_date_slicer(resumen, "res_periodo", "res_fecha_inicio", "fecha_inicio", "Fecha de ingreso", 366, "res_filter_group")
-    add_date_slicer(resumen, "res_periodo", "res_fecha_cierre", "fecha_cierre", "Fecha de cierre", 458, "res_filter_group")
-    add_date_slicer(sabana, "raw_periodo", "raw_fecha_inicio", "fecha_inicio", "Fecha de ingreso", 550, "raw_filter_group")
-    add_date_slicer(sabana, "raw_periodo", "raw_fecha_cierre", "fecha_cierre", "Fecha de cierre", 642, "raw_filter_group")
+    add_date_slicer(resumen, "res_periodo", "res_fecha_inicio", "solicitudes_workflow", "fecha_inicio", "Fecha de ingreso", 366, "res_filter_group")
+    add_date_slicer(resumen, "res_periodo", "res_fecha_cierre", "solicitudes_workflow", "fecha_cierre", "Fecha de cierre", 458, "res_filter_group")
+    add_date_slicer(sabana, "raw_periodo", "raw_fecha_inicio", "solicitudes_workflow", "fecha_inicio", "Fecha de ingreso", 550, "raw_filter_group")
+    add_date_slicer(sabana, "raw_periodo", "raw_fecha_cierre", "solicitudes_workflow", "fecha_cierre", "Fecha de cierre", 642, "raw_filter_group")
+
+    detail_pages = [
+        ("detalle_cambio_carrera", "car", "solicitudes_workflow", "fecha_inicio", "fecha_cierre", 458),
+        ("detalle_continuidad", "con", "solicitudes_workflow", "fecha_inicio", "fecha_cierre", 458),
+        ("detalle_inscripcion_especial", "esp", "solicitudes_workflow", "fecha_inicio", "fecha_cierre", 550),
+        ("detalle_reincorporacion", "rei", "solicitudes_workflow", "fecha_inicio", "fecha_cierre", 458),
+        ("detalle_retiro", "ret", "solicitudes_workflow", "fecha_inicio", "fecha_cierre", 458),
+        ("detalle_suspension", "sus", "solicitudes_workflow", "fecha_inicio", "fecha_cierre", 458),
+        ("detalle_inscripcion", "ins", "solicitudes_inscripcion", "start_datetime", "stop_datetime", 458),
+        ("detalle_calificacion", "cal", "solicitudes_calificacion", "start_datetime", "stop_datetime", 458),
+    ]
+    for page_name, prefix, entity, start_column, end_column, first_y in detail_pages:
+        page = definition / "pages" / page_name
+        add_date_slicer(
+            page,
+            f"{prefix}_periodo",
+            f"{prefix}_fecha_inicio",
+            entity,
+            start_column,
+            "Fecha de ingreso",
+            first_y,
+            f"{prefix}_filter_group",
+        )
+        add_date_slicer(
+            page,
+            f"{prefix}_periodo",
+            f"{prefix}_fecha_cierre",
+            entity,
+            end_column,
+            "Fecha de cierre",
+            first_y + 92,
+            f"{prefix}_filter_group",
+        )
 
     upgrade_matrix(resumen / "visuals" / "res_tabla" / "visual.json")
     # El tema institucional se conserva byte a byte: el validador lo contrasta
