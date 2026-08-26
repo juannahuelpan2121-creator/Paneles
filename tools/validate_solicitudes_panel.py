@@ -266,27 +266,38 @@ for required_measure in (
 ):
     if required_measure not in measures.get("Medidas Solicitudes", set()):
         errors.append(f"Medida workflow faltante: {required_measure}")
-raw_html_match = re.search(
-    r"measure 'HTML KPI Sábana'\s*=\s*```\s*(.*?)\s*```",
-    measure_text,
-    re.S,
-)
-if not raw_html_match:
+
+
+def _measure_body(measure_name):
+    """Extrae una medida TMDL serializada en formato cercado o plano."""
+    match = re.search(
+        r"measure '" + re.escape(measure_name) + r"'\s*=\s*(.*?)\n\s*lineageTag:",
+        measure_text,
+        re.S,
+    )
+    if not match:
+        return None
+
+    body = match.group(1).strip()
+    if body.startswith("```") and body.endswith("```"):
+        body = body[3:-3].strip()
+    return body
+
+
+raw_html_expression = _measure_body("HTML KPI Sábana")
+if raw_html_expression is None:
     errors.append("No se pudo localizar la expresión de HTML KPI Sábana")
 else:
-    raw_html_expression = raw_html_match.group(1).lstrip()
     if raw_html_expression.upper().startswith("RETURN"):
         errors.append("HTML KPI Sábana no puede comenzar con RETURN sin declarar una variable")
     for technical_text in ("ATHENA", "WORKFLOW_PROPIEDADES_JSON.SQL", "DESCARGA OPERACIONAL OPTIMIZADA"):
         if technical_text in raw_html_expression.upper():
             errors.append(f"HTML KPI Sábana conserva texto técnico: {technical_text}")
 
-summary_html_match = re.search(
-    r"measure 'HTML KPI Resumen Workflow'\s*=\s*```\s*(.*?)\s*```",
-    measure_text,
-    re.S,
-)
-if not summary_html_match or "Canceladas" in summary_html_match.group(1):
+summary_html_expression = _measure_body("HTML KPI Resumen Workflow")
+if summary_html_expression is None:
+    errors.append("No se pudo localizar la expresión de HTML KPI Resumen Workflow")
+elif "Canceladas" in summary_html_expression:
     errors.append("El resumen todavía contiene la tarjeta de solicitudes canceladas")
 if "GENERATESERIES ( 1, dias_calendario, 1 )" not in measure_text or "WEEKDAY ( inicio + [Value], 2 ) <= 5" not in measure_text:
     errors.append("Duración Promedio Días no excluye sábados y domingos")
