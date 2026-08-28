@@ -138,7 +138,9 @@ workflows AS (
         rol_administrador_id,
         descripcion_tipo_solicitud,
         version_workflow,
-        particion_workflow
+        particion_workflow,
+        periodo_encabezado,
+        rut_encabezado
     FROM (
         SELECT
             w.id,
@@ -166,6 +168,28 @@ workflows AS (
             d.description AS descripcion_tipo_solicitud,
             d.version AS version_workflow,
             CAST(w.dt AS VARCHAR) AS particion_workflow,
+            REGEXP_EXTRACT(
+                TRIM(COALESCE(w.name, '')),
+                '(20[0-9]{4})[ ]+[0-9]{8}[ ]+[0-9]{4}[ ]*$',
+                1
+            ) AS periodo_encabezado,
+            COALESCE(
+                REGEXP_EXTRACT(
+                    UPPER(COALESCE(w.name, '')),
+                    'RUT[^0-9]*([0-9]{7,9}[0-9K]?)',
+                    1
+                ),
+                REGEXP_EXTRACT(
+                    UPPER(COALESCE(w.name, '')),
+                    'SUSPENSI[^0-9]*([0-9]{7,9}[0-9K]?)',
+                    1
+                ),
+                REGEXP_EXTRACT(
+                    TRIM(UPPER(COALESCE(w.name, ''))),
+                    '([0-9]{7,9}[0-9K]?)[ ]+20[0-9]{4}[ ]+[0-9]{8}[ ]+[0-9]{4}[ ]*$',
+                    1
+                )
+            ) AS rut_encabezado,
             ROW_NUMBER() OVER (
                 PARTITION BY w.id
                 ORDER BY w.dt DESC NULLS LAST
@@ -209,7 +233,14 @@ sede_candidatas AS (
         p.value AS sede_workflow,
         REGEXP_REPLACE(UPPER(TRIM(p.value)), '[^A-Z0-9]+', '') AS sede_clave,
         c.codigo_campus,
-        c.descripcion_campus
+        c.descripcion_campus,
+        CASE
+            WHEN REGEXP_LIKE(LOWER(COALESCE(p.name, '')), '(destino|nueva)') THEN 9
+            WHEN UPPER(COALESCE(p.name, '')) IN (
+                'C_CAMPUS_CODE', 'C_CODIGO_SEDE', 'C_COD_SEDE', 'C_SEDE'
+            ) THEN 1
+            ELSE 5
+        END AS prioridad_propiedad
     FROM propiedades AS p
     LEFT JOIN campus_claves AS c
         ON REGEXP_REPLACE(UPPER(TRIM(p.value)), '[^A-Z0-9]+', '') = c.sede_clave
@@ -234,6 +265,7 @@ sede_resuelta AS (
                 PARTITION BY id
                 ORDER BY
                     CASE WHEN codigo_campus IS NOT NULL THEN 0 ELSE 1 END,
+                    prioridad_propiedad,
                     CASE WHEN sede_clave = codigo_campus THEN 0 ELSE 1 END,
                     nombre_propiedad_sede,
                     sede_workflow
@@ -246,11 +278,23 @@ atributos AS (
     SELECT
         id,
         MAX(
-            CASE WHEN REGEXP_LIKE(
-                LOWER(COALESCE(name, '')),
-                '(^|_)(periodo|periodo_adm|periodo_academico|periodo_consulta|term|term_code)($|_)'
-            ) THEN REGEXP_EXTRACT(TRIM(value), '(20[0-9]{4})', 1) END
-        ) AS periodo_detectado,
+            CASE WHEN UPPER(COALESCE(name, '')) = 'C_PERIODO'
+                THEN REGEXP_EXTRACT(TRIM(value), '(20[0-9]{4})', 1)
+            END
+        ) AS periodo_principal,
+        MAX(
+            CASE WHEN UPPER(COALESCE(name, '')) IN (
+                'C_TERM_CODE', 'FRM_PERIODO', 'P_PERIODO',
+                'L_PERIODO', 'PERIODO', 'PERIODO_CONSULTA'
+            ) THEN REGEXP_EXTRACT(TRIM(value), '(20[0-9]{4})', 1)
+            END
+        ) AS periodo_alternativo,
+        MAX(
+            CASE WHEN UPPER(COALESCE(name, '')) IN (
+                'P_PERIODOADM', 'WF_PERIODOADM', 'PERIODO_ADM'
+            ) THEN REGEXP_EXTRACT(TRIM(value), '(20[0-9]{4})', 1)
+            END
+        ) AS periodo_admision,
         MAX(
             CASE WHEN REGEXP_LIKE(
                 LOWER(COALESCE(name, '')),
@@ -258,11 +302,30 @@ atributos AS (
             ) THEN value END
         ) AS nivel_detectado,
         MAX(
-            CASE WHEN REGEXP_LIKE(
-                LOWER(COALESCE(name, '')),
-                '(^|_)(rut|rut_estudiante|rut_alumno|rutalumno)($|_)'
-            ) THEN value END
-        ) AS rut_estudiante_detectado,
+            CASE
+                WHEN UPPER(COALESCE(name, '')) = 'C_RUT'
+                 AND NOT REGEXP_LIKE(UPPER(TRIM(value)), '^U')
+                 AND REGEXP_LIKE(
+                    REGEXP_REPLACE(UPPER(TRIM(value)), '[^0-9K]', ''),
+                    '^[0-9]{7,9}[0-9K]$'
+                 )
+                THEN REGEXP_REPLACE(UPPER(TRIM(value)), '[^0-9K]', '')
+            END
+        ) AS rut_c_rut,
+        MAX(
+            CASE
+                WHEN UPPER(COALESCE(name, '')) IN (
+                    'RUT', 'RUT_ALUMNO', 'RUT_ESTUDIANTE', 'RUTALUMNO',
+                    'C_RUT_ALUMNO', 'C_RUT_ESTUDIANTE'
+                )
+                 AND NOT REGEXP_LIKE(UPPER(TRIM(value)), '^U')
+                 AND REGEXP_LIKE(
+                    REGEXP_REPLACE(UPPER(TRIM(value)), '[^0-9K]', ''),
+                    '^[0-9]{7,9}[0-9K]$'
+                 )
+                THEN REGEXP_REPLACE(UPPER(TRIM(value)), '[^0-9K]', '')
+            END
+        ) AS rut_alternativo,
         COUNT(*) AS cantidad_propiedades,
         MAX(CAST(dt AS VARCHAR)) AS particion_propiedad
     FROM propiedades
@@ -289,14 +352,20 @@ SELECT
     w.tipo_solicitud,
     w.categoria_solicitud,
     w.tipo_clasificacion,
-    COALESCE(a.periodo_detectado, 'Sin periodo') AS periodo,
+    COALESCE(
+        NULLIF(w.periodo_encabezado, ''),
+        a.periodo_principal,
+        a.periodo_alternativo,
+        a.periodo_admision,
+        'Sin periodo'
+    ) AS periodo,
     COALESCE(
         CONCAT(a.codigo_campus, ' - ', a.descripcion_campus),
         'Sin sede homologada'
     ) AS sede,
     COALESCE(a.sede_workflow, 'Sin sede informada') AS sede_workflow,
     COALESCE(a.nivel_detectado, 'Sin nivel') AS nivel,
-    a.rut_estudiante_detectado AS rut_estudiante,
+    COALESCE(a.rut_c_rut, w.rut_encabezado, a.rut_alternativo) AS rut_estudiante,
     w.ultima_actividad,
     w.origen,
     w.indicador_en_ejecucion,
