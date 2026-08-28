@@ -176,17 +176,17 @@ workflows AS (
             COALESCE(
                 REGEXP_EXTRACT(
                     UPPER(COALESCE(w.name, '')),
-                    'RUT[^0-9]*([0-9]{7,9}[0-9K]?)',
+                    'RUT[^A-Z0-9]*(E?[0-9]{7,9}[0-9K]?)',
                     1
                 ),
                 REGEXP_EXTRACT(
                     UPPER(COALESCE(w.name, '')),
-                    'SUSPENSI[^0-9]*([0-9]{7,9}[0-9K]?)',
+                    'SUSPENSI[^A-Z0-9]*(E?[0-9]{7,9}[0-9K]?)',
                     1
                 ),
                 REGEXP_EXTRACT(
                     TRIM(UPPER(COALESCE(w.name, ''))),
-                    '([0-9]{7,9}[0-9K]?)[ ]+20[0-9]{4}[ ]+[0-9]{8}[ ]+[0-9]{4}[ ]*$',
+                    '(E?[0-9]{7,9}[0-9K]?)[ ]+20[0-9]{4}[ ]+[0-9]{8}[ ]+[0-9]{4}[ ]*$',
                     1
                 )
             ) AS rut_encabezado,
@@ -306,10 +306,10 @@ atributos AS (
                 WHEN UPPER(COALESCE(name, '')) = 'C_RUT'
                  AND NOT REGEXP_LIKE(UPPER(TRIM(value)), '^U')
                  AND REGEXP_LIKE(
-                    REGEXP_REPLACE(UPPER(TRIM(value)), '[^0-9K]', ''),
-                    '^[0-9]{7,9}[0-9K]$'
+                    REGEXP_REPLACE(UPPER(TRIM(value)), '[^A-Z0-9K]', ''),
+                    '^(E[0-9]{8}|[0-9]{7,9}[0-9K])$'
                  )
-                THEN REGEXP_REPLACE(UPPER(TRIM(value)), '[^0-9K]', '')
+                THEN REGEXP_REPLACE(UPPER(TRIM(value)), '[^A-Z0-9K]', '')
             END
         ) AS rut_c_rut,
         MAX(
@@ -320,10 +320,10 @@ atributos AS (
                 )
                  AND NOT REGEXP_LIKE(UPPER(TRIM(value)), '^U')
                  AND REGEXP_LIKE(
-                    REGEXP_REPLACE(UPPER(TRIM(value)), '[^0-9K]', ''),
-                    '^[0-9]{7,9}[0-9K]$'
+                    REGEXP_REPLACE(UPPER(TRIM(value)), '[^A-Z0-9K]', ''),
+                    '^(E[0-9]{8}|[0-9]{7,9}[0-9K])$'
                  )
-                THEN REGEXP_REPLACE(UPPER(TRIM(value)), '[^0-9K]', '')
+                THEN REGEXP_REPLACE(UPPER(TRIM(value)), '[^A-Z0-9K]', '')
             END
         ) AS rut_alternativo,
         COUNT(*) AS cantidad_propiedades,
@@ -365,7 +365,7 @@ SELECT
     ) AS sede,
     COALESCE(a.sede_workflow, 'Sin sede informada') AS sede_workflow,
     COALESCE(a.nivel_detectado, 'Sin nivel') AS nivel,
-    COALESCE(a.rut_c_rut, w.rut_encabezado, a.rut_alternativo) AS rut_estudiante,
+    COALESCE(w.rut_encabezado, a.rut_c_rut, a.rut_alternativo) AS rut_estudiante,
     w.ultima_actividad,
     w.origen,
     w.indicador_en_ejecucion,

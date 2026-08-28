@@ -10,10 +10,10 @@
     "tabOrder": 2000
   },
   "visual": {
-    "visualType": "clusteredBarChart",
+    "visualType": "pivotTable",
     "query": {
       "queryState": {
-        "Category": {
+        "Rows": {
           "projections": [
             {
               "field": {
@@ -23,17 +23,17 @@
                       "Entity": "solicitudes_workflow"
                     }
                   },
-                  "Property": "estado_operacional"
+                  "Property": "sede"
                 }
               },
-              "queryRef": "solicitudes_workflow.estado_operacional",
-              "nativeQueryRef": "estado_operacional",
+              "queryRef": "solicitudes_workflow.sede",
+              "nativeQueryRef": "Campus / sede",
               "active": true,
-              "displayName": "Estado Operacional"
+              "displayName": "Campus / sede"
             }
           ]
         },
-        "Y": {
+        "Values": {
           "projections": [
             {
               "field": {
@@ -47,85 +47,163 @@
                 }
               },
               "queryRef": "Medidas Solicitudes.Solicitudes Total",
-              "nativeQueryRef": "Solicitudes Total"
+              "nativeQueryRef": "Total",
+              "displayName": "Total"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas Solicitudes"
+                    }
+                  },
+                  "Property": "Solicitudes En Curso"
+                }
+              },
+              "queryRef": "Medidas Solicitudes.Solicitudes En Curso",
+              "nativeQueryRef": "En curso",
+              "displayName": "En curso"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Medidas Solicitudes"
+                    }
+                  },
+                  "Property": "Solicitudes Finalizadas"
+                }
+              },
+              "queryRef": "Medidas Solicitudes.Solicitudes Finalizadas",
+              "nativeQueryRef": "Finalizadas",
+              "displayName": "Finalizadas"
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Measure": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Medidas Solicitudes"
-                  }
-                },
-                "Property": "Solicitudes Total"
-              }
-            },
-            "direction": "Descending"
-          }
-        ]
       }
     },
     "objects": {
-      "dataPoint": [
+      "columnHeaders": [
         {
           "properties": {
-            "fillTransparency": {
+            "columnAdjustment": {
               "expr": {
                 "Literal": {
-                  "Value": "0D"
+                  "Value": "'growToFit'"
                 }
               }
             },
-            "borderShow": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        },
-        {
-          "properties": {
-            "fill": {
+            "backColor": {
               "solid": {
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#CFB47C'"
+                      "Value": "'#EAF1FB'"
                     }
                   }
                 }
               }
-            }
-          },
-          "selector": {
-            "metadata": "Medidas Solicitudes.Solicitudes Total"
-          }
-        }
-      ],
-      "valueAxis": [
-        {
-          "properties": {
-            "show": {
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#112B42'"
+                    }
+                  }
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "autoExpand": {
               "expr": {
                 "Literal": {
                   "Value": "false"
                 }
               }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Center'"
+                }
+              }
+            },
+            "titleAlignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Left'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
             }
           }
         }
       ],
-      "labels": [
+      "grid": [
         {
           "properties": {
-            "color": {
+            "gridHorizontalColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#E5E7EB'"
+                    }
+                  }
+                }
+              }
+            },
+            "gridHorizontalWeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
+            "rowPadding": {
+              "expr": {
+                "Literal": {
+                  "Value": "6D"
+                }
+              }
+            },
+            "gridHorizontal": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            },
+            "fontColorPrimary": {
               "solid": {
                 "color": {
                   "expr": {
@@ -136,37 +214,14 @@
                 }
               }
             },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "9D"
-                }
-              }
-            },
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "categoryAxis": [
-        {
-          "properties": {
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "9D"
-                }
-              }
-            },
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
+            "backColorSecondary": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#F7F8FA'"
+                    }
+                  }
                 }
               }
             }
@@ -250,7 +305,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Solicitudes por estado'"
+                  "Value": "'Resumen por campus'"
                 }
               }
             },
@@ -259,7 +314,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#001E61'"
+                      "Value": "'#112B42'"
                     }
                   }
                 }
@@ -282,7 +337,59 @@
             "fontFamily": {
               "expr": {
                 "Literal": {
-                  "Value": "'Segoe UI'"
+                  "Value": "'Arial'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Solicitudes totales, en curso y finalizadas para el contexto seleccionado.'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "titleWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#58616E'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "9D"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Arial'"
                 }
               }
             }

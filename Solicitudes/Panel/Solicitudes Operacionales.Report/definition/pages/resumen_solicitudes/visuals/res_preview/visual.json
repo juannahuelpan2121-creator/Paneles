@@ -163,10 +163,10 @@
                     "Entity": "solicitudes_workflow"
                   }
                 },
-                "Property": "periodo"
+                "Property": "fecha_inicio"
               }
             },
-            "direction": "Descending"
+            "direction": "Ascending"
           }
         ]
       }

@@ -3,10 +3,10 @@
   "name": "cal_tabla",
   "position": {
     "x": 24,
-    "height": 1425,
+    "height": 1025,
     "tabOrder": 2000,
     "z": 2000,
-    "y": 335,
+    "y": 735,
     "width": 1232
   },
   "visual": {
